@@ -8,8 +8,9 @@
 
 .title {
   background-color: #DDD;
-  //composes: edit highlight from './edit.css';
-  //composes: button from 'library/button.css';
+  font-size: 40px;
+  /* composes: edit highlight from './edit.css';
+  composes: button from 'library/button.css'; */
 
 }
 
