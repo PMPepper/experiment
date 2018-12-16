@@ -2,14 +2,19 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Test from './components/test/Test';
+import Tabs from './components/tabs/Tabs';
 
 const title = 'Testing CSS modules';
 
 ReactDOM.render(
   <div>
     <h1>{title}</h1>
-    <p>Hello world blah blah blah!</p>
-    <Test />
+    <h2>Tabs test</h2>
+    <Tabs>
+      <p key="tab1" tab-title="Hello world">This is a tab content for the first tab.</p>
+      <p key="tab2" tab-title="Foo bar">This is a tab content for the second tab.</p>
+      <p key="tab3" tab-title="Tab three">This is a tab content for the <b>third</b> tab.</p>
+    </Tabs>
   </div>,
   document.getElementById('app')
 );

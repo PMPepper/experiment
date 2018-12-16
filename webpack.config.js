@@ -19,7 +19,11 @@ const config = {
     ]
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx']
+    extensions: ['*', '.js', '.jsx'],
+    alias: {
+      "react": "preact-compat",
+      "react-dom": "preact-compat"
+    }
   },
   output: {
     path: path.resolve(__dirname, 'build/js'),
