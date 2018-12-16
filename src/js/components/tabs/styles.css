@@ -1,3 +1,68 @@
 .tabs {
-  color: #6F6;
+
+}
+
+.tabsList {
+  margin: 0 -2px;
+}
+
+.tab {
+  border: 1px solid #333;
+  padding: 4px 8px;
+  margin: 0 2px -1px;
+  background: #AAA;
+  cursor: pointer;
+}
+
+.selectedTab {
+  composes: tab;
+  background: #DDD;
+}
+
+.panel {
+  display: none;
+  border: 1px solid #333;
+}
+
+.selectedPanel {
+  composes: panel;
+
+  display: block;
+}
+
+/* accordion styles */
+
+.accordion {
+  border: 1px solid #333;
+  border-bottom: 0;
+}
+
+.header {
+  border-bottom: 1px solid #333;
+}
+
+.selectedHeader {
+  composes: header;
+}
+
+.headerButton {
+  display: block;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  padding: 4px 8px;
+}
+
+.selectedHeaderButton {
+  composes: headerButton;
+}
+
+.openPanel {
+  border-bottom: 1px solid #333;
+}
+
+.closedPanel {
+  display: none;
 }

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter as Router, Route, Link, Switch } from "react-router-dom";
 
 import Test from './components/test/Test';
-import Tabs from './components/tabs/Tabs';
+import Tabs from './components/tabs/LocalStateTabs';
 
 import core from '../css/core.css';
 
@@ -115,9 +115,9 @@ ReactDOM.render(
   <div>
     <h1>{title}</h1>
     <h2>Tabs test</h2>
-    <Tabs>
+    <Tabs accordion={false}>
       <p key="tab1" tab-title="Hello world">This is a tab content for the first tab.</p>
-      <p key="tab2" tab-title="Foo bar">This is a tab content for the second tab.</p>
+      <p key="tab2" tab-title="Foo bar">This is a tab content for the second tab. Some more text. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. </p>
       <p key="tab3" tab-title="Tab three">This is a tab content for the <b>third</b> tab!</p>
     </Tabs>
     <RouteConfigExample />
