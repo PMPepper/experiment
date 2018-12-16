@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom';
 import Test from './components/test/Test';
 import Tabs from './components/tabs/Tabs';
 
+import core from '../css/core.css';
+
 const title = 'Testing CSS modules';
 
 ReactDOM.render(
