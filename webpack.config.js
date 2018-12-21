@@ -25,7 +25,8 @@ module.exports = {
               plugins: [
                 ['wildcard', {noModifyCase: true}],
                 '@babel/plugin-transform-runtime',
-                '@babel/plugin-proposal-class-properties'
+                '@babel/plugin-proposal-class-properties',
+                '@babel/plugin-syntax-dynamic-import',
               ]
             }
           ]
@@ -35,14 +36,14 @@ module.exports = {
         test: /\.scss$/,
         use: [
           'style-loader', // creates style nodes from JS strings
-          {
+          { // translates CSS into CommonJS
             loader: 'css-loader',
             options: {
               sourceMap: true,
               modules: true,
               localIdentName: '[local]_[hash:base64:6]',
             }
-          }, // translates CSS into CommonJS
+          },
           'sass-loader' // compiles Sass to CSS, using Node Sass by default
         ]
       }
@@ -51,14 +52,12 @@ module.exports = {
   resolve: {
     extensions: ['*', '.js', '.jsx'],
     alias: {
-      'react': 'preact-compat',
-      'react-dom': 'preact-compat',
       '@': path.resolve('src/js'),
     }
   },
   output: {
     path: path.resolve(__dirname, 'build/js'),
-    publicPath: "/js/",
+    publicPath: "js/",
     filename: 'scripts.js'
   },
   plugins: [

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter as Router, Route, Link, Switch } from "react-router-dom";
 
-import Tabs from './components/tabs/LocalStateTabs';
+//import Tabs from './components/tabs/LocalStateTabs';
 
 import core from '../css/core.scss';
 
@@ -11,9 +11,7 @@ const title = 'Testing CSS modules';
 
 ////////////////////////////////////////////////////////////////////
 // first our route components
-function Sandwiches() {
-  return <h2>Sandwiches</h2>;
-}
+const Sandwiches = React.lazy(() => import('./components/sandwiches/Sandwiches'));
 
 function Tacos({ routes }) {
   return (
@@ -95,11 +93,13 @@ function RouteConfigExample() {
           </li>
         </ul>
 
-        <Switch>{
-          routes.map((route, i) => (
-            <RouteWithSubRoutes key={i} {...route} />
-          ))}
-        </Switch>
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <Switch>{
+            routes.map((route, i) => (
+              <RouteWithSubRoutes key={i} {...route} />
+            ))}
+          </Switch>
+        </React.Suspense>
       </div>
     </Router>
   );
@@ -111,14 +111,14 @@ ReactDOM.render(
   <div>
     <h1>{title}</h1>
     <h2>Tabs test</h2>
-    <Tabs>
+    {/*<Tabs>
       <p key="tab1" tab-title="Hello world">This is a tab content for the first tab.</p>
       <p key="tab2" tab-title="Foo bar">This is a tab content for the second tab. Some more text. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. </p>
       <p key="tab3" tab-title="Tab three">This is a tab content for the <b>third</b> tab!</p>
       <p key="tab4" tab-title="Tab four">This is a tab content for the <b>fourth</b> tab!</p>
       <p key="tab5" tab-title="Tab five">This is a tab content for the <b>fifth</b> tab!</p>
       <p key="tab6" tab-title="Tab size">This is a tab content for the <b>sixth</b> tab!</p>
-    </Tabs>
+    </Tabs>*/}
     <RouteConfigExample />
   </div>,
   document.getElementById('app')

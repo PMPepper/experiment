@@ -9,6 +9,9 @@ module.exports = {
   devtool: 'hidden-source-map',
   entry: './src/js/main.js',
   optimization: {
+    /*splitChunks: {
+      chunks: 'all'
+    },*/
     minimizer: [new UglifyJsPlugin({
       uglifyOptions: {
         output: {
@@ -33,6 +36,7 @@ module.exports = {
                 ['wildcard', {noModifyCase: true}],
                 '@babel/plugin-transform-runtime',
                 '@babel/plugin-proposal-class-properties',
+                '@babel/plugin-syntax-dynamic-import',
                 'transform-remove-console'
               ]
             }
@@ -53,7 +57,6 @@ module.exports = {
           },
           'postcss-loader',
           'sass-loader', // compiles Sass to CSS, using Node Sass by default
-
         ]
       }
     ]
@@ -61,15 +64,14 @@ module.exports = {
   resolve: {
     extensions: ['*', '.js', '.jsx'],
     alias: {
-      'react': 'preact-compat',
-      'react-dom': 'preact-compat',
       '@': path.resolve('src/js'),
     }
   },
   output: {
     path: path.resolve(__dirname, 'build/js'),
-    publicPath: "/js/",
-    filename: 'scripts.js'
+    publicPath: "js/",
+    filename: '[name].bundle.js',
+    chunkFilename: '[name].bundle.js',
   },
   plugins: [
     new MiniCssExtractPlugin({

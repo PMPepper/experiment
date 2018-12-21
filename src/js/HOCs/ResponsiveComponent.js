@@ -91,8 +91,10 @@ export default function ResponsiveComponent(
         this._updateSize();//check element sizes after rendering
       }
 
-      render(props, state) {
-        return <PresentationalComponent {...mapProps(props, state, this._getRef)}>{props.children}</PresentationalComponent>;
+      render() {
+        const props = this.props;
+
+        return <PresentationalComponent {...mapProps(props, this.state, this._getRef)}>{props.children}</PresentationalComponent>;
       }
 
       static displayName = `ResponsiveComponent(${getDisplayName(PresentationalComponent)})`;
