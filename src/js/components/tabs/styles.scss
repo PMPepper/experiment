@@ -1,5 +1,5 @@
 .tabs {
-  composes: responsive from "../../../css/generic.css";
+  composes: responsive from "../../../css/generic.scss";
 }
 
 .tabsList {
@@ -12,14 +12,14 @@
   margin: 0 2px -1px;
   background: #AAA;
   cursor: pointer;
-}
 
-.tab:first-of-type {
-  margin-left: 0;
-}
+  &:first-of-type {
+    margin-left: 0;
+  }
 
-.tab:last-of-type {
-  margin-right: 0;
+  &:last-of-type {
+    margin-right: 0;
+  }
 }
 
 .selectedTab {

@@ -40,7 +40,7 @@ module.exports = {
         }
       },
       {
-        test: /\.css$/,
+        test: /\.scss$/,
         use: [
           MiniCssExtractPlugin.loader,
           {
@@ -51,7 +51,9 @@ module.exports = {
               localIdentName: '[local]_[hash:base64:6]',
             }
           },
-          'postcss-loader'
+          'postcss-loader',
+          'sass-loader', // compiles Sass to CSS, using Node Sass by default
+
         ]
       }
     ]

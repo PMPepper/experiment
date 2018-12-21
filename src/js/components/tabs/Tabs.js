@@ -1,6 +1,6 @@
 import React from 'react';
 import {compose} from 'recompose';
-import styles from './styles.css';
+import styles from './styles.scss';
 
 
 //HOCs
