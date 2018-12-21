@@ -5,11 +5,18 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 
 module.exports = {
-  mode: 'development',
-  devtool: 'source-map',
+  mode: 'production',
+  devtool: 'hidden-source-map',
   entry: './src/js/main.js',
   optimization: {
-
+    minimizer: [new UglifyJsPlugin({
+      uglifyOptions: {
+        output: {
+          comments: false,
+        },
+      },
+      extractComments: true
+    })]
   },
   module: {
     rules: [
@@ -25,7 +32,8 @@ module.exports = {
               plugins: [
                 ['wildcard', {noModifyCase: true}],
                 '@babel/plugin-transform-runtime',
-                '@babel/plugin-proposal-class-properties'
+                '@babel/plugin-proposal-class-properties',
+                'transform-remove-console'
               ]
             }
           ]
@@ -34,17 +42,16 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
+          MiniCssExtractPlugin.loader,
           {
-            loader: 'style-loader'
-          },
-          {
-            loader: 'css-loader',
+            loader: "css-loader",
             options: {
               sourceMap: true,
               modules: true,
               localIdentName: '[local]_[hash:base64:6]',
             }
-          }
+          },
+          'postcss-loader'
         ]
       }
     ]
@@ -63,7 +70,9 @@ module.exports = {
     filename: 'scripts.js'
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
+    new MiniCssExtractPlugin({
+      filename: '../css/style.css',
+    })
   ],
   devServer: {
     stats: "errors-only",
@@ -72,3 +81,14 @@ module.exports = {
     hot: true,
   }
 };
+//plugins: [['wildcard', {noModifyCase: true}], 'transform-runtime', 'transform-object-rest-spread', 'transform-class-properties']
+
+/*
+plugins: [
+              ['wildcard', {noModifyCase: true}],
+              'transform-runtime',
+              'transform-object-rest-spread',
+              'transform-class-properties',
+              'transform-remove-console',
+            ]
+*/
