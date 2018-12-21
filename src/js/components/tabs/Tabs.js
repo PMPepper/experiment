@@ -9,10 +9,20 @@ import ResponsiveComponent, {makeCheckSizeWidthFunc} from '@/HOCs/ResponsiveComp
 
 //Helpers
 import reactOmitElementProp from '@/helpers/react-omit-element-prop';
+import reactChildrenToArray from '@/helpers/react-children-to-array';
 
 
 //The component
 function Tabs({children, accordion = false, selectedTabIndex = 0, setSelectedTabIndex = null, getRef = null}) {
+  children = reactChildrenToArray(children);
+  selectedTabIndex = selectedTabIndex|0;
+
+  if(selectedTabIndex < 0) {
+    selectedTabIndex = 0;
+  } else if (selectedTabIndex >= children.length) {
+    selectedTabIndex = children.length - 1;
+  }
+
   return <div className={accordion ? styles.accordion : styles.tabs} ref={getRef}>
     {!accordion && <div className={styles.tabsList} role="tablist" aria-orientation="horizontal">
       {children.map((child, index) => {

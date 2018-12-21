@@ -48,7 +48,7 @@ function Cart() {
 // then our route config
 const routes = [
   {
-    path: "/sandwiches",
+    path: "/sandwiches/:id?",
     component: Sandwiches
   },
   {
