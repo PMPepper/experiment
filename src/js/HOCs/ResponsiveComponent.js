@@ -161,3 +161,24 @@ function doResize() {
     component._updateSize();
   })
 }
+
+//checkSize factory methods
+export function makeCheckSizeWidthFunc(prop, minWidth = 0) {
+  return ({outerWidth, scrollWidth}, {outerWidth: lastOuterWidth, scrollWidth: lastScrollWidth}, lastState) => {
+    //console.log(outerWidth, scrollWidth, lastOuterWidth, lastScrollWidth, lastState);
+    if(outerWidth === lastOuterWidth && scrollWidth === lastScrollWidth) {
+      //console.log('keep using previous');
+      return lastState;//If width of the component hasn't changed, retain current mode
+    }
+
+    if(scrollWidth > outerWidth) {
+      //console.log('use alternative');
+      return {[prop]: true};
+    } else if(lastScrollWidth > lastOuterWidth && outerWidth === lastOuterWidth) {
+      //console.log('keep using alternative', outerWidth, scrollWidth, lastState);
+      return {[prop]: true};//had to switch to responsive component because regular one didn't fit
+    }
+
+    return {[prop]: outerWidth < minWidth};
+  }
+}

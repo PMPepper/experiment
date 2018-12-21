@@ -4,7 +4,7 @@ import styles from './styles.css';
 
 
 //HOCs
-import ResponsiveComponent from '@/HOCs/ResponsiveComponent';
+import ResponsiveComponent, {makeCheckSizeWidthFunc} from '@/HOCs/ResponsiveComponent';
 
 
 //Helpers
@@ -46,23 +46,7 @@ function Tabs({children, accordion = false, selectedTabIndex = 0, setSelectedTab
 
 export default compose(
   ResponsiveComponent(
-    ({outerWidth, scrollWidth}, {outerWidth: lastOuterWidth, scrollWidth: lastScrollWidth}, lastState) => {
-      //console.log(outerWidth, scrollWidth, lastOuterWidth, lastScrollWidth, lastState);
-      if(outerWidth === lastOuterWidth && scrollWidth === lastScrollWidth) {
-        //console.log('keep using previous');
-        return lastState;//If width of the component hasn't changed, retain current mode
-      }
-
-      if(scrollWidth > outerWidth) {
-        //console.log('use alternative');
-        return {accordion: true};
-      } else if(lastScrollWidth > lastOuterWidth && outerWidth === lastOuterWidth) {
-        //console.log('keep using alternative', outerWidth, scrollWidth, lastState);
-        return {accordion: true};//had to switch to responsive component because regular one didn't fit
-      }
-
-      return {accordion: false};
-    }
+    makeCheckSizeWidthFunc('accordion')
   )
 )(Tabs);
 
