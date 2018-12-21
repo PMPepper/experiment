@@ -4,20 +4,16 @@ import {getDisplayName} from 'recompose';
 //allow updates if window height changes even if has no effect on div size?
 //I know there was a reason for this, but I can't recall what it was
 
-export default function MonitorSize({
-  //resizeWithWindowVertical = false,
-  //resizeWithWindowHorizontal = false,
-  /*mergeProps = (ownProps, addedProps) => {
-    return {...ownProps, ...addedProps};
-  },*/
-  mapProps = (props, state, getRef) => (props)
-} = {}) {
-
+export default function ResponsiveComponent(
+  checkSize = null,
+  {
+    mapProps = (props, state, getRef) => ({...props, ...state, getRef})
+  } = {}
+) {
   return (PresentationalComponent) => {
     return class extends React.Component {
       state = {};
-      //_lastWindowWidth = 0;
-      //_lastWindowHeight = 0;
+      _lastSizeProps = {};
       _isMounted = false;
       _ref = null;
 
@@ -26,6 +22,16 @@ export default function MonitorSize({
 
         this._isMounted = true;
         addComponent(this);
+      }
+
+      componentDidMount() {
+        this._updateSize();
+
+        //live-dev-server has not applied styles at point of component mounting, so
+        //size checks do not work. Slight delay makes this work
+        if(process.env.NODE_ENV !== 'production') {
+          setTimeout(() => {this._updateSize()}, 0)
+        }
       }
 
       componentWillUnmount() {
@@ -49,52 +55,52 @@ export default function MonitorSize({
 
         const elem = this._elem;
         const state = this.state;
+        const lastSizeProps = this._lastSizeProps
 
         if(!elem || !document.body.contains(elem) || !elem.offsetWidth) {
-          //this._lastWindowWidth = 0;
-          //this._lastWindowHeight = 0;
-
           return;
         }
 
+        //If any sizes have changed, re-run check size function & update state
         if(
-          elem.offsetWidth != state.outerWidth ||
-          elem.offsetHeight != state.outerHeight ||
-          elem.clientWidth != state.innerWidth ||
-          elem.clientHeight != state.innerHeight ||
-          elem.scrollWidth != state.scrollWidth ||
-          elem.scrollHeight != state.scrollHeight
-          //resizeWithWindowVertical && (window.innerHeight != this._lastWindowHeight) ||
-          //resizeWithWindowHorizontal && (window.innerWidth != this._lastWindowWidth)
+          elem.offsetWidth != lastSizeProps.outerWidth ||
+          elem.offsetHeight != lastSizeProps.outerHeight ||
+          elem.clientWidth != lastSizeProps.innerWidth ||
+          elem.clientHeight != lastSizeProps.innerHeight ||
+          elem.scrollWidth != lastSizeProps.scrollWidth ||
+          elem.scrollHeight != lastSizeProps.scrollHeight
         ) {
-          this.setState({
+          const sizeProps = {
             outerWidth: elem.offsetWidth,
             outerHeight: elem.offsetHeight,
             innerWidth: elem.clientWidth,
             innerHeight: elem.clientHeight,
             scrollWidth: elem.scrollWidth,
             scrollHeight: elem.scrollHeight,
-          });
-        }
+          }
 
-        //this._lastWindowWidth = window.innerWidth;
-        //this._lastWindowHeight = window.innerHeight;
+          //Record new values
+          this.setState(checkSize(sizeProps, this._lastSizeProps, state, this.props));
+
+          //Update last size props
+          this._lastSizeProps = sizeProps;
+        }
       }
 
       componentDidUpdate() {
         this._updateSize();//check element sizes after rendering
       }
 
-      render(props) {
-        return <PresentationalComponent {...mapProps(props, this.state, this._getRef)}>{this.props.children}</PresentationalComponent>;
+      render(props, state) {
+        return <PresentationalComponent {...mapProps(props, state, this._getRef)}>{props.children}</PresentationalComponent>;
       }
 
-      static displayName = `MonitorSize(${getDisplayName(PresentationalComponent)})`;
+      static displayName = `ResponsiveComponent(${getDisplayName(PresentationalComponent)})`;
     }
   }
 }
 
-
+//Internal helper methods
 const components = [];
 
 function addComponent(component) {
@@ -133,7 +139,7 @@ function clearListeners() {
 
 
 let resizedTId = null;
-let debounceDelay = 0.4;
+let debounceDelay = 0;//optional debounce delay - will help performance on complex app
 
 function onResize(e) {
   if(resizedTId !== null) {
@@ -141,7 +147,11 @@ function onResize(e) {
     resizedTId = null;
   }
 
-  resizedTId = setTimeout(doResize, debounceDelay*1000);
+  if(debounceDelay > 0) {
+    resizedTId = setTimeout(doResize, debounceDelay*1000);
+  } else {
+    doResize();
+  }
 }
 
 function doResize() {

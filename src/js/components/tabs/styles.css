@@ -1,9 +1,10 @@
 .tabs {
-
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .tabsList {
-  margin: 0 -2px;
+  white-space: nowrap;
 }
 
 .tab {
@@ -12,6 +13,14 @@
   margin: 0 2px -1px;
   background: #AAA;
   cursor: pointer;
+}
+
+.tab:first-of-type {
+  margin-left: 0;
+}
+
+.tab:last-of-type {
+  margin-right: 0;
 }
 
 .selectedTab {
