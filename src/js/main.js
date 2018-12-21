@@ -10,9 +10,6 @@ import core from '../css/core.css';
 const title = 'Testing CSS modules';
 
 
-
-
-
 ////////////////////////////////////////////////////////////////////
 // first our route components
 function Sandwiches() {

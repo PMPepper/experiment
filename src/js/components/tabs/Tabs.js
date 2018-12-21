@@ -2,11 +2,18 @@ import React from 'react';
 import {compose} from 'recompose';
 import styles from './styles.css';
 
-import reactOmitElementProp from '../../helpers/react-extract-element-prop';
+
+//HOCs
+import MonitorSize from '@/HOCs/MonitorSize';
 
 
-function Tabs({children, accordion = false, selectedTabIndex = 0, setSelectedTabIndex = null}) {
-  return <div class={accordion ? styles.accordion : styles.tabs}>
+//Helpers
+import reactOmitElementProp from '@/helpers/react-extract-element-prop';
+
+
+//The component
+function Tabs({children, accordion = false, selectedTabIndex = 0, setSelectedTabIndex = null, getRef = null}) {
+  return <div class={accordion ? styles.accordion : styles.tabs} ref={getRef}>
     {!accordion && <div class={styles.tabsList} role="tablist" aria-orientation="horizontal">
       {children.map((child, index) => {
         const isSelected = index === selectedTabIndex;
@@ -37,7 +44,19 @@ function Tabs({children, accordion = false, selectedTabIndex = 0, setSelectedTab
   </div>
 }
 
-export default compose()(Tabs);
+export default compose(
+  MonitorSize({
+    mapProps: (props, state, getRef) => {
+      console.log(state);
+
+      return {...props, getRef}
+    }
+  })
+)(Tabs);
 
 
 export const Display = Tabs;
+
+
+
+////

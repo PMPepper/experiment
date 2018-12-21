@@ -14,15 +14,29 @@ const config = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: ['babel-loader']
+        loader: 'babel-loader',
+
+        options: {
+          presets: [
+            '@babel/preset-env',
+            {
+              plugins: [
+                ['wildcard', {noModifyCase: true}],
+                '@babel/plugin-transform-runtime',
+                '@babel/plugin-proposal-class-properties'
+              ]
+            }
+          ]
+        }
       },
     ]
   },
   resolve: {
     extensions: ['*', '.js', '.jsx'],
     alias: {
-      "react": "preact-compat",
-      "react-dom": "preact-compat"
+      'react': 'preact-compat',
+      'react-dom': 'preact-compat',
+      '@': path.resolve('src/js'),
     }
   },
   output: {
@@ -40,6 +54,17 @@ const config = {
     hot: true,
   }
 };
+//plugins: [['wildcard', {noModifyCase: true}], 'transform-runtime', 'transform-object-rest-spread', 'transform-class-properties']
+
+/*
+plugins: [
+              ['wildcard', {noModifyCase: true}],
+              'transform-runtime',
+              'transform-object-rest-spread',
+              'transform-class-properties',
+              'transform-remove-console',
+            ]
+*/
 
 const cssLoaderConfig = {
   loader: "css-loader",
