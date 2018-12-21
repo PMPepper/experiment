@@ -9,9 +9,6 @@ module.exports = {
   devtool: 'hidden-source-map',
   entry: './src/js/main.js',
   optimization: {
-    /*splitChunks: {
-      chunks: 'all'
-    },*/
     minimizer: [new UglifyJsPlugin({
       uglifyOptions: {
         output: {

@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter as Router, Route, Link, Switch } from "react-router-dom";
+//import omit from 'lodash/omit';
 
 //import Tabs from './components/tabs/LocalStateTabs';
+import Test from '@/components/test/Test';
 
 import core from '../css/core.scss';
 
@@ -25,7 +27,7 @@ function Tacos({ routes }) {
           <Link to="/tacos/cart">Cart</Link>
         </li>
       </ul>
-
+      <Test />
       {routes.map((route, i) => (
         <RouteWithSubRoutes key={i} {...route} />
       ))}
