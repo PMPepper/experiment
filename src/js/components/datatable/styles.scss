@@ -1,0 +1,97 @@
+$bgCol: #FFF;
+$bgColAlt: #EBEBEB;
+$fontCol: #000;
+
+$borderColor: #b7b7b7;
+$basePadding: 1.6rem;
+
+.dataTable {
+  width: 100%;
+  border: 0.1rem solid $borderColor;
+  border-top: none;
+  margin-top: $basePadding / 2;
+  border-spacing: 0;
+  border-collapse: separate;
+}
+
+.th {
+  font-size: 1.65rem;
+  vertical-align: middle;
+  height: 4rem;
+  padding: $basePadding / 2;
+  text-rendering: geometricPrecision;
+  text-decoration: none;
+  outline: none;
+  border-left: 0.1rem solid $borderColor;
+  border-top: 0.1rem solid $borderColor;
+  text-align: center;
+  white-space: nowrap;
+  position: relative;
+
+  &:first-child {
+    border-left: 0;
+  }
+}
+
+.columnSortBtn {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  white-space: inherit;
+  display: block;
+  width: 100%;
+  text-align: inherit;
+  padding-right: $basePadding;
+  padding-left: $basePadding;
+}
+
+.columnSortBtnAsc {
+  composes: columnSortBtn;
+}
+
+.columnSortBtnDesc {
+  composes: columnSortBtn;
+}
+
+.columnLabel {
+  composes: columnSortBtn;
+}
+
+.thEven {
+  composes: th;
+}
+
+.tr {
+  background: $bgCol;
+}
+
+.trEven {
+  background: $bgColAlt;
+}
+
+.td {
+  color: $fontCol;
+  font-size: 1.55rem;
+  line-height: 1.0;
+  border-left: 0.1rem solid $borderColor;
+  border-top: 0.1rem solid $borderColor;
+  vertical-align: top;
+  padding: $basePadding / 2;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 35rem;
+
+  &:first-child {
+    border-left: 0;
+  }
+}
+
+.tdEven {
+  composes: td;
+}
+
+.tFootTD {
+  background: $borderColor;
+}
