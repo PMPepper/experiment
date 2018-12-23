@@ -5,8 +5,8 @@ export default function combineSortFunctions() {
     let sortFunc = null;
     let result = null;
 
-    for(let i = 0; i < arguments.length; i++) {
-      sortFunc = arguments[i];
+    for(let i = 0; i < args.length; i++) {
+      sortFunc = args[i];
 
       if(sortFunc) {
         result = sortFunc(a, b);

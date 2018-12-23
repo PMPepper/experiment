@@ -34,7 +34,7 @@ export default function DataTablePresentational(props) {
 DataTablePresentational.defaultProps = {
   styles: defaultStyles,
   sortColumnName: null,
-  sortColumnAsc: false,
+  sortColumnDesc: false,
   setSortColumn: null,
   tHeadComponent: THead,
   tBodyComponent: TBody,
@@ -47,7 +47,7 @@ if(process.env.NODE_ENV !== 'production') {
     columns: PropTypes.array,//TODO proper shape
     rows: PropTypes.arrayOf(PropTypes.object),
     sortColumnName: PropTypes.string,
-    sortColumnAsc: PropTypes.bool,
+    sortColumnDesc: PropTypes.bool,
     setSortColumn: PropTypes.func,
     tHeadComponent: isReactComponent,
     tBodyComponent: isReactComponent,

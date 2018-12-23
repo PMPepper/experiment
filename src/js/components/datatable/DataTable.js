@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import memoize from 'memoize-one';
 import {compose} from 'recompose';
 
@@ -15,25 +16,42 @@ import objectResolvePath from '@/helpers/object-resolve-path';
 
 
 export default class DataTable extends React.Component {
+  getRows = memoize((rows) => (Object.values(rows)))
+
+  getSortRowsFunc = memoize(
+    (columns, sortColumnName, sortColumnDesc, defaultSortColumns = null) => {
+      defaultSortColumns = defaultSortColumns || [];
+
+      const sortFuncs = [
+        getColumnSortFunc(getColumnByName(columns, sortColumnName), sortColumnDesc),
+        ...defaultSortColumns.map(defaultSortColumn => {
+          let defaultSortColumnName, defaultSortColumnDesc = false;
+
+          if(defaultSortColumn instanceof Array) {
+            defaultSortColumnName = defaultSortColumn[0];
+            defaultSortColumnDesc = defaultSortColumn[1];
+          } else {
+            defaultSortColumnName = defaultSortColumn;
+          }
+
+          return defaultSortColumnName !== sortColumnName ? getColumnSortFunc(getColumnByName(columns, defaultSortColumnName), defaultSortColumnDesc): null;
+        })
+      ];
+
+      return combineSortFunctions.apply(null, sortFuncs);
+    }
+  );
 
   sortRows = memoize(
-    (rows, columns, sortColumnName, sortColumnAsc, defaultSortColumn = null) => {
-      //TODO this is pretty much totally wrong - take into account meta types & custom sort functions
-      const column = getColumnByName(columns, sortColumnName);
-      const columnSortFunc = column ? column.sort : null;
-      const defaultSortColumnObj = getColumnByName(columns, defaultSortColumn);
-      let sortedRows = Object.values(rows);
-/*
-      //Get the sorting function
-      const sortFunc = defaultSortColumn && defaultSortColumn !== sortColumnName && defaultSortColumnObj ?
-        combineSortFunctions(columnSortFunc,  defaultSortColumnObj.sort)
-        :
-        columnSortFunc;
-*/
-      //If there is a sorting function, apply it
-      //sortFunc && sortedRows.sort(sortFunc);
+    (rows, sortRowsFunc) => {
+      if(sortRowsFunc) {
+        //need to duplication rows so that memoize detects that something has changed
+        rows = [...rows];
+        rows.sort(sortRowsFunc);
+        return rows;
+      }
 
-      return sortedRows;
+      return rows;
     }
   );
 
@@ -52,17 +70,23 @@ export default class DataTable extends React.Component {
       {...props}
       rows={this.paginateRows(
         this.sortRows(
-          props.rows,
-          props.columns,
-          props.sortColumnName,
-          props.sortColumnAsc,
-          props.defaultSortColumn
+          this.getRows(props.rows),
+          this.getSortRowsFunc(
+            props.columns,
+            props.sortColumnName,
+            props.sortColumnDesc,
+            props.defaultSortColumns
+          )
         ),
         props.itemsPerPage,
         props.page
       )}
     />
   }
+
+  static propTypes = {
+    defaultSortColumns: PropTypes.array,//TODO full shape (string, or array)
+  };
 }
 
 
@@ -71,6 +95,24 @@ function getColumnByName(columns, name) {
   return columns.find(column => (column.name === name)) || null;
 }
 
+function getColumnSortFunc(column, desc = false) {
+  if(!column || !column.sort) {//if this column is not sortable, do nothing
+    return null;
+  }
+
+  if(column.sort instanceof Function) {
+    //column has a custom sort function
+    return column.sort(desc);
+  }
+
+  const metaType = metaTypes[column.valueType || 'string'];
+
+  if(metaType) {
+    return metaType.getSortFunc(column, desc);
+  }
+
+  return null;
+}
 
 //Metatypes
 function registerDatatableMetatype(name, getSortFunc, formatFunc = null, dataCellClass = null, headCellClass = null) {
@@ -93,19 +135,22 @@ export function getMetaTypes() {
 registerDatatableMetatype(
   'string',
   (column, desc) => {
+    console.log('column', desc);
+    const columnName = column.name;
+
     return desc ?
       (a, b) => {
-        a = a.data[column];
-        b = b.data[column];
+        a = a.data[columnName];
+        b = b.data[columnName];
 
-        return (a < b) ? -1 : ((a > b) ? 1 : 0)
+        return (a > b) ? -1 : ((a < b) ? 1 : 0)
       }
       :
       (a, b) => {
-        a = a.data[column];
-        b = b.data[column];
+        a = a.data[columnName];
+        b = b.data[columnName];
 
-        return (a > b) ? -1 : ((a < b) ? 1 : 0)
+        return (a < b) ? -1 : ((a > b) ? 1 : 0)
       }
   },
   (value, column, row, props) => (value)
@@ -117,9 +162,9 @@ registerDatatableMetatype(
     const columnName = column.name;
 
     return desc ?
-      (a, b) => (a.data[columnName] - b.data[columnName])
-      :
       (a, b) => (b.data[columnName] - a.data[columnName])
+      :
+      (a, b) => (a.data[columnName] - b.data[columnName])
   },
   (value, column, row, props) => (<FormatNumber value={value} langCode={props.langCode} />)
 );
@@ -130,9 +175,9 @@ registerDatatableMetatype(
     const columnName = column.name;
 
     return desc ?
-      (a, b) => (a.data[columnName] - b.data[columnName])
-      :
       (a, b) => (b.data[columnName] - a.data[columnName])
+      :
+      (a, b) => (a.data[columnName] - b.data[columnName])
   },
   (value, column, row, props) => (<Time value={value} langCode={props.langCode} format="date" />)
 );
@@ -143,9 +188,9 @@ registerDatatableMetatype(
     const columnName = column.name;
 
     return desc ?
-      (a, b) => (a.data[columnName] - b.data[columnName])
-      :
       (a, b) => (b.data[columnName] - a.data[columnName])
+      :
+      (a, b) => (a.data[columnName] - b.data[columnName])
   },
   (value, column, row, props) => (<Time value={value} langCode={props.langCode} format="datetime" />)
 );

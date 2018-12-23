@@ -40,7 +40,7 @@ function Bus() {
   return <div style={{padding: '10px'}}>
     <h3>Bus</h3>
     <DataTable
-      defaultSortColumn="name"
+      defaultSortColumns={['name', ['age', false]]}
       columns={[
         {name: 'name', label: 'Name', sort: true},
         {name: 'age', label: 'Age', valueType: 'number', sort: true},

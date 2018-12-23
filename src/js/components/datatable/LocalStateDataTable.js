@@ -10,7 +10,7 @@ export default class LocalStateDataTable extends React.Component {
   setSortColumn = (columnName, desc = false) => {
     this.setState({
       sortColumnName: columnName,
-      sortColumnAsc: desc,
+      sortColumnDesc: desc,
     })
   }
 
