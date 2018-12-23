@@ -23,13 +23,15 @@ export default function Row(props) {
 }
 
 function formatCellData(row, column, props, metaTypes) {
+  const value = row.data[column.name];
+
   //If column has custom format method use that
   if(column.format) {
-    return column.format(column.name, row, props)
+    return column.format(value, column, row, props)
   }
 
   //Otherwise use metatype (defaults to string)
   const metaType = column.valueType && metaTypes.hasOwnProperty(column.valueType) ? metaTypes[column.valueType] : metaTypes.string;
 
-  return metaType.formatFunc(column.name, row, props);
+  return metaType.formatFunc(value, column, row, props);
 }
