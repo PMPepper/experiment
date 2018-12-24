@@ -20,6 +20,7 @@ export default class DataTable extends React.Component {
 
   getSortRowsFunc = memoize(
     (columns, sortColumnName, sortColumnDesc, defaultSortColumns = null) => {
+      console.log('getSortRowsFunc');
       defaultSortColumns = defaultSortColumns || [];
 
       const sortFuncs = [
@@ -39,15 +40,21 @@ export default class DataTable extends React.Component {
       ];
 
       return combineSortFunctions.apply(null, sortFuncs);
-    }
+    },
+    /*(...args) => {
+      console.log(args);
+      debugger;
+      return false;
+    }*/
   );
 
   sortRows = memoize(
     (rows, sortRowsFunc) => {
+      console.log('sortRows');
       if(sortRowsFunc) {
         //need to duplication rows so that memoize detects that something has changed
         rows = [...rows];
-        rows.sort(sortRowsFunc);
+        rows.sort(sortRowsFunc);//TODO need to pass props here?
         return rows;
       }
 
@@ -56,6 +63,7 @@ export default class DataTable extends React.Component {
   );
 
   paginateRows = memoize((sortedRows, itemsPerPage = 25, page = 0) => {
+    console.log('paginateRows');
     if(itemsPerPage > 0) {
       return sortedRows.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
     }
@@ -108,21 +116,35 @@ function getColumnSortFunc(column, desc = false) {
   const metaType = metaTypes[column.valueType || 'string'];
 
   if(metaType) {
-    return metaType.getSortFunc(column, desc);
+    return metaType.getSortFunc(column, desc, metaType.sortCompareFunc);
   }
 
   return null;
 }
 
 //Metatypes
-function registerDatatableMetatype(name, getSortFunc, formatFunc = null, dataCellClass = null, headCellClass = null) {
+export function registerDatatableMetatype(name, sortCompareFunc, formatFunc = null, getSortFunc = defaultGetSortFunc, dataCellClass = null, headCellClass = null) {
   metaTypes[name] = {
     name,
+    sortCompareFunc,
     formatFunc,
     getSortFunc,
     dataCellClass,
     headCellClass,
   };
+}
+
+function defaultGetSortFunc(column, desc, sortCompareFunc) {
+  const columnName = column.name;
+
+  return desc ?
+    (a, b) => {
+      return sortCompareFunc(b.data[columnName], a.data[columnName]);
+    }
+    :
+    (a, b) => {
+      return sortCompareFunc(a.data[columnName], b.data[columnName]);
+    }
 }
 
 const metaTypes = {};
@@ -134,81 +156,49 @@ export function getMetaTypes() {
 //string is the default column type
 registerDatatableMetatype(
   'string',
-  (column, desc) => {
-    console.log('column', desc);
-    const columnName = column.name;
-
-    return desc ?
-      (a, b) => {
-        a = a.data[columnName];
-        b = b.data[columnName];
-
-        return (a > b) ? -1 : ((a < b) ? 1 : 0)
-      }
-      :
-      (a, b) => {
-        a = a.data[columnName];
-        b = b.data[columnName];
-
-        return (a < b) ? -1 : ((a > b) ? 1 : 0)
-      }
-  },
+  (a, b) => ((a < b) ? -1 : ((a > b) ? 1 : 0)),
   (value, column, row, props) => (value)
 );
 
 registerDatatableMetatype(
   'number',
-  (column, desc) => {
-    const columnName = column.name;
-
-    return desc ?
-      (a, b) => (b.data[columnName] - a.data[columnName])
-      :
-      (a, b) => (a.data[columnName] - b.data[columnName])
-  },
+  (a, b) => (a - b),
   (value, column, row, props) => (<FormatNumber value={value} langCode={props.langCode} />)
 );
 
 registerDatatableMetatype(
   'date',
-  (column, desc) => {
-    const columnName = column.name;
-
-    return desc ?
-      (a, b) => (b.data[columnName] - a.data[columnName])
-      :
-      (a, b) => (a.data[columnName] - b.data[columnName])
-  },
+  (a, b) => (a - b),
   (value, column, row, props) => (<Time value={value} langCode={props.langCode} format="date" />)
 );
 
 registerDatatableMetatype(
   'datetime',
-  (column, desc) => {
-    const columnName = column.name;
-
-    return desc ?
-      (a, b) => (b.data[columnName] - a.data[columnName])
-      :
-      (a, b) => (a.data[columnName] - b.data[columnName])
-  },
+  (a, b) => (a - b),
   (value, column, row, props) => (<Time value={value} langCode={props.langCode} format="datetime" />)
 );
 
+
 registerDatatableMetatype(
   'mapped',
-  (column, desc) => {
-    const columnName = column.name;
-
-    return desc ?
-      (a, b) => (a.data[columnName] - b.data[columnName])
-      :
-      (a, b) => (b.data[columnName] - a.data[columnName])
-  },
+  (a, b) => (a - b),
   (value, column, row, props) => {
-    const mappedTo = objectResolvePath(props, column.mappedTo)
     const mappedValueType = metaTypes[column.mappedValueType || 'string'];
 
-    return mappedValueType.formatFunc(mappedTo[value], column, row, props);
+    return mappedValueType.formatFunc(column.mappedValues[value], column, row, props);
+  },
+  (column, desc) => {
+    const columnName = column.name;
+    const mappedValues = column.mappedValues;
+    const sortCompareFunc = metaTypes[column.mappedValueType || 'string'].sortCompareFunc;
+
+    return desc ?
+      (a, b) => {
+        return sortCompareFunc(mappedValues[b.data[columnName]], mappedValues[a.data[columnName]]);
+      }
+      :
+      (a, b) => {
+        return sortCompareFunc(mappedValues[a.data[columnName]], mappedValues[b.data[columnName]]);
+      }
   }
 );
