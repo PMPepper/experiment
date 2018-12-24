@@ -131,6 +131,7 @@ const Bus = compose(
       defaultSortColumns={defaultSortColumns}
       columns={columns}
       rows={members}
+      itemsPerPage={3}
     />
   </div>
 });

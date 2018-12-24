@@ -10,9 +10,6 @@ $basePadding: 1.6rem;
 $minWidth: 3.0rem;
 
 .pagination {
-  margin: 0 -0.1rem -0.1rem;
-  color: #FFF;
-  border-bottom: 0.2rem solid $borderColor;
   vertical-align: top;
 }
 
@@ -31,6 +28,11 @@ $minWidth: 3.0rem;
   vertical-align: middle;
 
   color: $fontCol;
+
+  &:hover {
+    color: #666;
+    cursor: pointer;
+  }
 }
 
 .prevBtn {
@@ -48,20 +50,14 @@ $minWidth: 3.0rem;
 }
 
 .current {
-  background: transparent;
-  background: $fontCol;
-
-  &:hover {
-    background: transparent;
-    background: $fontCol;
-  }
+  background: #999;
+  pointer-events: none;
 }
 
 .spacer {
   color: $fontCol;
   font-size: 1.9rem;
   margin: 0 $basePadding*0.25;
-  //min-width: $minWidth;
   text-align: center;
   display: inline-block;
   vertical-align: middle;
