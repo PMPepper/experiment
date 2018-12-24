@@ -1,0 +1,68 @@
+$bgCol: #FFF;
+$bgColAlt: #EBEBEB;
+$fontCol: #000;
+
+$borderColor: #b7b7b7;
+$basePadding: 1.6rem;
+
+
+
+$minWidth: 3.0rem;
+
+.pagination {
+  margin: 0 -0.1rem -0.1rem;
+  color: #FFF;
+  border-bottom: 0.2rem solid $borderColor;
+  vertical-align: top;
+}
+
+.page {
+  //@include themeBlockInteraction();
+
+  font-size: 1.65rem;
+  line-height: 2.5rem;
+  border: 0;
+  background: transparent;
+  padding: $basePadding/4 $basePadding/2;
+  min-width: $minWidth;
+  text-align: center;
+  display: inline-block;
+  margin: 0 0;
+  vertical-align: middle;
+
+  color: $fontCol;
+}
+
+.prevBtn {
+  composes: page;
+  font-size: 1.8rem;
+}
+
+.nextBtn {
+  composes: prevBtn;
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.current {
+  background: transparent;
+  background: $fontCol;
+
+  &:hover {
+    background: transparent;
+    background: $fontCol;
+  }
+}
+
+.spacer {
+  color: $fontCol;
+  font-size: 1.9rem;
+  margin: 0 $basePadding*0.25;
+  //min-width: $minWidth;
+  text-align: center;
+  display: inline-block;
+  vertical-align: middle;
+}

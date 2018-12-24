@@ -14,6 +14,10 @@ export default class LocalStateDataTable extends React.Component {
     })
   }
 
+  setPage = (page) => {
+    this.setState({page})
+  }
+
   render() {
     const props = this.props;
 
@@ -22,6 +26,7 @@ export default class LocalStateDataTable extends React.Component {
       {...this.state}
 
       setSortColumn={this.setSortColumn}
+      setPage={this.setPage}
 
       //TODO pagination
     />

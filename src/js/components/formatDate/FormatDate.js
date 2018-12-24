@@ -10,12 +10,13 @@ export default function FormatDate({value, langCode = null, format = null}) {
   return formatDate(value, langCode, format);
 }
 
-
-FormatDate.propTypes = {
-  value: PropTypes.instanceOf(Date),
-  langCode: PropTypes.string,
-  format: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.string
-  ])
-};
+if(process.env.NODE_ENV !== 'production') {
+  FormatDate.propTypes = {
+    value: PropTypes.instanceOf(Date),
+    langCode: PropTypes.string,
+    format: PropTypes.oneOfType([
+      PropTypes.object,
+      PropTypes.string
+    ])
+  };
+}

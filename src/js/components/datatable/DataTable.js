@@ -62,10 +62,10 @@ export default class DataTable extends React.Component {
     }
   );
 
-  paginateRows = memoize((sortedRows, itemsPerPage = 25, page = 0) => {
+  paginateRows = memoize((sortedRows, itemsPerPage, page) => {
     console.log('paginateRows');
     if(itemsPerPage > 0) {
-      return sortedRows.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
+      return sortedRows.slice((page - 1) * itemsPerPage, page * itemsPerPage);
     }
 
     return sortedRows;
@@ -74,11 +74,13 @@ export default class DataTable extends React.Component {
   render() {
     const props = this.props;
 
+    const allRows = this.getRows(props.rows);
+
     return <DataTablePresentational
       {...props}
       rows={this.paginateRows(
         this.sortRows(
-          this.getRows(props.rows),
+          allRows,
           this.getSortRowsFunc(
             props.columns,
             props.sortColumnName,
@@ -89,12 +91,18 @@ export default class DataTable extends React.Component {
         props.itemsPerPage,
         props.page
       )}
+      numRows={allRows.length}
     />
   }
 
   static propTypes = {
     defaultSortColumns: PropTypes.array,//TODO full shape (string, or array)
   };
+
+  static defaultProps = {
+    itemsPerPage: 25,
+    page: 1,
+  }
 }
 
 
