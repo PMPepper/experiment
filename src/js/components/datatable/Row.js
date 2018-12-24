@@ -1,22 +1,33 @@
 import React from 'react';
 import {getMetaTypes} from './DataTable';
 
+import css from '@/helpers/css-class-list-to-string';
 
 
 export default function Row(props) {
-  const {row, rowIndex, columns, styles} = props;
+  const {row, rowIndex, columns, styles, stacked} = props;
   const metaTypes = getMetaTypes();
 
-  return <tr className={(rowIndex % 2) === 0 ? styles.tr : styles.trEven}>
+  return <tr className={css((rowIndex % 2) === 0 ? styles.tr : styles.trEven, stacked && styles.trStacked)}>
     {columns.map((column, columnIndex) => {
-      const classes = [(columnIndex % 2) === 0 ? styles.td : styles.tdEven];
+      const columnLabel = column.label instanceof Function ? column.label(props) : column.label;
 
-      if(column.valueType && styles[`td_type_${column.valueType}`]) {
-        classes.push(styles[`td_type_${column.valueType}`]);
-      }
-
-      return <td key={column.name} className={classes.join(' ')}>
-        {formatCellData(row, column, props, metaTypes)}
+      return <td
+        key={column.name}
+        className={css(
+          (columnIndex % 2) === 0 ? styles.td : styles.tdEven,
+          column.valueType && styles[`td_type_${column.valueType}`],
+          stacked && styles.tdStacked
+        )}
+      >
+        <div className={styles.tdHeader} aria-hidden="true">{columnLabel}</div>{/*stack table contents*/}
+        <div className={css(
+          styles.tdContent,
+          column.valueType && styles[`tdContent_type_${column.valueType}`],
+          stacked && styles.tdContentStacked
+        )}>
+          {formatCellData(row, column, props, metaTypes)}
+        </div>
       </td>
     })}
   </tr>

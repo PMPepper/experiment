@@ -6,12 +6,26 @@ $borderColor: #b7b7b7;
 $basePadding: 1.6rem;
 
 .dataTable {
+  composes: responsive from "../../../css/generic.scss";
+
+  color: $fontCol;
+}
+
+.table {
   width: 100%;
   border: 0.1rem solid $borderColor;
   border-top: none;
   margin-top: $basePadding / 2;
   border-spacing: 0;
   border-collapse: separate;
+}
+
+.thead {
+  font-weight: bold;
+}
+
+.tbody {
+
 }
 
 .th {
@@ -66,11 +80,11 @@ $basePadding: 1.6rem;
 }
 
 .trEven {
+  composes: tr;
   background: $bgColAlt;
 }
 
 .td {
-  color: $fontCol;
   font-size: 1.55rem;
   line-height: 1.0;
   border-left: 0.1rem solid $borderColor;
@@ -81,7 +95,6 @@ $basePadding: 1.6rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 35rem;
 
   &:first-child {
     border-left: 0;
@@ -92,6 +105,61 @@ $basePadding: 1.6rem;
   composes: td;
 }
 
-.tFootTD {
+.tdHeader {
+  display: none;
+}
+
+.tfootTD {
   background: $borderColor;
+}
+
+/* Stacked styles */
+
+.stacked,
+.tableStacked,
+.tbodyStacked,
+.trStacked,
+.tfootStacked,
+.tfootRowStacked,
+.tfootTDStacked {
+  color: #006600;
+  display: block;
+}
+
+//Put table header offscreen
+.theadStacked {
+  composes: offscreen from "../../../css/generic.scss";
+
+  display: block;
+}
+
+.trStacked {
+
+}
+
+.tdStacked {
+  display: flex;
+  flex: auto 1 1;
+  border-left: 0;
+  text-align: left;
+  padding: 0;
+}
+
+//show cell headers
+.tdStacked > .tdHeader {
+  display: block;
+  flex: 50% 0 0;
+  max-width: 35rem;
+  font-weight: bold;
+  padding: $basePadding/2;
+  border-right: 1px solid $borderColor;
+}
+
+.tdStacked > .tdContent {
+  flex: 50% 1 1;
+  padding: $basePadding/2;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

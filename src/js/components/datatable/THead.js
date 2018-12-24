@@ -1,22 +1,20 @@
 import React from 'react';
 
+import css from '@/helpers/css-class-list-to-string';
 
 
-export default function THead({styles, columns, sortColumnName, sortColumnDesc, setSortColumn}) {
+export default function THead({styles, columns, sortColumnName, sortColumnDesc, setSortColumn, stacked}) {
 
-  return <thead className={styles.thead}>
-    <tr className={styles.tHeadRow}>
+  return <thead className={css(styles.thead, stacked && styles.theadStacked)}>
+    <tr className={styles.theadRow}>
       {columns.map((column, index) => {
         const isSortColumn = column.name === sortColumnName;
-        const classes = [(index % 2) === 0 ? styles.th : styles.thEven];
-
-        if(isSortColumn) {
-          classes.push(sortColumnDesc ? styles.thSortDesc : styles.thSortAsc);
-        }
-
         const columnLabel = column.label instanceof Function ? column.label(props) : column.label;
 
-        return <th key={column.name} className={classes.join(' ')}>
+        return <th key={column.name} className={css(
+          (index % 2) === 0 ? styles.th : styles.thEven,
+          isSortColumn && (sortColumnDesc ? styles.thSortDesc : styles.thSortAsc)
+        )}>
           {setSortColumn && column.sort ?
             <button className={styles[isSortColumn ? (sortColumnDesc ? 'columnSortBtnDesc' : 'columnSortBtnAsc') : 'columnSortBtn']} onClick={() => {isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}>{columnLabel}</button>
             :

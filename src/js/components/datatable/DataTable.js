@@ -3,6 +3,17 @@ import PropTypes from 'prop-types';
 import memoize from 'memoize-one';
 import {compose} from 'recompose';
 
+//TODO
+//selectable rows
+//expandable rows
+//context menus
+//state handlers? redux etc?
+//responsive
+//-stacktables
+//-sort columns!
+//table name/custom styles (linked to name?)
+
+
 //Internal
 import DataTablePresentational from './DataTablePresentational';
 
@@ -47,7 +58,7 @@ export default class DataTable extends React.Component {
       if(sortRowsFunc) {
         //need to duplication rows so that memoize detects that something has changed
         rows = [...rows];
-        rows.sort(sortRowsFunc);//TODO need to pass props here?
+        rows.sort(sortRowsFunc);
         return rows;
       }
 

@@ -55,7 +55,7 @@ const Bus = compose(
     columns: baseColumns,
     memberTypes: baseMemberTypes,
     members: [
-      {id: '1', data: {name: 'Bob', age: 71, joined: new Date(2011, 9, 21), memberType: '1'}},
+      {id: '1', data: {name: 'Bob Smithington the 3rd of westminster', age: 71, joined: new Date(2011, 9, 21), memberType: '1'}},
       {id: '2', data: {name: 'Simon', age: 32, joined: new Date(2013, 12, 19), memberType: '1'}},
       {id: '3', data: {name: 'Karen', age: 52, joined: new Date(2017, 11, 5), memberType: '1'}},
       {id: '4', data: {name: 'Sarah', age: 29, joined: new Date(2014, 9, 3), memberType: '1'}},
@@ -131,7 +131,6 @@ const Bus = compose(
       defaultSortColumns={defaultSortColumns}
       columns={columns}
       rows={members}
-      itemsPerPage={3}
     />
   </div>
 });
