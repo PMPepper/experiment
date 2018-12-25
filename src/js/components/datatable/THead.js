@@ -16,7 +16,9 @@ export default function THead({styles, columns, sortColumnName, sortColumnDesc, 
           isSortColumn && (sortColumnDesc ? styles.thSortDesc : styles.thSortAsc)
         )}>
           {setSortColumn && column.sort ?
-            <button className={styles[isSortColumn ? (sortColumnDesc ? 'columnSortBtnDesc' : 'columnSortBtnAsc') : 'columnSortBtn']} onClick={() => {isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}>{columnLabel}</button>
+            <button className={styles[isSortColumn ? (sortColumnDesc ? 'columnSortBtnDesc' : 'columnSortBtnAsc') : 'columnSortBtn']} onClick={() => {isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}>
+              <span className={styles[isSortColumn ? (sortColumnDesc ? 'columnSortBtnInnerDesc' : 'columnSortBtnInnerAsc') : 'columnSortBtnInner']}>{columnLabel}</span>
+            </button>
             :
             <span className={styles.columnLabel}>{columnLabel}</span>
           }

@@ -45,7 +45,7 @@ const baseColumns = [
   {name: 'name', label: 'Name', sort: true},
   {name: 'age', label: 'Age', valueType: 'number', sort: true},
   {name: 'joined', label: 'Joined', valueType: 'date', sort: true},
-  {name: 'memberType', label: 'Type', valueType: 'mapped', mappedValueType: 'number', mappedValues: baseMemberTypes, sort: true},
+  {name: 'memberType', label: 'Type', valueType: 'mapped', mappedValueType: 'number', mappedValues: baseMemberTypes, sort: false},
 ]
 
 const defaultSortColumns = ['name', ['age', false]];
@@ -55,7 +55,7 @@ const Bus = compose(
     columns: baseColumns,
     memberTypes: baseMemberTypes,
     members: [
-      {id: '1', data: {name: 'Bob Smithington the 3rd of westminster', age: 71, joined: new Date(2011, 9, 21), memberType: '1'}},
+      {id: '1', data: {name: 'Bob', age: 71, joined: new Date(2011, 9, 21), memberType: '1'}},// Smithington the 3rd of westminster
       {id: '2', data: {name: 'Simon', age: 32, joined: new Date(2013, 12, 19), memberType: '1'}},
       {id: '3', data: {name: 'Karen', age: 52, joined: new Date(2017, 11, 5), memberType: '1'}},
       {id: '4', data: {name: 'Sarah', age: 29, joined: new Date(2014, 9, 3), memberType: '1'}},
@@ -77,7 +77,7 @@ const Bus = compose(
       {id: '20', data: {name: 'Gareth', age: 29, joined: new Date(2017, 1, 24), memberType: '1'}},
       {id: '21', data: {name: 'Harry', age: 28, joined: new Date(2016, 11, 23), memberType: '1'}},
       {id: '22', data: {name: 'Ione', age: 27, joined: new Date(2018, 1, 30), memberType: '1'}},
-      {id: '23', data: {name: 'Jake', age: 66, joined: new Date(2018, 3, 9), memberType: '2'}},
+      {id: '23', data: {name: 'Jake Smithington the 3rd of westminster', age: 42, joined: new Date(2018, 3, 9), memberType: '2'}},
       {id: '24', data: {name: 'Kate', age: 25, joined: new Date(2012, 2, 10), memberType: '1'}},
       {id: '25', data: {name: 'Laura', age: 24, joined: new Date(2013, 10, 20), memberType: '2'}},
       {id: '26', data: {name: 'Mathew', age: 43, joined: new Date(2015, 5, 21), memberType: '1'}},

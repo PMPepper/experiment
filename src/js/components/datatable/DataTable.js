@@ -8,10 +8,8 @@ import {compose} from 'recompose';
 //expandable rows
 //context menus
 //state handlers? redux etc?
-//responsive
-//-stacktables
-//-sort columns!
 //table name/custom styles (linked to name?)
+//custom cell styles e.g. align start
 
 
 //Internal
@@ -79,8 +77,28 @@ export default class DataTable extends React.Component {
 
     const allRows = this.getRows(props.rows);
 
+    //use default sort column if none supplied
+    let sortColumnName = null;
+    let sortColumnDesc = false;
+
+    if(props.sortColumnName) {
+      sortColumnName = props.sortColumnName;
+      sortColumnDesc = !!props.sortColumnDesc;
+    } else if(props.defaultSortColumns && props.defaultSortColumns.length > 0) {
+      const defaultSortColumn = props.defaultSortColumns[0];
+
+      if(defaultSortColumn instanceof Array) {
+        sortColumnName = defaultSortColumn[0];
+        sortColumnDesc = !!defaultSortColumn[1];
+      } else {
+        sortColumnName = defaultSortColumn;
+      }
+    }
+
     return <DataTablePresentational
       {...props}
+      sortColumnName={sortColumnName}
+      sortColumnDesc={sortColumnDesc}
       rows={this.paginateRows(
         this.sortRows(
           allRows,

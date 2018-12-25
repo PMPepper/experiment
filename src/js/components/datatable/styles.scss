@@ -1,62 +1,97 @@
-$bgCol: #FFF;
-$bgColAlt: #EBEBEB;
-$fontCol: #000;
+@import '../../../css/shared';
 
-$borderColor: #b7b7b7;
-$basePadding: 1.6rem;
+
+//Overall table vars
+$tableCol: $fontCol;
+$tableBorderCol: $borderColor;
+$tableBasePadding: $basePadding;
+
+//thead vars
+$theadCol: null;
+$theadBg: #EBEBEB;
+
+//tbody vars
+$tbodyCol: null;
+$tbodyBg: #FFF;
+$tbodyBgAlt: #F5F5F5;
+
+//tfoot vars
+$tfootCol: null;
+$tfootBg: $tableBorderCol;
+
+//Arrow vars
+$arrowCol: lighten($tableCol, 30%);
+$arrowWidth: 1.4rem;
+$arrowHeight: 1rem;
+
+//stack header vars
+$stackHeaderCol: null;
+$stackHeaderBg: null;
+
+//stack content vars
+$stackContentCol: null;
+$stackContentBg: null;
 
 .dataTable {
   composes: responsive from "../../../css/generic.scss";
 
-  color: $fontCol;
+  color: $tableCol;
 }
 
 .table {
   width: 100%;
-  border: 0.1rem solid $borderColor;
+  border: 0.1rem solid $tableBorderCol;
   border-top: none;
-  margin-top: $basePadding / 2;
+  margin-top: $tableBasePadding / 2;
   border-spacing: 0;
   border-collapse: separate;
 }
 
+//Header styles
 .thead {
   font-weight: bold;
-}
-
-.tbody {
-
+  color: $theadCol;
+  background: $theadBg;
 }
 
 .th {
   font-size: 1.65rem;
   vertical-align: middle;
-  height: 4rem;
-  padding: $basePadding / 2;
-  text-rendering: geometricPrecision;
-  text-decoration: none;
-  outline: none;
-  border-left: 0.1rem solid $borderColor;
-  border-top: 0.1rem solid $borderColor;
+  padding: 0;
+  border-left: 0.1rem solid $tableBorderCol;
+  border-top: 0.1rem solid $tableBorderCol;
   text-align: center;
   white-space: nowrap;
-  position: relative;
 
   &:first-child {
     border-left: 0;
   }
 }
 
-.columnSortBtn {
-  border: 0;
-  background: transparent;
-  padding: 0;
-  white-space: inherit;
+.thEven {
+  composes: th;
+}
+
+//-non-sorting column header styles
+.columnLabel {
   display: block;
-  width: 100%;
+  padding: $tableBasePadding/2 $arrowWidth + ($tableBasePadding*0.75);
+  white-space: inherit;
   text-align: inherit;
-  padding-right: $basePadding;
-  padding-left: $basePadding;
+  font-weight: bold;
+}
+
+//-Sort button styles
+.columnSortBtn {
+  composes: columnLabel;
+
+  background: transparent;
+  padding: $tableBasePadding/2;
+  border: 0;
+  margin: 0;
+  width: 100%;
+  cursor: pointer;
+  color: inherit;
 }
 
 .columnSortBtnAsc {
@@ -67,30 +102,61 @@ $basePadding: 1.6rem;
   composes: columnSortBtn;
 }
 
-.columnLabel {
-  composes: columnSortBtn;
+//-Sorting arrow styles
+.columnSortBtnInner {
+  display: inline-block;
+  padding: 0 $arrowWidth + $tableBasePadding/4;
+  position: relative;
+
+  &::after {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    margin-top: -$arrowHeight/2;
+  }
 }
 
-.thEven {
-  composes: th;
+.columnSortBtnInnerAsc {
+  composes: columnSortBtnInner;
+
+  &::after {
+    @include triangle(top, $arrowWidth, $arrowHeight, $arrowCol);
+  }
 }
 
+.columnSortBtnInnerDesc {
+  composes: columnSortBtnInner;
+
+  &::after {
+    @include triangle(bottom, $arrowWidth, $arrowHeight, $arrowCol);
+  }
+}
+
+
+
+//tbody styles
+.tbody {
+  color: $tbodyCol;
+}
+
+//-Row styles
 .tr {
-  background: $bgCol;
+  background: $tbodyBg;
 }
 
 .trEven {
   composes: tr;
-  background: $bgColAlt;
+  background: $tbodyBgAlt;
 }
 
+//-Cell styles
 .td {
   font-size: 1.55rem;
   line-height: 1.0;
-  border-left: 0.1rem solid $borderColor;
-  border-top: 0.1rem solid $borderColor;
+  border-left: 0.1rem solid $tableBorderCol;
+  border-top: 0.1rem solid $tableBorderCol;
   vertical-align: top;
-  padding: $basePadding / 2;
+  padding: $tableBasePadding / 2;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -105,15 +171,16 @@ $basePadding: 1.6rem;
   composes: td;
 }
 
-.tdHeader {
-  display: none;
-}
-
+//tfoot styles
 .tfootTD {
-  background: $borderColor;
+  background: $tfootBg;
+  color: $tfootCol;
 }
 
-/* Stacked styles */
+
+////////////////////
+// Stacked styles //
+////////////////////
 
 .stacked,
 .tableStacked,
@@ -122,7 +189,6 @@ $basePadding: 1.6rem;
 .tfootStacked,
 .tfootRowStacked,
 .tfootTDStacked {
-  color: #006600;
   display: block;
 }
 
@@ -133,10 +199,6 @@ $basePadding: 1.6rem;
   display: block;
 }
 
-.trStacked {
-
-}
-
 .tdStacked {
   display: flex;
   flex: auto 1 1;
@@ -145,21 +207,86 @@ $basePadding: 1.6rem;
   padding: 0;
 }
 
-//show cell headers
-.tdStacked > .tdHeader {
-  display: block;
+
+.tdHeader {
+  display: none;
   flex: 50% 0 0;
   max-width: 35rem;
   font-weight: bold;
-  padding: $basePadding/2;
-  border-right: 1px solid $borderColor;
+  border-right: 0.1rem solid $tableBorderCol;
+  color: $stackHeaderCol;
+  background: $stackHeaderBg;
 }
 
+//-Non-sorting stacked header style
+.rowLabel {
+  padding: $tableBasePadding/2;
+  display: block;
+  font-weight: bold;
+}
+
+//-Sorting button styles
+.rowSortBtn {
+  composes: rowLabel;
+
+  cursor: pointer;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.rowSortBtnAsc {
+  composes: rowSortBtn;
+}
+
+.rowSortBtnDesc {
+  composes: rowSortBtn;
+}
+
+//-For showing the arrows on stacked tables
+.rowSortBtnInner {
+  display: inline-block;
+  padding-right: $arrowWidth+$tableBasePadding/4;
+  position: relative;
+
+  &::after {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    margin-top: -$arrowHeight/2;
+  }
+}
+
+.rowSortBtnInnerAsc {
+  composes: rowSortBtnInner;
+
+  &::after {
+    @include triangle(top, $arrowWidth, $arrowHeight, $arrowCol);
+  }
+}
+
+.rowSortBtnInnerDesc {
+  composes: rowSortBtnInner;
+
+  &::after {
+    @include triangle(bottom, $arrowWidth, $arrowHeight, $arrowCol);
+  }
+}
+
+//show cell headers if stacked
+.tdStacked > .tdHeader {
+  display: block;
+}
+
+//stacked table cell content styles
 .tdStacked > .tdContent {
   flex: 50% 1 1;
-  padding: $basePadding/2;
+  padding: $tableBasePadding/2;
 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: $stackContentCol;
+  background: $stackContentBg;
 }
