@@ -1,14 +1,19 @@
 export default function cssClassListToString() {
+  const classes = [];
+
   for(let i = 0, l = arguments.length; i < l; i++) {
     if(arguments[i]) {
-      buffer.push(arguments[i].toString());
+      if(arguments[i] instanceof Array) {
+        let nestedClasses = cssClassListToString.apply(null, arguments[i]);
+
+        if(nestedClasses) {
+          classes.push(nestedClasses);
+        }
+      } else {
+        classes.push(arguments[i].toString());
+      }
     }
   }
 
-  const classes = buffer.join(' ');
-  buffer.length = 0;
-
-  return classes;
+  return classes.join(' ');
 }
-
-const buffer = [];

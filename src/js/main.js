@@ -42,7 +42,7 @@ function Tacos({ routes }) {
 const baseMemberTypes = {'1': 10, '2': 25};
 
 const baseColumns = [
-  {name: 'name', label: 'Name', sort: true},
+  {name: 'name', label: 'Name', sort: true, css: ['alignStart']},
   {name: 'age', label: 'Age', valueType: 'number', sort: true},
   {name: 'joined', label: 'Joined', valueType: 'date', sort: true},
   {name: 'memberType', label: 'Type', valueType: 'mapped', mappedValueType: 'number', mappedValues: baseMemberTypes, sort: false},

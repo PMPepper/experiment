@@ -72,6 +72,7 @@ $stackContentBg: null;
   composes: th;
 }
 
+
 //-non-sorting column header styles
 .columnLabel {
   display: block;
@@ -114,6 +115,10 @@ $stackContentBg: null;
     top: 50%;
     margin-top: -$arrowHeight/2;
   }
+}
+
+.columnSortBtnInner.alignStart {
+  padding-left: 0;
 }
 
 .columnSortBtnInnerAsc {
@@ -289,4 +294,9 @@ $stackContentBg: null;
   text-overflow: ellipsis;
   color: $stackContentCol;
   background: $stackContentBg;
+}
+
+//Generic
+.alignStart {
+  text-align: left;
 }

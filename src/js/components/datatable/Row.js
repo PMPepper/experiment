@@ -18,13 +18,27 @@ export default function Row(props) {
         className={css(
           (columnIndex % 2) === 0 ? styles.td : styles.tdEven,
           column.valueType && styles[`td_type_${column.valueType}`],
-          stacked && styles.tdStacked
+          stacked && styles.tdStacked,
+          column.css && column.css.map(className => (styles[className]))
         )}
       >
         <div className={styles.tdHeader} aria-hidden="true">
         {setSortColumn && column.sort ?
-          <button className={styles[isSortColumn ? (sortColumnDesc ? 'rowSortBtnDesc' : 'rowSortBtnAsc') : 'rowSortBtn']} onClick={() => {isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}>
-            <span className={styles[isSortColumn ? (sortColumnDesc ? 'rowSortBtnInnerDesc' : 'rowSortBtnInnerAsc') : 'rowSortBtnInner']}>{columnLabel}</span>
+          <button
+            className={css(
+              styles[isSortColumn ? (sortColumnDesc ? 'rowSortBtnDesc' : 'rowSortBtnAsc') : 'rowSortBtn'],
+              column.css && column.css.map(className => (styles[className]))
+            )}
+            onClick={() => {isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}
+          >
+            <span
+              className={css(
+                styles[isSortColumn ? (sortColumnDesc ? 'rowSortBtnInnerDesc' : 'rowSortBtnInnerAsc') : 'rowSortBtnInner'],
+                column.css && column.css.map(className => (styles[className]))
+              )}
+            >
+              {columnLabel}
+            </span>
           </button>
           :
           <span className={styles.rowLabel}>{columnLabel}</span>

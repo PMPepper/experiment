@@ -13,11 +13,21 @@ export default function THead({styles, columns, sortColumnName, sortColumnDesc, 
 
         return <th key={column.name} className={css(
           (index % 2) === 0 ? styles.th : styles.thEven,
-          isSortColumn && (sortColumnDesc ? styles.thSortDesc : styles.thSortAsc)
+          isSortColumn && (sortColumnDesc ? styles.thSortDesc : styles.thSortAsc),
+          column.css && column.css.map(className => (styles[className]))
         )}>
           {setSortColumn && column.sort ?
-            <button className={styles[isSortColumn ? (sortColumnDesc ? 'columnSortBtnDesc' : 'columnSortBtnAsc') : 'columnSortBtn']} onClick={() => {isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}>
-              <span className={styles[isSortColumn ? (sortColumnDesc ? 'columnSortBtnInnerDesc' : 'columnSortBtnInnerAsc') : 'columnSortBtnInner']}>{columnLabel}</span>
+            <button
+              className={css(
+                styles[isSortColumn ? (sortColumnDesc ? 'columnSortBtnDesc' : 'columnSortBtnAsc') : 'columnSortBtn'],
+                column.css && column.css.map(className => (styles[className]))
+              )}
+              onClick={() => {isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}
+            >
+              <span className={css(
+                styles[isSortColumn ? (sortColumnDesc ? 'columnSortBtnInnerDesc' : 'columnSortBtnInnerAsc') : 'columnSortBtnInner'],
+                column.css && column.css.map(className => (styles[className]))
+              )}>{columnLabel}</span>
             </button>
             :
             <span className={styles.columnLabel}>{columnLabel}</span>
