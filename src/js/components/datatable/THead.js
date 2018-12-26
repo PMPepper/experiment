@@ -3,7 +3,7 @@ import React from 'react';
 import css from '@/helpers/css-class-list-to-string';
 
 
-export default function THead({styles, columns, sortColumnName, sortColumnDesc, setSortColumn, stacked}) {
+export default function Thead({styles, columns, sortColumnName, sortColumnDesc, setSortColumn, stacked}) {
 
   return <thead className={css(styles.thead, stacked && styles.theadStacked)}>
     <tr className={styles.theadRow}>

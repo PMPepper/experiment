@@ -4,10 +4,9 @@ import {compose} from 'recompose';
 import defaultStyles from './styles.scss';
 
 
-import THead from './THead';
-import TBody from './TBody';
-import Row from './Row';
-import TFoot from './TFoot';
+import Thead from './Thead';
+import Tbody from './ExpandableRows';//Tbody
+import Tfoot from './Tfoot';
 
 import ResponsiveComponent, {makeCheckSizeWidthFunc} from '@/HOCs/ResponsiveComponent';
 
@@ -22,18 +21,16 @@ function DataTablePresentational({getRef = null, ...props}) {
     rows,
     styles,
     stacked,
-    tHeadComponent: THeadComponent,
-    tBodyComponent: TBodyComponent,
-    tFootComponent: TFootComponent,
+    tHeadComponent: TheadComponent,
+    tBodyComponent: TbodyComponent,
+    tFootComponent: TfootComponent,
   } = props;
 
   return <div className={css(styles.dataTable, stacked && styles.stacked)} ref={getRef}>
     <table className={css(styles.table, stacked && styles.tableStacked)}>
-      <THeadComponent {...props} />
-      <TBodyComponent {...props}>
-        {rows.map((row, index) => (<Row {...props} row={row} rowIndex={index} key={row.id} />))}
-      </TBodyComponent>
-      <TFootComponent {...props} />
+      <TheadComponent {...props} />
+      <TbodyComponent {...props} />
+      <TfootComponent {...props} />
     </table>
   </div>
 }
@@ -44,9 +41,9 @@ DataTablePresentational.defaultProps = {
   sortColumnName: null,
   sortColumnDesc: false,
   setSortColumn: null,
-  tHeadComponent: THead,
-  tBodyComponent: TBody,
-  tFootComponent: TFoot,
+  tHeadComponent: Thead,
+  tBodyComponent: Tbody,
+  tFootComponent: Tfoot,
 }
 
 if(process.env.NODE_ENV !== 'production') {
@@ -61,6 +58,7 @@ if(process.env.NODE_ENV !== 'production') {
     tHeadComponent: isReactComponent,
     tBodyComponent: isReactComponent,
     tFootComponent: isReactComponent,
+    rowComponent: isReactComponent,
   };
 }
 

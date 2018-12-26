@@ -300,3 +300,30 @@ $stackContentBg: null;
 .alignStart {
   text-align: left;
 }
+
+
+//Expandable rows styles
+// .expandTr {
+//
+// }
+//
+// .expandTrEven {
+//   composes: expandTr;
+// }
+
+.expandTd {
+  padding: 0;
+}
+
+.expandTdEven {
+  composes: expandTd;
+}
+
+.expandContent {
+  //height: 0;
+  overflow: hidden;
+}
+
+.expandContentEven {
+  composes: expandContent;
+}

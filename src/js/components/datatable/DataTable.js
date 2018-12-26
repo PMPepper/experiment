@@ -9,6 +9,7 @@ import {compose} from 'recompose';
 //context menus
 //state handlers? redux etc?
 //table name/custom styles (linked to name?)
+//filtering?
 
 
 //Internal

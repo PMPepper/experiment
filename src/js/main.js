@@ -55,14 +55,14 @@ const Bus = compose(
     columns: baseColumns,
     memberTypes: baseMemberTypes,
     members: [
-      {id: '1', data: {name: 'Bob', age: 71, joined: new Date(2011, 9, 21), memberType: '1'}},// Smithington the 3rd of westminster
+      {id: '1', expanded: true, data: {name: 'Bob', age: 71, joined: new Date(2011, 9, 21), memberType: '1'}},// Smithington the 3rd of westminster
       {id: '2', data: {name: 'Simon', age: 32, joined: new Date(2013, 12, 19), memberType: '1'}},
       {id: '3', data: {name: 'Karen', age: 52, joined: new Date(2017, 11, 5), memberType: '1'}},
       {id: '4', data: {name: 'Sarah', age: 29, joined: new Date(2014, 9, 3), memberType: '1'}},
       {id: '5', data: {name: 'Chris', age: 44, joined: new Date(2017, 10, 19), memberType: '1'}},
       {id: '6', data: {name: 'Ian', age: 43, joined: new Date(2010, 10, 30), memberType: '2'}},
       {id: '7', data: {name: 'Jo', age: 42, joined: new Date(2013, 12, 28), memberType: '1'}},
-      {id: '8', data: {name: 'Pete', age: 41, joined: new Date(2015, 8, 1), memberType: '1'}},
+      {id: '8', expanded: true, data: {name: 'Pete', age: 41, joined: new Date(2015, 8, 1), memberType: '1'}},
       {id: '9', data: {name: 'Kim', age: 40, joined: new Date(2017, 10, 10), memberType: '2'}},
       {id: '10', data: {name: 'Anne', age: 39, joined: new Date(2013, 10, 23), memberType: '1'}},
       {id: '11', data: {name: 'David', age: 38, joined: new Date(2014, 6, 26), memberType: '1'}},
@@ -131,6 +131,9 @@ const Bus = compose(
       defaultSortColumns={defaultSortColumns}
       columns={columns}
       rows={members}
+      getExpandedRowContents={(row) => {
+        return `Hello ${row.data.name}`
+      }}
     />
   </div>
 });
