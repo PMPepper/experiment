@@ -41,7 +41,7 @@ $stackContentBg: null;
 .table {
   width: 100%;
   border: 0.1rem solid $tableBorderCol;
-  border-top: none;
+  //border-top: none;
   margin-top: $tableBasePadding / 2;
   border-spacing: 0;
   border-collapse: separate;
@@ -59,7 +59,8 @@ $stackContentBg: null;
   vertical-align: middle;
   padding: 0;
   border-left: 0.1rem solid $tableBorderCol;
-  border-top: 0.1rem solid $tableBorderCol;
+  //border-top: 0.1rem solid $tableBorderCol;
+  border-bottom: 0.1rem solid $tableBorderCol;
   text-align: center;
   white-space: nowrap;
 
@@ -149,16 +150,14 @@ $stackContentBg: null;
 //-Row styles
 .tr {
   background: $tbodyBg;
-
-  //Only if has a click handler
-  @include blockInteraction();
 }
 
 .trEven {
   composes: tr;
   background: $tbodyBgAlt;
+}
 
-  //Only if has a click handler
+.selectable {
   @include blockInteraction();
 }
 
@@ -167,7 +166,7 @@ $stackContentBg: null;
   font-size: 1.55rem;
   line-height: 1.0;
   border-left: 0.1rem solid $tableBorderCol;
-  border-top: 0.1rem solid $tableBorderCol;
+  border-bottom: 0.1rem solid $tableBorderCol;
   vertical-align: top;
   padding: $tableBasePadding / 2;
   text-align: center;
@@ -249,6 +248,8 @@ $stackContentBg: null;
   background: transparent;
   color: inherit;
   width: 100%;
+
+  @include textInteraction();
 }
 
 .rowSortBtnAsc {
@@ -324,11 +325,31 @@ $stackContentBg: null;
   composes: expandTd;
 }
 
+.expandTd.expanded,
+.expandTdEven.expanded {
+  &:after {
+    display: block;
+    content: '';
+    border-bottom: 0.1rem solid $borderColor;
+  }
+}
+
 .expandContent {
-  //height: 0;
-  overflow: hidden;
+  will-change: opacity, height;
+  overflow-y: hidden;
+}
+
+.expandContent:before, .expandContent:after{
+    content: ' ';
+    display: table;
 }
 
 .expandContentEven {
   composes: expandContent;
+}
+
+//expand stacked styles
+.expandTdStacked,
+.expandTr {
+  display: block;
 }

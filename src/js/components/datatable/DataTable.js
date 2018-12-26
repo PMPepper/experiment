@@ -5,11 +5,20 @@ import {compose} from 'recompose';
 
 //TODO
 //selectable rows
+//-optional clicking to toggle selected
+//--hover/focus styles only if click to toggle selected
+//-optional extra select column (checkbox)
+
 //expandable rows
+//-optional extra expand column (up/down arrow)
+
 //context menus
 //state handlers? redux etc?
 //table name/custom styles (linked to name?)
+//fixed layout table
 //filtering?
+//factory methods to create standard tables
+//'columns' property allows filtering/adding of columns on table-by-table basis?
 
 
 //Internal

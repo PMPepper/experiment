@@ -136,7 +136,15 @@ const Bus = compose(
 
       clickTogglesExpandedRows={true}
       getExpandedRowContents={(row) => {
-        return `Hello ${row.data.name}`
+        // style={{borderBottom:'1px solid #7f7f7f'}}
+        return <div>
+          <p>Hello {row.data.name}</p>
+          <p>Lorem ipsum</p>
+          <p>Lorem ipsum dolor sit amet</p>
+          <p>Lorem ipsum</p>
+          <p>Lorem ipsum</p>
+          <p>Lorem ipsum</p>
+        </div>
       }}
 
       /*expandableRowContentComponent={(props) => {
