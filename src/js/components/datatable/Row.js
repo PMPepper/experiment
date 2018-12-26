@@ -29,7 +29,7 @@ export default function Row(props) {
               styles[isSortColumn ? (sortColumnDesc ? 'rowSortBtnDesc' : 'rowSortBtnAsc') : 'rowSortBtn'],
               column.css && column.css.map(className => (styles[className]))
             )}
-            onClick={() => {isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}
+            onClick={(e) => {e.preventDefault(); e.stopPropagation(); isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}
           >
             <span
               className={css(

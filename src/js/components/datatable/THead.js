@@ -22,7 +22,7 @@ export default function Thead({styles, columns, sortColumnName, sortColumnDesc, 
                 styles[isSortColumn ? (sortColumnDesc ? 'columnSortBtnDesc' : 'columnSortBtnAsc') : 'columnSortBtn'],
                 column.css && column.css.map(className => (styles[className]))
               )}
-              onClick={() => {isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}
+              onClick={(e) => {e.preventDefault(); e.stopPropagation(); isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}
             >
               <span className={css(
                 styles[isSortColumn ? (sortColumnDesc ? 'columnSortBtnInnerDesc' : 'columnSortBtnInnerAsc') : 'columnSortBtnInner'],
