@@ -19,7 +19,7 @@ export default function Row(props) {
           (columnIndex % 2) === 0 ? styles.td : styles.tdEven,
           column.valueType && styles[`td_type_${column.valueType}`],
           stacked && styles.tdStacked,
-          column.css && column.css.map(className => (styles[className]))
+          column.css
         )}
       >
         <div className={styles.tdHeader} aria-hidden="true">
@@ -27,14 +27,14 @@ export default function Row(props) {
           <button
             className={css(
               styles[isSortColumn ? (sortColumnDesc ? 'rowSortBtnDesc' : 'rowSortBtnAsc') : 'rowSortBtn'],
-              column.css && column.css.map(className => (styles[className]))
+              column.css
             )}
             onClick={(e) => {e.preventDefault(); e.stopPropagation(); isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}
           >
             <span
               className={css(
                 styles[isSortColumn ? (sortColumnDesc ? 'rowSortBtnInnerDesc' : 'rowSortBtnInnerAsc') : 'rowSortBtnInner'],
-                column.css && column.css.map(className => (styles[className]))
+                column.css
               )}
             >
               {columnLabel}

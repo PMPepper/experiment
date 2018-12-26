@@ -14,19 +14,19 @@ export default function Thead({styles, columns, sortColumnName, sortColumnDesc, 
         return <th key={column.name} className={css(
           (index % 2) === 0 ? styles.th : styles.thEven,
           isSortColumn && (sortColumnDesc ? styles.thSortDesc : styles.thSortAsc),
-          column.css && column.css.map(className => (styles[className]))
+          column.css
         )}>
           {setSortColumn && column.sort ?
             <button
               className={css(
                 styles[isSortColumn ? (sortColumnDesc ? 'columnSortBtnDesc' : 'columnSortBtnAsc') : 'columnSortBtn'],
-                column.css && column.css.map(className => (styles[className]))
+                column.css
               )}
               onClick={(e) => {e.preventDefault(); e.stopPropagation(); isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}
             >
               <span className={css(
                 styles[isSortColumn ? (sortColumnDesc ? 'columnSortBtnInnerDesc' : 'columnSortBtnInnerAsc') : 'columnSortBtnInner'],
-                column.css && column.css.map(className => (styles[className]))
+                column.css
               )}>{columnLabel}</span>
             </button>
             :

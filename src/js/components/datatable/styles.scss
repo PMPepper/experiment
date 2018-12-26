@@ -119,7 +119,7 @@ $stackContentBg: null;
   }
 }
 
-.columnSortBtnInner.alignStart {
+.columnSortBtnInner:global(.alignStart) {
   padding-left: 0;
 }
 
@@ -304,11 +304,6 @@ $stackContentBg: null;
   text-overflow: ellipsis;
   color: $stackContentCol;
   background: $stackContentBg;
-}
-
-//Generic
-.alignStart {
-  text-align: left;
 }
 
 
