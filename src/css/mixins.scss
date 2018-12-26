@@ -38,3 +38,33 @@
   //   border-color: $color transparent transparent transparent;
   // }
 }
+
+@mixin blockInteraction($mouseCol: $blockMouseInteractionCol, $mouseBg: $blockMouseInteractionBg, $keyboardCol: $blockKeyboardInteractionCol, $keyboardBg: $blockKeyboardInteractionBg) {
+  &:hover {
+    background-color: $mouseBg;
+    color: $mouseCol;
+    outline: none;
+    cursor: pointer;
+  }
+
+  :global(.focus_keyboard) &:focus {
+    background-color: $keyboardBg;
+    color: $keyboardCol;
+    outline: none;
+  }
+}
+
+@mixin textInteraction($mouseCol: $textMouseInteractionCol, $mouseBg: $textMouseInteractionBg, $keyboardCol: $textKeyboardInteractionCol, $keyboardBg: $textKeyboardInteractionBg) {
+  &:hover {
+    color: $mouseCol;
+    background-color: $mouseBg;
+    outline: none;
+    cursor: pointer;
+  }
+
+  :global(.focus_keyboard) &:focus {
+    color: $keyboardCol;
+    background-color: $keyboardBg;
+    outline: none;
+  }
+}

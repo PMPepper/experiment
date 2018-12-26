@@ -10,6 +10,9 @@ import DataTable from '@/components/datatable/LocalStateDataTable';
 
 import objectModify from '@/helpers/object-modify';
 
+import * as dom from './dom';
+
+
 import core from '../css/core.scss';
 
 const title = 'Testing CSS modules';
@@ -54,39 +57,39 @@ const Bus = compose(
   withStateHandlers({
     columns: baseColumns,
     memberTypes: baseMemberTypes,
-    members: [
-      {id: '1', expanded: true, data: {name: 'Bob', age: 71, joined: new Date(2011, 9, 21), memberType: '1'}},// Smithington the 3rd of westminster
-      {id: '2', data: {name: 'Simon', age: 32, joined: new Date(2013, 12, 19), memberType: '1'}},
-      {id: '3', data: {name: 'Karen', age: 52, joined: new Date(2017, 11, 5), memberType: '1'}},
-      {id: '4', data: {name: 'Sarah', age: 29, joined: new Date(2014, 9, 3), memberType: '1'}},
-      {id: '5', data: {name: 'Chris', age: 44, joined: new Date(2017, 10, 19), memberType: '1'}},
-      {id: '6', data: {name: 'Ian', age: 43, joined: new Date(2010, 10, 30), memberType: '2'}},
-      {id: '7', data: {name: 'Jo', age: 42, joined: new Date(2013, 12, 28), memberType: '1'}},
-      {id: '8', expanded: true, data: {name: 'Pete', age: 41, joined: new Date(2015, 8, 1), memberType: '1'}},
-      {id: '9', data: {name: 'Kim', age: 40, joined: new Date(2017, 10, 10), memberType: '2'}},
-      {id: '10', data: {name: 'Anne', age: 39, joined: new Date(2013, 10, 23), memberType: '1'}},
-      {id: '11', data: {name: 'David', age: 38, joined: new Date(2014, 6, 26), memberType: '1'}},
-      {id: '12', data: {name: 'John', age: 37, joined: new Date(2015, 10, 16), memberType: '2'}},
-      {id: '13', data: {name: 'Phillip', age: 36, joined: new Date(2012, 7, 4), memberType: '1'}},
-      {id: '14', data: {name: 'Alan', age: 35, joined: new Date(2015, 3, 1), memberType: '1'}},
-      {id: '15', data: {name: 'Barbara', age: 34, joined: new Date(2010, 10, 18), memberType: '1'}},
-      {id: '16', data: {name: 'Catherine', age: 33, joined: new Date(2011, 10, 13), memberType: '1'}},
-      {id: '17', data: {name: 'Dion', age: 32, joined: new Date(2012, 7, 21), memberType: '2'}},
-      {id: '18', data: {name: 'Eric', age: 31, joined: new Date(2014, 9, 12), memberType: '1'}},
-      {id: '19', data: {name: 'Francis', age: 36, joined: new Date(2016, 8, 11), memberType: '2'}},
-      {id: '20', data: {name: 'Gareth', age: 29, joined: new Date(2017, 1, 24), memberType: '1'}},
-      {id: '21', data: {name: 'Harry', age: 28, joined: new Date(2016, 11, 23), memberType: '1'}},
-      {id: '22', data: {name: 'Ione', age: 27, joined: new Date(2018, 1, 30), memberType: '1'}},
-      {id: '23', data: {name: 'Jake Smithington the 3rd of westminster', age: 42, joined: new Date(2018, 3, 9), memberType: '2'}},
-      {id: '24', data: {name: 'Kate', age: 25, joined: new Date(2012, 2, 10), memberType: '1'}},
-      {id: '25', data: {name: 'Laura', age: 24, joined: new Date(2013, 10, 20), memberType: '2'}},
-      {id: '26', data: {name: 'Mathew', age: 43, joined: new Date(2015, 5, 21), memberType: '1'}},
-      {id: '27', data: {name: 'Norman', age: 22, joined: new Date(2018, 10, 15), memberType: '1'}},
-      {id: '28', data: {name: 'Odin', age: 21, joined: new Date(2017, 10, 8), memberType: '1'}},
-      {id: '29', data: {name: 'Paul', age: 20, joined: new Date(2012, 6, 3), memberType: '2'}},
-      {id: '30', data: {name: 'Quinn', age: 19, joined: new Date(2011, 1, 14), memberType: '1'}},
-      {id: '31', data: {name: 'Richard', age: 57, joined: new Date(2010, 10, 21), memberType: '1'}},
-    ]
+    members: {
+      '1': {name: 'Bob', age: 71, joined: new Date(2011, 9, 21), memberType: '1'},// Smithington the 3rd of westminster
+      '2': {name: 'Simon', age: 32, joined: new Date(2013, 12, 19), memberType: '1'},
+      '3': {name: 'Karen', age: 52, joined: new Date(2017, 11, 5), memberType: '1'},
+      '4': {name: 'Sarah', age: 29, joined: new Date(2014, 9, 3), memberType: '1'},
+      '5': {name: 'Chris', age: 44, joined: new Date(2017, 10, 19), memberType: '1'},
+      '6': {name: 'Ian', age: 43, joined: new Date(2010, 10, 30), memberType: '2'},
+      '7': {name: 'Jo', age: 42, joined: new Date(2013, 12, 28), memberType: '1'},
+      '8': {name: 'Pete', age: 41, joined: new Date(2015, 8, 1), memberType: '1'},
+      '9': {name: 'Kim', age: 40, joined: new Date(2017, 10, 10), memberType: '2'},
+      '10': {name: 'Anne', age: 39, joined: new Date(2013, 10, 23), memberType: '1'},
+      '11': {name: 'David', age: 38, joined: new Date(2014, 6, 26), memberType: '1'},
+      '12': {name: 'John', age: 37, joined: new Date(2015, 10, 16), memberType: '2'},
+      '13': {name: 'Phillip', age: 36, joined: new Date(2012, 7, 4), memberType: '1'},
+      '14': {name: 'Alan', age: 35, joined: new Date(2015, 3, 1), memberType: '1'},
+      '15': {name: 'Barbara', age: 34, joined: new Date(2010, 10, 18), memberType: '1'},
+      '16': {name: 'Catherine', age: 33, joined: new Date(2011, 10, 13), memberType: '1'},
+      '17': {name: 'Dion', age: 32, joined: new Date(2012, 7, 21), memberType: '2'},
+      '18': {name: 'Eric', age: 31, joined: new Date(2014, 9, 12), memberType: '1'},
+      '19': {name: 'Francis', age: 36, joined: new Date(2016, 8, 11), memberType: '2'},
+      '20': {name: 'Gareth', age: 29, joined: new Date(2017, 1, 24), memberType: '1'},
+      '21': {name: 'Harry', age: 28, joined: new Date(2016, 11, 23), memberType: '1'},
+      '22': {name: 'Ione', age: 27, joined: new Date(2018, 1, 30), memberType: '1'},
+      '23': {name: 'Jake Smithington the 3rd of westminster', age: 42, joined: new Date(2018, 3, 9), memberType: '2'},
+      '24': {name: 'Kate', age: 25, joined: new Date(2012, 2, 10), memberType: '1'},
+      '25': {name: 'Laura', age: 24, joined: new Date(2013, 10, 20), memberType: '2'},
+      '26': {name: 'Mathew', age: 43, joined: new Date(2015, 5, 21), memberType: '1'},
+      '27': {name: 'Norman', age: 22, joined: new Date(2018, 10, 15), memberType: '1'},
+      '28': {name: 'Odin', age: 21, joined: new Date(2017, 10, 8), memberType: '1'},
+      '29': {name: 'Paul', age: 20, joined: new Date(2012, 6, 3), memberType: '2'},
+      '30': {name: 'Quinn', age: 19, joined: new Date(2011, 1, 14), memberType: '1'},
+      '31': {name: 'Richard', age: 57, joined: new Date(2010, 10, 21), memberType: '1'},
+    }
   }, {
     setMemberTypes: ({columns}) => (memberTypes) => {
       return {
@@ -107,11 +110,9 @@ const Bus = compose(
     </button>
 
     <button onClick={() => {
-      const newMembers = [...members];
-
-      newMembers.push({
-        id: (members.length + 1).toString(),
-        data: {
+      const newMembers = {
+        ...members,
+        [Date.now() + Math.random()]: {
           name: 'New member',
           age: Math.round((Math.random() * 60) + 10),
           joined: new Date(
@@ -121,19 +122,26 @@ const Bus = compose(
           ),
           memberType: Math.random() > 0.5 ? '1' : '2'
         }
-      });
+      };
 
       setMembers(newMembers);
     }}>
       New member
     </button>
     <DataTable
-      defaultSortColumns={defaultSortColumns}
       columns={columns}
       rows={members}
+
+      defaultSortColumns={defaultSortColumns}
+
+      clickTogglesExpandedRows={true}
       getExpandedRowContents={(row) => {
         return `Hello ${row.data.name}`
       }}
+
+      /*expandableRowContentComponent={(props) => {
+        return <b>{props.children}</b>
+      }}*/
     />
   </div>
 });

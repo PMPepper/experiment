@@ -25,7 +25,7 @@ import objectResolvePath from '@/helpers/object-resolve-path';
 
 
 export default class DataTable extends React.Component {
-  getRows = memoize((rows) => (Object.values(rows)))
+  getRows = memoize((rows) => (Object.keys(rows).map(id => ({id, data: rows[id]}))))
 
   getSortRowsFunc = memoize(
     (columns, sortColumnName, sortColumnDesc, defaultSortColumns = null) => {

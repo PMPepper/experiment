@@ -20,11 +20,13 @@ export default function ExpandableRows(props) {
 ExpandableRows.defaultProps = {
   rowComponent: Row,
   expandableRowComponent: ExpandableRow,
+  expandableRowContentComponent: null
 };
 
 if(process.env.NODE_ENV !== 'production') {
   ExpandableRows.propTypes = {
     rowComponent: isReactComponent,
-    expandableRowComponent: isReactComponent
+    expandableRowComponent: isReactComponent,
+    expandableRowContentComponent: isReactComponent,
   };
 }

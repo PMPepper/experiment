@@ -8,19 +8,19 @@ $tableBasePadding: $basePadding;
 
 //thead vars
 $theadCol: null;
-$theadBg: #EBEBEB;
+$theadBg: $grey30;
 
 //tbody vars
 $tbodyCol: null;
-$tbodyBg: #FFF;
-$tbodyBgAlt: #F5F5F5;
+$tbodyBg: $grey0;
+$tbodyBgAlt: $grey20;
 
 //tfoot vars
 $tfootCol: null;
 $tfootBg: $tableBorderCol;
 
 //Arrow vars
-$arrowCol: lighten($tableCol, 30%);
+$arrowCol: $grey50;
 $arrowWidth: 1.4rem;
 $arrowHeight: 1rem;
 
@@ -93,6 +93,8 @@ $stackContentBg: null;
   width: 100%;
   cursor: pointer;
   color: inherit;
+
+  @include textInteraction();
 }
 
 .columnSortBtnAsc {
@@ -147,11 +149,17 @@ $stackContentBg: null;
 //-Row styles
 .tr {
   background: $tbodyBg;
+
+  //Only if has a click handler
+  @include blockInteraction();
 }
 
 .trEven {
   composes: tr;
   background: $tbodyBgAlt;
+
+  //Only if has a click handler
+  @include blockInteraction();
 }
 
 //-Cell styles
