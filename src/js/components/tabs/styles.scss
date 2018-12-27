@@ -1,5 +1,14 @@
+@import '../../../css/shared';
+
+$tabsCol: $fontCol;
+$tabsBorderCol: $borderCol;
+$tabsBasePadding: $basePadding;
+
+
 .tabs {
   composes: responsive from "../../../css/generic.scss";
+
+  color: $tabsCol;
 }
 
 .tabsList {
@@ -7,11 +16,14 @@
 }
 
 .tab {
-  border: 1px solid #333;
-  padding: 4px 8px;
-  margin: 0 2px -1px;
-  background: #AAA;
+  border: 0.1rem solid $tabsBorderCol;
+  padding: $tabsBasePadding/4 $tabsBasePadding/2;
+  margin: 0 2px -0.1rem;
+  background: $grey20;
   cursor: pointer;
+  font-size: 1.6rem;
+
+  @include blockInteraction($mouseBg: $grey35);
 
   &:first-of-type {
     margin-left: 0;
@@ -22,55 +34,78 @@
   }
 }
 
-.selectedTab {
-  composes: tab;
-  background: #DDD;
+.tab.selected {
+  background: $grey30;
+}
+
+.tabPanels {
+  border: 0.1rem solid $tabsBorderCol;
+  padding: $tabsBasePadding/2;
 }
 
 .panel {
-  display: none;
-  border: 1px solid #333;
+  visibility: hidden;
+  display: inline-block;
+  width: 100%;
+  margin-right: -100%;
+  vertical-align: top;
 }
 
-.selectedPanel {
-  composes: panel;
-
-  display: block;
+.panel.selected {
+  visibility: visible;
 }
 
-/* accordion styles */
 
-.accordion {
-  border: 1px solid #333;
+//////////////////////
+// accordion styles //
+//////////////////////
+.tabs.accordion {
+  border: 0.1rem solid $tabsBorderCol;
   border-bottom: 0;
 }
 
-.header {
-  border-bottom: 1px solid #333;
+.tabPanels.accordion {
+  border: 0;
+  padding: 0;
 }
 
-.selectedHeader {
-  composes: header;
+.header {
+  color: inherit;
+  font-size: 1.6rem;
+  border-bottom: 0.1rem solid $tabsBorderCol;
+}
+
+.header.selected {
+
 }
 
 .headerButton {
   display: block;
-  background: transparent;
+  background: $grey20;
   border: 0;
   cursor: pointer;
   width: 100%;
   text-align: left;
-  padding: 4px 8px;
+  padding: $tabsBasePadding/4 $tabsBasePadding/2;
+
+  @include blockInteraction($mouseBg: $grey35);
 }
 
-.selectedHeaderButton {
-  composes: headerButton;
+.headerButton.selected {
+  background: $grey30;
+
 }
 
-.openPanel {
-  border-bottom: 1px solid #333;
-}
-
-.closedPanel {
+.panel.accordion {
+  border: 0;
+  visibility: visible;
   display: none;
+  width: auto;
+  margin: 0;
+  padding: $tabsBasePadding/2;
+}
+
+.panel.accordion.selected {
+  display: block;
+  border-bottom: 0.1rem solid $tabsBorderCol;
 }

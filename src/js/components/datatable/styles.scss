@@ -3,7 +3,7 @@
 
 //Overall table vars
 $tableCol: $fontCol;
-$tableBorderCol: $borderColor;
+$tableBorderCol: $borderCol;
 $tableBasePadding: $basePadding;
 
 //thead vars
@@ -291,7 +291,7 @@ $expandArrowHoverCol: $grey40;
 }
 
 .expandTd.visible {
-  border-top: 0.1rem solid $borderColor;
+  border-top: 0.1rem solid $borderCol;
 }
 
 .expandContent {
