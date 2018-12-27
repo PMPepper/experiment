@@ -27,7 +27,7 @@ function DataTablePresentational({getRef = null, ...props}) {
   } = props;
 
   return <div className={css(styles.dataTable, stacked && styles.stacked)} ref={getRef}>
-    <table className={css(styles.table, stacked && styles.tableStacked)}>
+    <table className={css(styles.table, stacked && styles.stacked)}>
       <TheadComponent {...props} />
       <TbodyComponent {...props} />
       <TfootComponent {...props} />

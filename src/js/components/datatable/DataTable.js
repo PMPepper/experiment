@@ -42,7 +42,7 @@ export default class DataTable extends React.Component {
 
   getColumns = memoize((columns, expandRowColumn) => {
     console.log('[DT]: getColumns');
-    
+
     if(expandRowColumn) {
       columns = [...columns, expandRowColumn]
     }
@@ -286,7 +286,8 @@ function getExpandRowColumn(styles) {
         type="button"
         className={css(
           props.styles.expandToggleButton,
-          isRowExpanded && props.styles.isExpanded
+          props.stacked && props.styles.stacked,
+          isRowExpanded && props.styles.expanded
         )}
         onClick={() => {props.setRowExpanded(row.id, !isRowExpanded)}}
       >

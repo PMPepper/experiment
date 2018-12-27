@@ -11,7 +11,7 @@ import isReactComponent from '@/prop-types/is-react-component';
 export default function Tbody(props) {
   const {styles, rows, stacked, rowComponent: RowComponent} = props;
 
-  return <tbody className={css(styles.tbody, stacked && styles.tbodyStacked)}>
+  return <tbody className={css(styles.tbody, stacked && styles.stacked)}>
     {rows.map((row, index) => (<RowComponent {...props} row={row} rowIndex={index} key={row.id} />))}
   </tbody>
 }

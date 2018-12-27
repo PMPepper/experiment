@@ -8,16 +8,18 @@ $tableBasePadding: $basePadding;
 
 //thead vars
 $theadCol: null;
-$theadBg: $grey30;
+$theadBg: $grey20;
+
+$sortHoverBg: $grey30;
 
 //tbody vars
 $tbodyCol: null;
 $tbodyBg: $grey0;
-$tbodyBgAlt: $grey20;
+$tbodyBgAlt: $grey10;
 
 //tfoot vars
 $tfootCol: null;
-$tfootBg: $grey40;
+$tfootBg: $grey35;
 
 //Arrow vars
 $arrowCol: $grey50;
@@ -31,6 +33,10 @@ $stackHeaderBg: null;
 //stack content vars
 $stackContentCol: null;
 $stackContentBg: null;
+
+//expand styles
+$expandArrowCol: $grey70;
+$expandArrowHoverCol: $grey40;
 
 .dataTable {
   composes: responsive from "../../../css/generic.scss";
@@ -69,10 +75,6 @@ $stackContentBg: null;
   }
 }
 
-.thEven {
-  composes: th;
-}
-
 
 //-non-sorting column header styles
 .columnLabel {
@@ -95,15 +97,8 @@ $stackContentBg: null;
   cursor: pointer;
   color: inherit;
 
-  @include textInteraction();
-}
-
-.columnSortBtnAsc {
-  composes: columnSortBtn;
-}
-
-.columnSortBtnDesc {
-  composes: columnSortBtn;
+  //@include textInteraction();
+  @include blockInteraction($mouseBg: $sortHoverBg);
 }
 
 //-Sorting arrow styles
@@ -118,28 +113,23 @@ $stackContentBg: null;
     top: 50%;
     margin-top: -$arrowHeight/2;
   }
-}
 
-.columnSortBtnInner:global(.alignStart) {
-  padding-left: 0;
-}
+  &.asc {
+    &::after {
+      @include triangle(top, $arrowWidth, $arrowHeight, $arrowCol);
+    }
+  }
 
-.columnSortBtnInnerAsc {
-  composes: columnSortBtnInner;
+  &.desc {
+    &::after {
+      @include triangle(bottom, $arrowWidth, $arrowHeight, $arrowCol);
+    }
+  }
 
-  &::after {
-    @include triangle(top, $arrowWidth, $arrowHeight, $arrowCol);
+  &:global(.alignStart) {
+    padding-left: 0;
   }
 }
-
-.columnSortBtnInnerDesc {
-  composes: columnSortBtnInner;
-
-  &::after {
-    @include triangle(bottom, $arrowWidth, $arrowHeight, $arrowCol);
-  }
-}
-
 
 
 //tbody styles
@@ -150,14 +140,13 @@ $stackContentBg: null;
 //-Row styles
 .tr {
   background: $tbodyBg;
+
+  &.even {
+    background: $tbodyBgAlt;
+  }
 }
 
-.trEven {
-  composes: tr;
-  background: $tbodyBgAlt;
-}
-
-.selectable {
+.tr.selectable {
   @include blockInteraction();
 }
 
@@ -179,14 +168,16 @@ $stackContentBg: null;
   }
 }
 
-.tdEven {
-  composes: td;
-}
-
 //tfoot styles
 .tfootTD {
   background: $tfootBg;
   color: $tfootCol;
+  border-top: 0.1rem solid $tableBorderCol;
+  padding: 0;
+
+  &:empty {
+    display: none;
+  }
 }
 
 
@@ -194,24 +185,22 @@ $stackContentBg: null;
 // Stacked styles //
 ////////////////////
 
-.stacked,
-.tableStacked,
-.tbodyStacked,
-.trStacked,
-.tfootStacked,
-.tfootRowStacked,
-.tfootTDStacked {
+.table.stacked,
+.tbody.stacked,
+.tr.stacked,
+.tfoot.stacked,
+.tfootRow.stacked,
+.tfootTD.stacked {
   display: block;
 }
 
 //Put table header offscreen
-.theadStacked {
-  composes: offscreen from "../../../css/generic.scss";
-
+.thead.stacked {
+  @include offscreen();
   display: block;
 }
 
-.tdStacked {
+.td.stacked {
   display: flex;
   flex: auto 1 1;
   border-left: 0;
@@ -222,7 +211,7 @@ $stackContentBg: null;
 
 .tdHeader {
   display: none;
-  flex: 50% 0 0;
+  flex: 40% 0 0;
   max-width: 35rem;
   font-weight: bold;
   border-right: 0.1rem solid $tableBorderCol;
@@ -252,14 +241,6 @@ $stackContentBg: null;
   @include textInteraction();
 }
 
-.rowSortBtnAsc {
-  composes: rowSortBtn;
-}
-
-.rowSortBtnDesc {
-  composes: rowSortBtn;
-}
-
 //-For showing the arrows on stacked tables
 .rowSortBtnInner {
   display: inline-block;
@@ -272,31 +253,27 @@ $stackContentBg: null;
     top: 50%;
     margin-top: -$arrowHeight/2;
   }
-}
 
-.rowSortBtnInnerAsc {
-  composes: rowSortBtnInner;
-
-  &::after {
-    @include triangle(top, $arrowWidth, $arrowHeight, $arrowCol);
+  &.asc {
+    &::after {
+      @include triangle(top, $arrowWidth, $arrowHeight, $arrowCol);
+    }
   }
-}
 
-.rowSortBtnInnerDesc {
-  composes: rowSortBtnInner;
-
-  &::after {
-    @include triangle(bottom, $arrowWidth, $arrowHeight, $arrowCol);
+  &.desc {
+    &::after {
+      @include triangle(bottom, $arrowWidth, $arrowHeight, $arrowCol);
+    }
   }
 }
 
 //show cell headers if stacked
-.tdStacked > .tdHeader {
+.tdHeader.stacked {
   display: block;
 }
 
 //stacked table cell content styles
-.tdStacked > .tdContent {
+.tdContent.stacked {
   flex: 50% 1 1;
   padding: $tableBasePadding/2;
 
@@ -309,39 +286,13 @@ $stackContentBg: null;
 
 
 //Expandable rows styles
-// .expandTr {
-//
-// }
-//
-// .expandTrEven {
-//   composes: expandTr;
-// }
-
 .expandTd {
   padding: 0;
 }
 
-.expandTdEven {
-  composes: expandTd;
-}
-
-.expandTd.isVisible,
-.expandTdEven.isVisible {
-  /*&:after {
-    display: block;
-    content: '';
-    border-bottom: 0.1rem solid $borderColor;
-  }*/
-
+.expandTd.visible {
   border-top: 0.1rem solid $borderColor;
 }
-
-// .expandState-0,
-// .expandState-1,
-// .expandState-2,
-// .expandState-4 {
-//   border-top: 0.1rem solid $borderColor;;
-// }
 
 .expandContent {
   will-change: opacity, height;
@@ -351,10 +302,6 @@ $stackContentBg: null;
 .expandContent:before, .expandContent:after{
     content: ' ';
     display: table;
-}
-
-.expandContentEven {
-  composes: expandContent;
 }
 
 //expand toggle button styles
@@ -383,10 +330,10 @@ $stackContentBg: null;
   bottom: 0;
   left: 0;
 
+  color: $expandArrowCol;
   display: block;
   min-height: 1.4rem;
   width: 100%;
-  //height: 100%;
   background: transparent;
   border: 0;
   padding: 0;
@@ -394,7 +341,7 @@ $stackContentBg: null;
   transform: rotate(0);
   transition: transform 0.3s ease-in-out;
 
-  @include textInteraction();
+  @include textInteraction($mouseCol: $expandArrowHoverCol);
 
   &:after {
     @include triangle(bottom, 1.6rem, 1rem, currentColor);
@@ -403,21 +350,20 @@ $stackContentBg: null;
     left: 50%;
     margin: -0.5rem 0 0 -0.8rem;
   }
-
 }
 
-.expandToggleButton.isExpanded {
+.expandToggleButton.expanded {
   transform: rotate(180deg);
 }
 
 //expand stacked styles
-.expandTdStacked,
-.expandTrStacked {
+.expandTd.stacked,
+.expandTr.stacked {
   display: block;
 }
 
 //expand toggle button stacked styles
-.tdStacked.expandToggleCell .expandToggleCell,
-.tdStacked.expandToggleCell .expandToggleButton {
+.expandToggleCell.stacked,
+.expandToggleButton.stacked {
   position: static;
 }

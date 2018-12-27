@@ -18,3 +18,6 @@ function Sandwiches({match, history}) {
 
 
 export default withRouter(Sandwiches);
+
+
+//const Sandwiches = React.lazy(() => import('./Sandwiches'));

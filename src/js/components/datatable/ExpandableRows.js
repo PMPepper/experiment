@@ -11,7 +11,7 @@ import isReactComponent from '@/prop-types/is-react-component';
 export default function ExpandableRows(props) {
   const {styles, rows, stacked, expandableRowComponent: ExpandableRowComponent} = props;
 
-  return rows.map((row, index) => (<tbody className={css(styles.tbody, stacked && styles.tbodyStacked)} key={row.id}>
+  return rows.map((row, index) => (<tbody className={css(styles.tbody, stacked && styles.stacked)} key={row.id}>
     <ExpandableRowComponent {...props} row={row} rowIndex={index} />
   </tbody>))
 }

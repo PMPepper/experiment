@@ -11,7 +11,19 @@ import isReactComponent from '@/prop-types/is-react-component';
 
 
 export default class ExpandableRow extends React.Component {
-  state = {expandRowAnimationState: 0};
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      expandRowAnimationState: this.isExpanded ? 1 : 0
+    };
+  }
+
+  get isExpanded() {
+    const {row, expandedRows, getExpandedRowContents} = this.props;
+
+    return expandedRows && expandedRows[row.id] && getExpandedRowContents
+  }
 
   render() {
     const props = this.props;
@@ -23,7 +35,7 @@ export default class ExpandableRow extends React.Component {
       expandRowAnimation: ExpandRowAnimation
     } = props;
 
-    const isRowExpanded = (expandedRows && expandedRows[row.id] && getExpandedRowContents);
+    const isRowExpanded = this.isExpanded;
 
     return [
       <RowComponent
@@ -49,25 +61,25 @@ export default class ExpandableRow extends React.Component {
       />,
       <tr
         className={css(
-          (rowIndex % 2) === 0 ? styles.expandTr : styles.expandTrEven,
-          stacked && styles.expandTrStacked,
+          styles.expandTr,
+          stacked && styles.stacked,
           isRowExpanded && styles.expanded
         )}
         key="expand"
       >
         <td
           className={css(
-            (rowIndex % 2) === 0 ? styles.expandTd : styles.expandTdEven,
-            stacked && styles.expandTdStacked,
+            styles.expandTd,
+            stacked && styles.stacked,
             isRowExpanded && styles.expanded,
-            this.state.expandRowAnimationState && styles.isVisible
+            this.state.expandRowAnimationState && styles.visible
           )}
           colSpan={columns.length}
         >
           <ExpandRowAnimation
             className={css(
-              (rowIndex % 2) === 0 ? styles.expandContent : styles.expandContentEven,
-              stacked && styles.expandContentStacked,
+              styles.expandContent,
+              stacked && styles.stacked,
               isRowExpanded && styles.expanded
             )}
             onChangeAnimationState={(newState, oldState) => {

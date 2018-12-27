@@ -1,47 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {compose, withStateHandlers} from 'recompose';
-import { HashRouter as Router, Route, Link, Switch } from "react-router-dom";
-//import omit from 'lodash/omit';
 
 //import Tabs from './components/tabs/LocalStateTabs';
 import Test from '@/components/test/Test';
 import DataTable from '@/components/datatable/LocalStateDataTable';
+import RouterExample from '@/components/routerExample/Router';
 
 import objectModify from '@/helpers/object-modify';
 
 import * as dom from './dom';
-
 
 import core from '../css/core.scss';
 
 const title = 'Testing CSS modules';
 
 
-////////////////////////////////////////////////////////////////////
-// first our route components
-const Sandwiches = React.lazy(() => import('./components/sandwiches/Sandwiches'));
-
-function Tacos({ routes }) {
-  return (
-    <div>
-      <h2>Tacos</h2>
-      <ul>
-        <li>
-          <Link to="/tacos/bus">Bus</Link>
-        </li>
-        <li>
-          <Link to="/tacos/cart">Cart</Link>
-        </li>
-      </ul>
-      <Test />
-      {routes.map((route, i) => (
-        <RouteWithSubRoutes key={i} {...route} />
-      ))}
-    </div>
-  );
-}
-
+//Datatable example
 const baseMemberTypes = {'1': 10, '2': 25};
 
 const baseColumns = [
@@ -53,7 +28,7 @@ const baseColumns = [
 
 const defaultSortColumns = ['name', ['age', false]];
 
-const Bus = compose(
+const App = compose(
   withStateHandlers({
     columns: baseColumns,
     memberTypes: baseMemberTypes,
@@ -99,9 +74,9 @@ const Bus = compose(
     },
     setMembers: () => (members) => ({members}),
   })
-)(function BusPresentational({columns, members, setMembers, memberTypes, setMemberTypes}) {
-  return <div style={{padding: '10px'}}>
-    <h3>Bus</h3>
+)(function App({columns, members, setMembers, memberTypes, setMemberTypes}) {
+  return <div>
+    <h3>Example datatable</h3>
     <button onClick={() => {setMemberTypes({
       '1': Math.round(Math.random() * 20),
       '2': Math.round(Math.random() * 20)
@@ -128,6 +103,7 @@ const Bus = compose(
     }}>
       New member
     </button>
+
     <DataTable
       columns={columns}
       rows={members}
@@ -137,7 +113,6 @@ const Bus = compose(
       //clickTogglesExpandedRows={true}
       addExpandRowColumn={true}
       getExpandedRowContents={(row) => {
-        // style={{borderBottom:'1px solid #7f7f7f'}}
         return <div>
           <p>Hello {row.data.name}</p>
           <p>Lorem ipsum</p>
@@ -145,102 +120,32 @@ const Bus = compose(
           <p>Lorem ipsum</p>
           <p>Lorem ipsum</p>
           <p>Lorem ipsum</p>
+          <button>A button</button>
         </div>
       }}
-
-      /*expandableRowContentComponent={(props) => {
-        return <b>{props.children}</b>
-      }}*/
     />
   </div>
 });
 
-function Cart() {
-  return <h3>Cart</h3>;
-}
 
-
-////////////////////////////////////////////////////////////
-// then our route config
-const routes = [
-  {
-    path: "/sandwiches/:id?",
-    component: Sandwiches
-  },
-  {
-    path: "/tacos",
-    component: Tacos,
-    routes: [
-      {
-        path: "/tacos/bus",
-        component: Bus
-      },
-      {
-        path: "/tacos/cart",
-        component: Cart
-      }
-    ]
-  },
-  {
-    component: () => (<p>NOT FOUND!</p>)
-  }
-];
-
-// wrap <Route> and use this everywhere instead, then when
-// sub routes are added to any route it'll work
-function RouteWithSubRoutes(route) {
-  return <Route
-    path={route.path}
-    render={props => (
-      // pass the sub-routes down to keep nesting
-      <route.component {...props} routes={route.routes} />
-    )}
-  />
-}
-
-function RouteConfigExample() {
-  return (
-    <Router>
-      <div>
-        <ul>
-          <li>
-            <Link to="/tacos">Tacos</Link>
-          </li>
-          <li>
-            <Link to="/sandwiches">Sandwiches</Link>
-          </li>
-        </ul>
-
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <Switch>{
-            routes.map((route, i) => (
-              <RouteWithSubRoutes key={i} {...route} />
-            ))}
-          </Switch>
-        </React.Suspense>
-      </div>
-    </Router>
-  );
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
 ReactDOM.render(
-  <div>
+  <div style={{padding: '16px'}}>
     <h1>{title}</h1>
     <h2>Tabs test</h2>
-    {/*<Tabs>
-      <p key="tab1" tab-title="Hello world">This is a tab content for the first tab.</p>
-      <p key="tab2" tab-title="Foo bar">This is a tab content for the second tab. Some more text. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. </p>
-      <p key="tab3" tab-title="Tab three">This is a tab content for the <b>third</b> tab!</p>
-      <p key="tab4" tab-title="Tab four">This is a tab content for the <b>fourth</b> tab!</p>
-      <p key="tab5" tab-title="Tab five">This is a tab content for the <b>fifth</b> tab!</p>
-      <p key="tab6" tab-title="Tab size">This is a tab content for the <b>sixth</b> tab!</p>
-    </Tabs>*/}
-    <RouteConfigExample />
+    <App />
+    <RouterExample />
   </div>,
   document.getElementById('app')
 );
+
+{/*<Tabs>
+  <p key="tab1" tab-title="Hello world">This is a tab content for the first tab.</p>
+  <p key="tab2" tab-title="Foo bar">This is a tab content for the second tab. Some more text. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. </p>
+  <p key="tab3" tab-title="Tab three">This is a tab content for the <b>third</b> tab!</p>
+  <p key="tab4" tab-title="Tab four">This is a tab content for the <b>fourth</b> tab!</p>
+  <p key="tab5" tab-title="Tab five">This is a tab content for the <b>fifth</b> tab!</p>
+  <p key="tab6" tab-title="Tab size">This is a tab content for the <b>sixth</b> tab!</p>
+</Tabs>*/}
 
 
 if(process.env.NODE_ENV !== 'production') {

@@ -7,6 +7,8 @@ import defaultStyles from './styles.scss';
 
 import Icon from '@/components/icon/Icon';
 
+import css from '@/helpers/css-class-list-to-string';
+
 import isPositiveInteger from '@/prop-types/is-positive-integer';
 import isPositiveNonZeroInteger from '@/prop-types/is-positive-nonzero-integer';
 
@@ -22,15 +24,15 @@ export default function Pagination(props) {
 
   const offsetCount = Math.floor((pagesToDisplay - 5)/2); //how many numbers beside the current page should be shown, e.g. if pagesToDisplay = 7, page = 6 and totalPages = 10, then 1 ... 5, 6, 7 ... 10 offset count is 1 (1 back and 1 forward from the current page)
 
-  return <div {...rest} ref={getRef} className={`${styles.pagination} ${className}`}>
+  return <div {...rest} ref={getRef} className={css(styles.pagination, className)}>
     <button
       disabled={page === 1}
       onClick={onRequestPagination ? (e) => {onRequestPagination(page - 1, e);} : null}
-      className={`${styles.prevBtn} ${page === 1 ? styles.disabled : ''}`}//getElementClass('prev', {disabled: page == 1 ? null : undefined})
+      className={css(styles.prevBtn, page === 1 && styles.disabled)}
       type="button"
     >
       <Icon icon="chevron-left" />
-      {/*TODO <span className="u-offscreen"><Text id="pagination-prev" /></span>*/}
+      {/*TODO <span className="u-offscreen"><Text id="pagination-next" /></span>*/}
     </button>
 
     {rangeInclusive(1, Math.min(totalPages, pagesToDisplay)).map((position) => {
@@ -40,7 +42,7 @@ export default function Pagination(props) {
     <button
       disabled={page === totalPages}
       onClick={onRequestPagination ? (e) => {onRequestPagination(page + 1, e);} : null}
-      className={`${styles.nextBtn} ${page === totalPages ? styles.disabled : ''}`}//getElementClass('prev', {disabled: page == 1 ? null : undefined})
+      className={css(styles.nextBtn, page === totalPages && styles.disabled)}
       type="button"
     >
       <Icon icon="chevron-right" />

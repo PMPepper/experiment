@@ -7,8 +7,17 @@ import css from '@/helpers/css-class-list-to-string';
 export default function Row(props) {
   const {row, rowIndex, columns, styles, stacked, sortColumnName, sortColumnDesc, setSortColumn, rowProps, rowCssClasses} = props;
   const metaTypes = getMetaTypes();
+  const isEven = rowIndex % 2 === 1;
 
-  return <tr className={css((rowIndex % 2) === 0 ? styles.tr : styles.trEven, stacked && styles.trStacked, rowCssClasses)} {...rowProps}>
+  return <tr
+    className={css(
+      styles.tr,
+      isEven && styles.even,
+      stacked && styles.stacked,
+      rowCssClasses
+    )}
+    {...rowProps}
+  >
     {columns.map((column, columnIndex) => {
       const isSortColumn = column.name === sortColumnName;
       const columnLabel = column.label instanceof Function ? column.label(props) : column.label;
@@ -16,24 +25,30 @@ export default function Row(props) {
       return <td
         key={column.name}
         className={css(
-          (columnIndex % 2) === 0 ? styles.td : styles.tdEven,
-          column.valueType && styles[`td_type_${column.valueType}`],
-          stacked && styles.tdStacked,
+          styles.td,
+          column.valueType && styles[column.valueType],
+          stacked && styles.stacked,
           column.css
         )}
       >
-        <div className={css(styles.tdHeader, column.css)} aria-hidden="true">
+        <div className={css(styles.tdHeader, stacked && styles.stacked,column.css)} aria-hidden="true">
         {setSortColumn && column.sort ?
           <button
             className={css(
-              styles[isSortColumn ? (sortColumnDesc ? 'rowSortBtnDesc' : 'rowSortBtnAsc') : 'rowSortBtn'],
+              styles.rowSortBtn,
+              isSortColumn && sortColumnDesc && styles.desc,
+              isSortColumn && !sortColumnDesc && styles.asc,
+              stacked && styles.stacked,
               column.css
             )}
             onClick={(e) => {e.preventDefault(); e.stopPropagation(); isSortColumn ? setSortColumn(column.name, !sortColumnDesc) : setSortColumn(column.name)}}
           >
             <span
               className={css(
-                styles[isSortColumn ? (sortColumnDesc ? 'rowSortBtnInnerDesc' : 'rowSortBtnInnerAsc') : 'rowSortBtnInner'],
+                styles.rowSortBtnInner,
+                isSortColumn && sortColumnDesc && styles.desc,
+                isSortColumn && !sortColumnDesc && styles.asc,
+                stacked && styles.stacked,
                 column.css
               )}
             >
@@ -41,13 +56,13 @@ export default function Row(props) {
             </span>
           </button>
           :
-          <span className={styles.rowLabel}>{columnLabel}</span>
+          <span className={css(styles.rowLabel, stacked && styles.stacked)}>{columnLabel}</span>
         }
         </div>{/*stack table contents*/}
         <div className={css(
           styles.tdContent,
-          column.valueType && styles[`tdContent_type_${column.valueType}`],
-          stacked && styles.tdContentStacked,
+          column.valueType && styles[column.valueType],
+          stacked && styles.stacked,
           column.css
         )}>
           {formatCellData(row, column, props, metaTypes)}

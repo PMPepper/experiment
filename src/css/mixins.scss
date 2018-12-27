@@ -40,31 +40,37 @@
 }
 
 @mixin blockInteraction($mouseCol: $blockMouseInteractionCol, $mouseBg: $blockMouseInteractionBg, $keyboardCol: $blockKeyboardInteractionCol, $keyboardBg: $blockKeyboardInteractionBg) {
+  outline: 0!important;
+
   &:hover {
     background-color: $mouseBg;
     color: $mouseCol;
-    outline: none;
     cursor: pointer;
   }
 
   :global(.focus_keyboard) &:focus {
     background-color: $keyboardBg;
     color: $keyboardCol;
-    outline: none;
   }
 }
 
 @mixin textInteraction($mouseCol: $textMouseInteractionCol, $mouseBg: $textMouseInteractionBg, $keyboardCol: $textKeyboardInteractionCol, $keyboardBg: $textKeyboardInteractionBg) {
+  outline: 0!important;
+
   &:hover {
     color: $mouseCol;
     background-color: $mouseBg;
-    outline: none;
     cursor: pointer;
   }
 
   :global(.focus_keyboard) &:focus {
     color: $keyboardCol;
     background-color: $keyboardBg;
-    outline: none;
   }
+}
+
+@mixin offscreen() {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
 }

@@ -1,11 +1,10 @@
-$bgCol: #FFF;
-$bgColAlt: #EBEBEB;
-$fontCol: #000;
+@import '../../../css/shared';
 
-$borderColor: #b7b7b7;
-$basePadding: 1.6rem;
+$paginationCol: $fontCol;
+$bgCol: $grey0;
+$bgColAlt: $grey20;
 
-
+$paginationBasePadding: $basePadding;
 
 $minWidth: 3.0rem;
 
@@ -14,29 +13,26 @@ $minWidth: 3.0rem;
 }
 
 .page {
-  //@include themeBlockInteraction();
-
+  color: $fontCol;
   font-size: 1.65rem;
   line-height: 2.5rem;
   border: 0;
   background: transparent;
-  padding: $basePadding/4 $basePadding/2;
+  padding: $paginationBasePadding/4 $paginationBasePadding/2;
   min-width: $minWidth;
   text-align: center;
   display: inline-block;
   margin: 0 0;
   vertical-align: middle;
+  font-weight: bold;
 
-  color: $fontCol;
+  @include textInteraction($mouseBg: $grey35);
 
-  &:hover {
-    color: #666;
-    cursor: pointer;
-  }
 }
 
 .prevBtn {
   composes: page;
+  font-weight: normal;
   font-size: 1.8rem;
 }
 
@@ -50,14 +46,14 @@ $minWidth: 3.0rem;
 }
 
 .current {
-  background: #999;
+  background: $grey40;
   pointer-events: none;
 }
 
 .spacer {
-  color: $fontCol;
+  color: $paginationCol;
   font-size: 1.9rem;
-  margin: 0 $basePadding*0.25;
+  margin: 0 $paginationBasePadding/4;
   text-align: center;
   display: inline-block;
   vertical-align: middle;
