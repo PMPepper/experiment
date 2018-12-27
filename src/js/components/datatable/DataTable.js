@@ -18,7 +18,7 @@ import {compose} from 'recompose';
 //fixed layout table
 //filtering?
 //factory methods to create standard tables
-//'columns' property allows filtering/adding of columns on table-by-table basis?
+//-'columns' property allows filtering/adding of columns on table-by-table basis?
 
 
 //Internal
@@ -31,10 +31,19 @@ import Time from '@/components/time/Time';
 //Helpers
 import combineSortFunctions from '@/helpers/combine-sort-functions';
 import objectResolvePath from '@/helpers/object-resolve-path';
+import css from '@/helpers/css-class-list-to-string';
 
 
 export default class DataTable extends React.Component {
   getRows = memoize((rows) => (Object.keys(rows).map(id => ({id, data: rows[id]}))))
+
+  getColumns = memoize((columns, addExpandRowColumn) => {
+    if(addExpandRowColumn) {
+      columns = [...columns, expandRowColumn]
+    }
+
+    return columns;
+  });
 
   getSortRowsFunc = memoize(
     (columns, sortColumnName, sortColumnDesc, defaultSortColumns = null) => {
@@ -85,6 +94,7 @@ export default class DataTable extends React.Component {
     const props = this.props;
 
     const allRows = this.getRows(props.rows);
+    const columns = this.getColumns(props.columns, props.addExpandRowColumn);
 
     //use default sort column if none supplied
     let sortColumnName = null;
@@ -106,13 +116,14 @@ export default class DataTable extends React.Component {
 
     return <DataTablePresentational
       {...props}
+      columns={columns}
       sortColumnName={sortColumnName}
       sortColumnDesc={sortColumnDesc}
       rows={this.paginateRows(
         this.sortRows(
           allRows,
           this.getSortRowsFunc(
-            props.columns,
+            columns,
             props.sortColumnName,
             props.sortColumnDesc,
             props.defaultSortColumns
@@ -136,7 +147,9 @@ export default class DataTable extends React.Component {
 }
 
 
-//Internal helpers
+//////////////////////
+// Internal helpers //
+//////////////////////
 function getColumnByName(columns, name) {
   return columns.find(column => (column.name === name)) || null;
 }
@@ -160,7 +173,11 @@ function getColumnSortFunc(column, desc = false) {
   return null;
 }
 
-//Metatypes
+
+///////////////
+// Metatypes //
+///////////////
+
 export function registerDatatableMetatype(name, sortCompareFunc, formatFunc = null, getSortFunc = defaultGetSortFunc, dataCellClass = null, headCellClass = null) {
   metaTypes[name] = {
     name,
@@ -240,3 +257,28 @@ registerDatatableMetatype(
       }
   }
 );
+
+
+///////////////////////
+// Expand rows stuff //
+///////////////////////
+const expandRowColumn = {
+  name: '__expand__',
+  label: null,
+  sort: false,
+  format: (value, column, row, props) => {
+    const isRowExpanded = props.expandedRows[row.id];
+
+    return <button
+      type="button"
+      className={css(
+        props.styles.expandToggleButton,
+        isRowExpanded && props.styles.isExpanded
+      )}
+      onClick={() => {props.setRowExpanded(row.id, !isRowExpanded)}}
+    >
+      <span className="offscreen">[TODO langauge system]</span>
+    </button>
+  }
+  //css: [styles.]
+};

@@ -30,7 +30,7 @@ export default function Thead({styles, columns, sortColumnName, sortColumnDesc, 
               )}>{columnLabel}</span>
             </button>
             :
-            <span className={styles.columnLabel}>{columnLabel}</span>
+            columnLabel ? <span className={styles.columnLabel}>{columnLabel}</span> : null
           }
         </th>
       })}

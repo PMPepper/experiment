@@ -134,7 +134,8 @@ const Bus = compose(
 
       defaultSortColumns={defaultSortColumns}
 
-      clickTogglesExpandedRows={true}
+      //clickTogglesExpandedRows={true}
+      addExpandRowColumn={true}
       getExpandedRowContents={(row) => {
         // style={{borderBottom:'1px solid #7f7f7f'}}
         return <div>

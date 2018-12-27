@@ -357,6 +357,27 @@ $stackContentBg: null;
   composes: expandContent;
 }
 
+.expandToggleButton {
+  background: transparent;
+  position: relative;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transform: rotate(0);
+  transition: transform 0.3s ease-in-out;
+
+  @include textInteraction();
+
+  &:after {
+    @include triangle(bottom, 1.6rem, 1rem, currentColor);
+  }
+
+}
+
+.expandToggleButton.isExpanded {
+  transform: rotate(180deg);
+}
+
 //expand stacked styles
 .expandTdStacked,
 .expandTrStacked {
