@@ -112,6 +112,8 @@ export default function makeAnimationSingleTransition({
         this._waitingForRefToHide = false;
         this._interrupted = interrupted;
 
+        this._onChangeAnimationState(SHOWING);
+
         //record state & trigger re-render
         return {
           animationState: SHOWING,
@@ -141,6 +143,8 @@ export default function makeAnimationSingleTransition({
         this._waitingForRefToShow = false;
         this._interrupted = false;
 
+        this._onChangeAnimationState(SHOWING);
+
         //update state
         return {
           animationState: SHOWING,
@@ -165,6 +169,7 @@ export default function makeAnimationSingleTransition({
           this.setState(this._startHidingAnimation(false));
         } else {
           //c/onsole.log('[ANI] _showAnimationComplete: show complete, now visible');
+          this._onChangeAnimationState(VISIBLE);
           this.setState({animationState: VISIBLE});
         }
       }
@@ -183,6 +188,8 @@ export default function makeAnimationSingleTransition({
         this._interrupted = interrupted;
 
         //record state & trigger re-render
+        this._onChangeAnimationState(HIDING);
+
         return {
           animationState: HIDING,
 
@@ -211,8 +218,18 @@ export default function makeAnimationSingleTransition({
         this._waitingForRefToShow = false;
         this._interrupted = false;
 
+        this._onChangeAnimationState(HIDING);
+
         //update state
         return {animationState: HIDING};
+      }
+
+      _onChangeAnimationState(newState) {
+        const curState = this.state.animationState;
+
+        if(newState !== curState) {
+          this.props.onChangeAnimationState && this.props.onChangeAnimationState(newState, curState);
+        }
       }
 
       _hideAnimationComplete = () => {
@@ -220,19 +237,23 @@ export default function makeAnimationSingleTransition({
           return;
         }
 
+        const props = this.props;
+
         this._animation = null;
 
         //animation specific
         onHideAnimationComplete && onHideAnimationComplete(this._ref, this.props);
 
-        this.props.onHideComplete && this.props.onHideComplete();
+        props.onHideComplete && props.onHideComplete();
 
-        if(this.props.canInterrupt && this._nextChildren) {
+        if(props.canInterrupt && this._nextChildren) {
           //c/onsole.log('[ANI] _hideAnimationComplete: hide complete, but now has children: ', this._nextChildren);
           this.setState(this._startShowingAnimation(this._nextChildren, false));
         } else {
           //c/onsole.log('[ANI] _hideAnimationComplete: hide complete, now hidden');
+          this._onChangeAnimationState(HIDDEN);
           this.setState({animationState: HIDDEN, currentChildren: null});
+
         }
       }
 
@@ -272,7 +293,7 @@ export default function makeAnimationSingleTransition({
 
       render() {
         const {
-          getRef, appear, canInterrupt, onHideComplete, onShowComplete, showTransitionSettings, hideTransitionSettings,//extract props
+          getRef, appear, canInterrupt, onHideComplete, onShowComplete, onChangeAnimationState, showTransitionSettings, hideTransitionSettings,//extract props
           component: Component = 'div',
           ...props//everything else
         } = this.props;
@@ -280,7 +301,7 @@ export default function makeAnimationSingleTransition({
         return this.state.animationState === HIDDEN ?
           null
           :
-          <Component {...(mapProps ? mapProps(props) : props)} ref={this._getRef}>
+          <Component {...(mapProps ? mapProps(props, this.state) : props)} ref={this._getRef}>
             {this.state.currentChildren}
           </Component>
       }
@@ -292,22 +313,42 @@ export default function makeAnimationSingleTransition({
       }
     }
   } else {
-    return function (props) {
-      const {
-        getRef, appear, absolute, full, canInterrupt, onHideComplete, onShowComplete, showTransitionSettings, hideTransitionSettings,//extract props
-        children, component: Component = 'div', className = '',
-        ...rest//everything else
-      } = props;
+    return class extends React.Component {
+      static displayName = name;
 
-      if(Component !== 'div' || className || getRef) {
-        if(!hasAnyRenderableChildren(children)) {
-          return null;
+      lastState = HIDDEN;
+
+      _onChangeAnimationState(newState) {
+        if(newState !== this.lastState) {
+          this.props.onChangeAnimationState && this.props.onChangeAnimationState(newState, this.lastState);
+
+          this.lastState = newState;
         }
-
-        return <Component className={className} {...rest}>{children}</Component>
       }
 
-      return children || null;
+      render() {
+        const props = this.props;
+
+        const {
+          getRef, appear, absolute, full, canInterrupt, onHideComplete, onShowComplete, onChangeAnimationState, showTransitionSettings, hideTransitionSettings,//extract props
+          children, component: Component = 'div', className = '',
+          ...rest//everything else
+        } = props;
+
+        if(Component !== 'div' || className || getRef) {
+          if(!hasAnyRenderableChildren(children)) {
+            this._onChangeAnimationState(HIDDEN);
+
+            return null;
+          }
+
+          this._onChangeAnimationState(VISIBLE);
+
+          return <Component className={className} {...rest}>{children}</Component>
+        }
+
+        return children || null;
+      }
     }
   }
 }

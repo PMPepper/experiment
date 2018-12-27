@@ -41,7 +41,7 @@ $stackContentBg: null;
 .table {
   width: 100%;
   border: 0.1rem solid $tableBorderCol;
-  //border-top: none;
+  border-top: none;
   margin-top: $tableBasePadding / 2;
   border-spacing: 0;
   border-collapse: separate;
@@ -59,8 +59,8 @@ $stackContentBg: null;
   vertical-align: middle;
   padding: 0;
   border-left: 0.1rem solid $tableBorderCol;
-  //border-top: 0.1rem solid $tableBorderCol;
-  border-bottom: 0.1rem solid $tableBorderCol;
+  border-top: 0.1rem solid $tableBorderCol;
+  //border-bottom: 0.1rem solid $tableBorderCol;
   text-align: center;
   white-space: nowrap;
 
@@ -166,7 +166,7 @@ $stackContentBg: null;
   font-size: 1.55rem;
   line-height: 1.0;
   border-left: 0.1rem solid $tableBorderCol;
-  border-bottom: 0.1rem solid $tableBorderCol;
+  border-top: 0.1rem solid $tableBorderCol;
   vertical-align: top;
   padding: $tableBasePadding / 2;
   text-align: center;
@@ -325,14 +325,23 @@ $stackContentBg: null;
   composes: expandTd;
 }
 
-.expandTd.expanded,
-.expandTdEven.expanded {
-  &:after {
+.expandTd.isVisible,
+.expandTdEven.isVisible {
+  /*&:after {
     display: block;
     content: '';
     border-bottom: 0.1rem solid $borderColor;
-  }
+  }*/
+
+  border-top: 0.1rem solid $borderColor;
 }
+
+// .expandState-0,
+// .expandState-1,
+// .expandState-2,
+// .expandState-4 {
+//   border-top: 0.1rem solid $borderColor;;
+// }
 
 .expandContent {
   will-change: opacity, height;
@@ -350,6 +359,6 @@ $stackContentBg: null;
 
 //expand stacked styles
 .expandTdStacked,
-.expandTr {
+.expandTrStacked {
   display: block;
 }
