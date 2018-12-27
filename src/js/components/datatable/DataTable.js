@@ -23,6 +23,7 @@ import {compose} from 'recompose';
 
 //Internal
 import DataTablePresentational from './DataTablePresentational';
+import defaultStyles from './styles.scss';
 
 //Components
 import FormatNumber from '@/components/formatNumber/FormatNumber';
@@ -37,8 +38,12 @@ import css from '@/helpers/css-class-list-to-string';
 export default class DataTable extends React.Component {
   getRows = memoize((rows) => (Object.keys(rows).map(id => ({id, data: rows[id]}))))
 
-  getColumns = memoize((columns, addExpandRowColumn) => {
-    if(addExpandRowColumn) {
+  getExpandRowColumn = memoize(getExpandRowColumn)
+
+  getColumns = memoize((columns, expandRowColumn) => {
+    console.log('[DT]: getColumns');
+    
+    if(expandRowColumn) {
       columns = [...columns, expandRowColumn]
     }
 
@@ -47,6 +52,8 @@ export default class DataTable extends React.Component {
 
   getSortRowsFunc = memoize(
     (columns, sortColumnName, sortColumnDesc, defaultSortColumns = null) => {
+      console.log('[DT]: getSortRowsFunc');
+
       defaultSortColumns = defaultSortColumns || [];
 
       const sortFuncs = [
@@ -71,6 +78,8 @@ export default class DataTable extends React.Component {
 
   sortRows = memoize(
     (rows, sortRowsFunc) => {
+      console.log('[DT]: sortRows');
+
       if(sortRowsFunc) {
         //need to duplication rows so that memoize detects that something has changed
         rows = [...rows];
@@ -83,6 +92,8 @@ export default class DataTable extends React.Component {
   );
 
   paginateRows = memoize((sortedRows, itemsPerPage, page) => {
+    console.log('[DT]: paginateRows');
+
     if(itemsPerPage > 0) {
       return sortedRows.slice((page - 1) * itemsPerPage, page * itemsPerPage);
     }
@@ -94,7 +105,7 @@ export default class DataTable extends React.Component {
     const props = this.props;
 
     const allRows = this.getRows(props.rows);
-    const columns = this.getColumns(props.columns, props.addExpandRowColumn);
+    const columns = this.getColumns(props.columns, props.addExpandRowColumn && this.getExpandRowColumn(props.styles));
 
     //use default sort column if none supplied
     let sortColumnName = null;
@@ -143,6 +154,7 @@ export default class DataTable extends React.Component {
   static defaultProps = {
     itemsPerPage: 25,
     page: 1,
+    styles: defaultStyles
   }
 }
 
@@ -262,23 +274,25 @@ registerDatatableMetatype(
 ///////////////////////
 // Expand rows stuff //
 ///////////////////////
-const expandRowColumn = {
-  name: '__expand__',
-  label: null,
-  sort: false,
-  format: (value, column, row, props) => {
-    const isRowExpanded = props.expandedRows[row.id];
+function getExpandRowColumn(styles) {
+  return {
+    name: '__expand__',
+    label: null,
+    sort: false,
+    format: (value, column, row, props) => {
+      const isRowExpanded = props.expandedRows[row.id];
 
-    return <button
-      type="button"
-      className={css(
-        props.styles.expandToggleButton,
-        isRowExpanded && props.styles.isExpanded
-      )}
-      onClick={() => {props.setRowExpanded(row.id, !isRowExpanded)}}
-    >
-      <span className="offscreen">[TODO langauge system]</span>
-    </button>
+      return <button
+        type="button"
+        className={css(
+          props.styles.expandToggleButton,
+          isRowExpanded && props.styles.isExpanded
+        )}
+        onClick={() => {props.setRowExpanded(row.id, !isRowExpanded)}}
+      >
+        <span className="offscreen">[TODO langauge system]</span>
+      </button>
+    },
+    css: [styles.expandToggleCell]
   }
-  //css: [styles.]
 };

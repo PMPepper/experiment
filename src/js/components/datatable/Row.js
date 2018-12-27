@@ -22,7 +22,7 @@ export default function Row(props) {
           column.css
         )}
       >
-        <div className={styles.tdHeader} aria-hidden="true">
+        <div className={css(styles.tdHeader, column.css)} aria-hidden="true">
         {setSortColumn && column.sort ?
           <button
             className={css(
@@ -47,7 +47,8 @@ export default function Row(props) {
         <div className={css(
           styles.tdContent,
           column.valueType && styles[`tdContent_type_${column.valueType}`],
-          stacked && styles.tdContentStacked
+          stacked && styles.tdContentStacked,
+          column.css
         )}>
           {formatCellData(row, column, props, metaTypes)}
         </div>
