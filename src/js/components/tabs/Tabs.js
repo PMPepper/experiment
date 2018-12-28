@@ -2,13 +2,10 @@ import React from 'react';
 import {compose} from 'recompose';
 import styles from './styles.scss';
 
-
 //HOCs
 import ResponsiveComponent, {makeCheckSizeWidthFunc} from '@/HOCs/ResponsiveComponent';
 
 //Components
-//import Transition from '@/components/transitions/FadeAndVerticalSlideAnimation';
-
 
 //Helpers
 import reactOmitElementProp from '@/helpers/react-omit-element-prop';

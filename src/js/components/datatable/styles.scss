@@ -331,17 +331,16 @@ $expandArrowHoverCol: $grey40;
   left: 0;
 
   color: $expandArrowCol;
+  background: transparent;
   display: block;
   min-height: 1.4rem;
   width: 100%;
-  background: transparent;
   border: 0;
   padding: 0;
   cursor: pointer;
-  transform: rotate(0);
-  transition: transform 0.3s ease-in-out;
 
-  @include textInteraction($mouseCol: $expandArrowHoverCol);
+
+  @include blockInteraction($mouseBg: $grey30);//$mouseCol: $expandArrowHoverCol
 
   &:after {
     @include triangle(bottom, 1.6rem, 1rem, currentColor);
@@ -349,11 +348,15 @@ $expandArrowHoverCol: $grey40;
     top: 50%;
     left: 50%;
     margin: -0.5rem 0 0 -0.8rem;
+    transform: rotate(0);
+    transition: transform 0.3s ease-in-out;
   }
 }
 
 .expandToggleButton.expanded {
-  transform: rotate(180deg);
+  &:after {
+    transform: rotate(180deg);
+  }
 }
 
 //expand stacked styles
@@ -365,5 +368,11 @@ $expandArrowHoverCol: $grey40;
 //expand toggle button stacked styles
 .expandToggleCell.stacked,
 .expandToggleButton.stacked {
-  position: static;
+  position: relative;
+  padding: 0;
+}
+
+.expandToggleButton.stacked {
+  background: $grey20;
+  padding: (($basePadding/2) + ($arrowHeight/2));
 }
