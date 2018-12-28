@@ -99,11 +99,15 @@ export default compose(
     <DataTable
       columns={columns}
       rows={members}
-
       defaultSortColumns={defaultSortColumns}
 
-      expandedRows={{1: true}}
+      //rowProps={{onClick: (e) => {alert(e.type+'>!>!')}}}
 
+      //Selection props
+      clickTogglesSelectedRows={true}
+
+      //Expand row rows
+      //expandedRows={{1: true}}
       //clickTogglesExpandedRows={true}
       addExpandRowColumn={true}
       getExpandedRowContents={(row) => {

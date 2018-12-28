@@ -2,21 +2,44 @@ import React from 'react';
 import {getMetaTypes} from './DataTable';
 
 import css from '@/helpers/css-class-list-to-string';
+import reactCombineProps from '@/helpers/react-combine-props';
 
 
 export default function Row(props) {
-  const {row, rowIndex, columns, styles, stacked, sortColumnName, sortColumnDesc, setSortColumn, rowProps, rowCssClasses} = props;
+  let {
+    row, rowIndex, columns, styles, stacked, sortColumnName, sortColumnDesc, setSortColumn, rowProps,
+    clickTogglesSelectedRows, selectedRows, setRowSelected,
+  } = props;
+
   const metaTypes = getMetaTypes();
   const isEven = rowIndex % 2 === 1;
+  const isSelected = !!selectedRows[row.id];
+
+  rowProps = reactCombineProps(
+    rowProps,
+    clickTogglesSelectedRows && {
+      className: styles.selectable,
+      onClick: () => {setRowSelected(row.id, !selectedRows[row.id])},
+      onKeyDown: (e) => {
+        if(e.which === 13 || e.which === 32) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          setRowSelected(row.id, !selectedRows[row.id])
+        }
+      }
+    }
+  );
 
   return <tr
+    {...rowProps}
     className={css(
       styles.tr,
       isEven && styles.even,
+      isSelected && styles.selected,
       stacked && styles.stacked,
-      rowCssClasses
+      rowProps.className
     )}
-    {...rowProps}
   >
     {columns.map((column, columnIndex) => {
       const isSortColumn = column.name === sortColumnName;
@@ -27,17 +50,19 @@ export default function Row(props) {
         className={css(
           styles.td,
           column.valueType && styles[column.valueType],
+          isSelected && styles.selected,
           stacked && styles.stacked,
           column.css
         )}
       >
-        <div className={css(styles.tdHeader, stacked && styles.stacked,column.css)} aria-hidden="true">
+        <div className={css(styles.tdHeader, stacked && styles.stacked, isSelected && styles.selected, column.css)} aria-hidden="true">
         {setSortColumn && column.sort ?
           <button
             className={css(
               styles.rowSortBtn,
               isSortColumn && sortColumnDesc && styles.desc,
               isSortColumn && !sortColumnDesc && styles.asc,
+              isSelected && styles.selected,
               stacked && styles.stacked,
               column.css
             )}
@@ -48,6 +73,7 @@ export default function Row(props) {
                 styles.rowSortBtnInner,
                 isSortColumn && sortColumnDesc && styles.desc,
                 isSortColumn && !sortColumnDesc && styles.asc,
+                isSelected && styles.selected,
                 stacked && styles.stacked,
                 column.css
               )}
@@ -56,12 +82,13 @@ export default function Row(props) {
             </span>
           </button>
           :
-          <span className={css(styles.rowLabel, stacked && styles.stacked)}>{columnLabel}</span>
+          <span className={css(styles.rowLabel, isSelected && styles.selected, stacked && styles.stacked)}>{columnLabel}</span>
         }
         </div>{/*stack table contents*/}
         <div className={css(
           styles.tdContent,
           column.valueType && styles[column.valueType],
+          isSelected && styles.selected,
           stacked && styles.stacked,
           column.css
         )}>

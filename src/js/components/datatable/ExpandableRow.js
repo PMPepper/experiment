@@ -6,6 +6,7 @@ import Row from './Row';
 import FadeAndVerticalSlideAnimation from '@/components/transitions/FadeAndVerticalSlideAnimation';
 
 import css from '@/helpers/css-class-list-to-string';
+import reactCombineProps from '@/helpers/react-combine-props';
 
 import isReactComponent from '@/prop-types/is-react-component';
 
@@ -29,7 +30,9 @@ export default class ExpandableRow extends React.Component {
     const props = this.props;
 
     const {
-      row, rowIndex, styles, columns, stacked, clickTogglesExpandedRows, getExpandedRowContents, expandedRows, setRowExpanded,
+      row, rowIndex, styles, columns, stacked,
+      clickTogglesExpandedRows, getExpandedRowContents, expandedRows, setRowExpanded,
+      rowProps,
       rowComponent: RowComponent,
       expandableRowContentComponent: ExpandableRowContentComponent,
       expandRowAnimation: ExpandRowAnimation
@@ -40,9 +43,10 @@ export default class ExpandableRow extends React.Component {
     return [
       <RowComponent
         {...props}
-        rowCssClasses={clickTogglesExpandedRows && styles.selectable}
-        rowProps={clickTogglesExpandedRows ?
-          {
+        rowProps={reactCombineProps(
+          rowProps,
+          clickTogglesExpandedRows && {
+            className: styles.selectable,
             tabIndex: 0,
             onClick: () => {setRowExpanded(row.id, !expandedRows[row.id])},
             onKeyDown: (e) => {
@@ -54,9 +58,7 @@ export default class ExpandableRow extends React.Component {
               }
             }
           }
-          :
-          null
-        }
+        )}
         key="row"
       />,
       <tr
@@ -98,6 +100,8 @@ export default class ExpandableRow extends React.Component {
     ]
   }
 }
+
+const emptyObj = {};
 
 ExpandableRow.defaultProps = {
   expandRowAnimation: FadeAndVerticalSlideAnimation

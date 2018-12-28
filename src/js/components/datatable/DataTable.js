@@ -9,9 +9,6 @@ import {compose} from 'recompose';
 //--hover/focus styles only if click to toggle selected
 //-optional extra select column (checkbox)
 
-//expandable rows
-//-optional extra expand column (up/down arrow)
-
 //context menus
 //state handlers? redux etc?
 //table name/custom styles (linked to name?)
@@ -289,7 +286,7 @@ function getExpandRowColumn(styles) {
           props.stacked && props.styles.stacked,
           isRowExpanded && props.styles.expanded
         )}
-        onClick={() => {props.setRowExpanded(row.id, !isRowExpanded)}}
+        onClick={(e) => {e.stopPropagation(); props.setRowExpanded(row.id, !isRowExpanded)}}
       >
         <span className="offscreen">[TODO langauge system]</span>
       </button>
