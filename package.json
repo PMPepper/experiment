@@ -60,6 +60,7 @@
     "modern-normalize": "^0.5.0",
     "range-inclusive": "^1.0.2",
     "react-router-dom": "^4.3.1",
-    "recompose": "^0.30.0"
+    "recompose": "^0.30.0",
+    "wicg-inert": "^2.0.0"
   }
 }

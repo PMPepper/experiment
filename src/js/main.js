@@ -4,6 +4,9 @@ import ReactDOM from 'react-dom';
 import * as dom from './dom';
 import core from '../css/core.scss';
 
+//polyfills
+import 'wicg-inert';
+
 
 const title = 'React/Webpack testing';
 

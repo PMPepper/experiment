@@ -119,7 +119,10 @@ export default compose(
               <p>Lorem ipsum</p>
               <button>A button</button>
             </div>
-            <div className="wysiwyg" key="tab4" tab-title="Tab four"><p>This is a tab content for the <b>fourth</b> tab!</p></div>
+            <div className="wysiwyg" key="tab4" tab-title="Tab four">
+              <p>This is a tab content for the <b>fourth</b> tab!</p>
+              <button>A button</button>
+            </div>
             <div className="wysiwyg" key="tab5" tab-title="Tab five"><p>This is a tab content for the <b>fifth</b> tab!</p></div>
             <div className="wysiwyg" key="tab6" tab-title="Tab size"><p>This is a tab content for the <b>sixth</b> tab!</p></div>
           </Tabs>

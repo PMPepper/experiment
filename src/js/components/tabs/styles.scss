@@ -43,16 +43,28 @@ $tabsBasePadding: $basePadding;
   padding: $tabsBasePadding/2;
 }
 
+.header {
+  display: none;
+}
+
+$transitionTime: 0.4s;
+
 .panel {
-  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
   display: inline-block;
   width: 100%;
   margin-right: -100%;
   vertical-align: top;
+  transition: opacity $transitionTime/2 linear;
+
+  will-change: opacity;
 }
 
 .panel.selected {
-  visibility: visible;
+  pointer-events: auto;
+  opacity: 1;
+  transition: opacity $transitionTime/2 linear $transitionTime/2;
 }
 
 
@@ -69,7 +81,8 @@ $tabsBasePadding: $basePadding;
   padding: 0;
 }
 
-.header {
+.header.accordion {
+  display: block;
   color: inherit;
   font-size: 1.6rem;
   border-bottom: 0.1rem solid $tabsBorderCol;
