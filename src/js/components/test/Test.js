@@ -3,6 +3,7 @@ import {compose, withStateHandlers} from 'recompose';
 
 import DataTable from '@/components/datatable/LocalStateDataTable';
 import Tabs from '@/components/tabs/LocalStateTabs';
+import Tab from '@/components/tabs/Tab';
 
 import objectModify from '@/helpers/object-modify';
 
@@ -108,9 +109,9 @@ export default compose(
       getExpandedRowContents={(row) => {
         return <div style={{padding: '8px'}}>
           <Tabs>
-            <div className="wysiwyg" key="tab1" tab-title="Hello world"><p>This is a tab content for the first tab.</p></div>
-            <div className="wysiwyg" key="tab2" tab-title="Foo bar"><p>This is a tab content for the second tab. Some more text. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. </p></div>
-            <div className="wysiwyg" key="tab3" tab-title="Tab three">
+            <Tab className="wysiwyg" key="tab1" tab-title="Hello world"><p>This is a tab content for the first tab.</p></Tab>
+            <Tab className="wysiwyg" key="tab2" tab-title="Foo bar"><p>This is a tab content for the second tab. Some more text. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. Lorem ipsum dolor sit amet, etc etc etc. </p></Tab>
+            <Tab className="wysiwyg" key="tab3" tab-title="Tab three">
               <p>Hello {row.data.name}</p>
               <p>Lorem ipsum</p>
               <p>Lorem ipsum dolor sit amet</p>
@@ -118,20 +119,19 @@ export default compose(
               <p>Lorem ipsum</p>
               <p>Lorem ipsum</p>
               <button>A button</button>
-            </div>
-            <div className="wysiwyg" key="tab4" tab-title="Tab four">
+            </Tab>
+            <Tab className="wysiwyg" key="tab4" tab-title="Tab four">
               <p>This is a tab content for the <b>fourth</b> tab!</p>
               <button>A button</button>
-            </div>
-            <div className="wysiwyg" key="tab5" tab-title="Tab five"><p>This is a tab content for the <b>fifth</b> tab!</p></div>
-            <div className="wysiwyg" key="tab6" tab-title="Tab size"><p>This is a tab content for the <b>sixth</b> tab!</p></div>
+            </Tab>
+            <Tab className="wysiwyg" key="tab5" tab-title="Tab five"><p>This is a tab content for the <b>fifth</b> tab!</p></Tab>
+            <Tab className="wysiwyg" key="tab6" tab-title="Tab size"><p>This is a tab content for the <b>sixth</b> tab!</p></Tab>
           </Tabs>
         </div>
       }}
     />
   </div>
 });
-
 
 
 {/*<Tabs>

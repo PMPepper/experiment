@@ -40,7 +40,6 @@ $tabsBasePadding: $basePadding;
 
 .tabPanels {
   border: 0.1rem solid $tabsBorderCol;
-  padding: $tabsBasePadding/2;
 }
 
 .header {
@@ -73,6 +72,7 @@ $transitionTime: 0.4s;
 //////////////////////
 .tabs.accordion {
   border: 0.1rem solid $tabsBorderCol;
+  //border-width: 0 0.1rem;
   border-bottom: 0;
 }
 
@@ -85,7 +85,11 @@ $transitionTime: 0.4s;
   display: block;
   color: inherit;
   font-size: 1.6rem;
+  //border-bottom: 0.1rem solid $tabsBorderCol;
+  //border-bottom: 0;
+
   border-bottom: 0.1rem solid $tabsBorderCol;
+
 }
 
 .header.selected {
@@ -109,16 +113,32 @@ $transitionTime: 0.4s;
 
 }
 
+$accordionTransitionTime: 0.3s;
+
 .panel.accordion {
+  //resetting from tabs styles
   border: 0;
-  visibility: visible;
-  display: none;
+  opacity: 1;
   width: auto;
-  margin: 0;
-  padding: $tabsBasePadding/2;
+  display: block;
+
+  //general accordion styles
+  overflow: hidden;
+  margin: -0.1rem 0 0;
+  will-change: height;
+  border-bottom: 0.1rem solid $tabsBorderCol;
+
+  //transition styles
+  height: 0;
+  transition: height $accordionTransitionTime linear;
 }
 
 .panel.accordion.selected {
-  display: block;
-  border-bottom: 0.1rem solid $tabsBorderCol;
+  //
+  height: auto;
+}
+
+//tab content styles
+.tabContent {
+  padding: $tabsBasePadding/2;
 }
