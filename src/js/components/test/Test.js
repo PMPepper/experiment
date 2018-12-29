@@ -4,6 +4,10 @@ import {compose, withStateHandlers} from 'recompose';
 import DataTable from '@/components/datatable/LocalStateDataTable';
 import Tabs from '@/components/tabs/LocalStateTabs';
 import Tab from '@/components/tabs/Tab';
+import {SPACER} from '@/components/menu/Menu';
+import Icon from '@/components/icon/Icon';
+
+import ContextMenu from '@/components/menu/ContextMenu';
 
 import modify from '@/helpers/object/modify';
 
@@ -86,9 +90,28 @@ export default compose(
       New types
     </button>
 
-    <PositionComponent position={{x: 100, y:200, width: 0, height: 0}}>
-      <div style={{width: '100px', height: '100px', background: '#FEE'}}></div>
-    </PositionComponent>
+    <ContextMenu
+      position={{x: 50, y:50}}
+      items={[
+        {label: 'Hello', action: () => {alert('w00t!');}},
+        {label: 'World', icon: <Icon icon="globe" />},
+        {label: 'Foo', disabled: true},
+        SPACER,
+        {label: 'Bar', items: [
+          {label: 'Far', action: () => {alert('Far')}},
+          {label: 'Gar', action: () => {alert('Gar')}},
+          SPACER,
+          {label: 'A', action: () => {alert('A')}},
+          {label: 'B', action: () => {alert('B')}},
+          {label: 'C', action: () => {alert('C')}},
+          {label: 'D', action: () => {alert('D')}},
+          {label: 'E', icon: <Icon icon="chevron-right" />, items: [
+            {label: 'E1', action: () => {alert('E1')}},
+            {label: 'E2', action: () => {alert('E2')}}
+          ]},
+        ]}
+      ]}
+    />
 
     <PositionComponent position={{x: 100, y:200, width: 100, height: 100}} style={{border: '1px solid #F00', margin: '10px'}}>
       <div style={{padding: '8px', background: '#EEE'}}>Positioned component thing lorem ipsum dolor sit amet</div>

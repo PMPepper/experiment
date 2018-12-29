@@ -15,7 +15,6 @@ Needs:
 Default passes props:
 -setPositionedItemSize: function to allow child to tell this component how big the child is (can use in combination with MonitorElementSizeComponent)
 -style: object with styles for specifying how to position
-
 */
 
 //The component

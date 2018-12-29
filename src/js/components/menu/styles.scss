@@ -1,0 +1,76 @@
+@import '../../../css/shared';
+
+$menuFontCol: $fontCol;
+$menuBorderCol: $borderCol;
+$menuBg: $grey0;
+$menuBgSelected: $grey30;
+$menuBasePadding: $basePadding;
+
+$menuSpacerCol: $menuBorderCol;
+
+.menu {
+
+}
+
+
+.list {
+  width: 24rem;
+  background: $menuBg;
+  border: 1px solid $menuBorderCol;
+  border-bottom-width: 0.1rem;
+  color: $menuFontCol;
+  font-size: 1.4rem;
+  //margin-left: -0.3rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  box-shadow: 0.2rem 0.2rem rgba(0, 0, 0, 0.2);
+}
+
+.item {
+
+}
+
+.item.selected {
+  background: $menuBgSelected;
+}
+
+.spacer {
+  border-bottom: 0.1rem solid rgba($menuSpacerCol, 0.70);
+  margin: $menuBasePadding/4 0;
+}
+
+.action {
+  display: block;
+  text-align: left;
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: $menuBasePadding/2;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+
+  .disabled {
+    color: rgba($menuFontCol, 0.5);
+  }
+
+  .hasChildren {
+    &:after {
+      $triangleWidth: 1.2rem;
+      $triangleHeight: 1.2rem;
+      @include triangle(right, $triangleWidth, $triangleHeight, currentColor);
+
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      margin-top: - $triangleHeight / 2;
+    }
+  }
+}
+
+.icon {
+  display: inline-block;
+  width: 1.1rem + ($menuBasePadding/2);
+}
