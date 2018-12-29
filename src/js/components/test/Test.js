@@ -86,8 +86,12 @@ export default compose(
       New types
     </button>
 
-    <PositionComponent position={{x: 100, y:200, width: 100, height: 100}} style={{border: '1px solid #F00', margin: '1px'}}>
-      <div style={{padding: '8px', background: '#EEE'}}>Positioned component thing</div>
+    <PositionComponent position={{x: 100, y:200, width: 0, height: 0}}>
+      <div style={{width: '100px', height: '100px', background: '#FEE'}}></div>
+    </PositionComponent>
+
+    <PositionComponent position={{x: 100, y:200, width: 100, height: 100}} style={{border: '1px solid #F00', margin: '10px'}}>
+      <div style={{padding: '8px', background: '#EEE'}}>Positioned component thing lorem ipsum dolor sit amet</div>
     </PositionComponent>
 
     <button onClick={() => {

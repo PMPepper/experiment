@@ -5,6 +5,8 @@ import {getDisplayName} from 'recompose';
 import {addItem, removeItem} from  '@/modules/onFrameIterator';
 
 import omit from '@/helpers/object/omit';
+import outerWidth from '@/helpers/dom/get-element-outer-width';
+import outerHeight from '@/helpers/dom/get-element-outer-height';
 
 
 export default function MonitorElementSizeComponent({
@@ -40,7 +42,7 @@ export default function MonitorElementSizeComponent({
         if(ref) {
           const setSizeCallbackFunc = this.props[setSizeCallbackFuncPropName];
 
-          setSizeCallbackFunc && setSizeCallbackFunc(ref.offsetWidth, ref.offsetHeight);
+          setSizeCallbackFunc && setSizeCallbackFunc(outerWidth(ref), outerHeight(ref));
         }
       }
 

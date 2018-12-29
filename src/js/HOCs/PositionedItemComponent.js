@@ -54,6 +54,7 @@ export default function PositionedItemComponent({
 
       setPositionedItemSize = (contentWidth = 0, contentHeight = 0) => {
         if(contentWidth !== this.state.contentWidth || contentHeight !== this.state.contentHeight) {
+          console.log(contentWidth, contentHeight);
           this.setState({contentWidth, contentHeight});
         }
       }
