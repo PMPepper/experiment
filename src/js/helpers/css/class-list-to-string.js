@@ -1,10 +1,10 @@
-export default function cssClassListToString() {
+export default function classListToString() {
   const classes = [];
 
   for(let i = 0, l = arguments.length; i < l; i++) {
     if(arguments[i]) {
       if(arguments[i] instanceof Array) {
-        let nestedClasses = cssClassListToString.apply(null, arguments[i]);
+        let nestedClasses = classListToString.apply(null, arguments[i]);
 
         if(nestedClasses) {
           classes.push(nestedClasses);

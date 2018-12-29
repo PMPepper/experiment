@@ -5,8 +5,8 @@ import Row from './Row';
 
 import FadeAndVerticalSlideAnimation from '@/components/transitions/FadeAndVerticalSlideAnimation';
 
-import css from '@/helpers/css-class-list-to-string';
-import reactCombineProps from '@/helpers/react-combine-props';
+import css from '@/helpers/css/class-list-to-string';
+import combineProps from '@/helpers/react/combine-props';
 
 import isReactComponent from '@/prop-types/is-react-component';
 
@@ -43,7 +43,7 @@ export default class ExpandableRow extends React.Component {
     return [
       <RowComponent
         {...props}
-        rowProps={reactCombineProps(
+        rowProps={combineProps(
           rowProps,
           clickTogglesExpandedRows && {
             className: styles.selectable,

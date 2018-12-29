@@ -4,13 +4,13 @@ import {getDisplayName} from 'recompose';
 
 import {addItem, removeItem} from  '@/modules/onFrameIterator';
 
-import objectOmit from '@/helpers/object-omit';
+import omit from '@/helpers/object/omit';
 
 
 export default function MonitorElementSizeComponent({
   setSizeCallbackFuncPropName = 'setPositionedItemSize',
   mapProps = (props) => {
-    return objectOmit(props, [setSizeCallbackFuncPropName]);
+    return omit(props, [setSizeCallbackFuncPropName]);
   }
 } = {}) {
   return (PresentationalComponent) => {

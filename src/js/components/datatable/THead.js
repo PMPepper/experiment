@@ -1,6 +1,6 @@
 import React from 'react';
 
-import css from '@/helpers/css-class-list-to-string';
+import css from '@/helpers/css/class-list-to-string';
 
 
 export default function Thead({styles, columns, sortColumnName, sortColumnDesc, setSortColumn, stacked}) {

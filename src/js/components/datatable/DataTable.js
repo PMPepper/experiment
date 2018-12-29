@@ -27,9 +27,8 @@ import FormatNumber from '@/components/formatNumber/FormatNumber';
 import Time from '@/components/time/Time';
 
 //Helpers
-import combineSortFunctions from '@/helpers/combine-sort-functions';
-import objectResolvePath from '@/helpers/object-resolve-path';
-import css from '@/helpers/css-class-list-to-string';
+import combineSortFunctions from '@/helpers/func/combine-sort-functions';
+import css from '@/helpers/css/class-list-to-string';
 
 
 export default class DataTable extends React.Component {

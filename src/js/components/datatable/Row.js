@@ -1,8 +1,8 @@
 import React from 'react';
 import {getMetaTypes} from './DataTable';
 
-import css from '@/helpers/css-class-list-to-string';
-import reactCombineProps from '@/helpers/react-combine-props';
+import css from '@/helpers/css/class-list-to-string';
+import combineProps from '@/helpers/react/combine-props';
 
 
 export default function Row(props) {
@@ -15,7 +15,7 @@ export default function Row(props) {
   const isEven = rowIndex % 2 === 1;
   const isSelected = !!selectedRows[row.id];
 
-  rowProps = reactCombineProps(
+  rowProps = combineProps(
     rowProps,
     clickTogglesSelectedRows && {
       className: styles.selectable,

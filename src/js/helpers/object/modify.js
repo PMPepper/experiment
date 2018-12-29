@@ -1,11 +1,11 @@
-import objectResolvePath, {normalisePath} from './object-resolve-path';
+import resolvePath, {normalisePath} from './resolve-path';
 
 //Immutably modify simple objects
 //Doesn't deal with functions, symbols - only really intended for primitives, objects and arrays
-export default function objectModify(obj, path, newValue) {
+export default function modify(obj, path, newValue) {
   path = normalisePath(path);
 
-  if(objectResolvePath(obj, path) !== newValue) {//newValue is not the same as the current value at that path. Object(s) need to change
+  if(resolvePath(obj, path) !== newValue) {//newValue is not the same as the current value at that path. Object(s) need to change
     //create new base object
     obj = clone(obj);
 

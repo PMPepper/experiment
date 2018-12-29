@@ -1,5 +1,5 @@
 //Adds array(s) to the end of another, in place
-export default function arrayAdd(arr, ...arrs) {
+export default function add(arr, ...arrs) {
   arrs.forEach(addArr => {
     addArr.forEach(value => {
       arr.push(value);

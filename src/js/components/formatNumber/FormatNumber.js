@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import formatNumber from '@/helpers/format-number';
+import formatNumber from '@/helpers/string/format-number';
 import isInteger from '@/prop-types/is-integer';
 
 

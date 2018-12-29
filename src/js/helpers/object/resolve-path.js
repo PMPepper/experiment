@@ -1,4 +1,4 @@
-export default function objectResolvePath(obj, path) {
+export default function resolvePath(obj, path) {
   return normalisePath(path).reduce(function(prev, curr) {
     return prev ? prev[curr] : undefined
   }, obj);

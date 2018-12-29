@@ -10,7 +10,7 @@ import RenderChildren from '@/components/renderChildren/RenderChildren';
 
 
 //Helpers
-import hasAnyRenderableChildren from '@/helpers/react-has-any-renderable-children';
+import hasAnyRenderableChildren from '@/helpers/react/has-any-renderable-children';
 
 
 //consts

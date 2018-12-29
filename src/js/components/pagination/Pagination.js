@@ -7,7 +7,7 @@ import defaultStyles from './styles.scss';
 
 import Icon from '@/components/icon/Icon';
 
-import css from '@/helpers/css-class-list-to-string';
+import css from '@/helpers/css/class-list-to-string';
 
 import isPositiveInteger from '@/prop-types/is-positive-integer';
 import isPositiveNonZeroInteger from '@/prop-types/is-positive-nonzero-integer';

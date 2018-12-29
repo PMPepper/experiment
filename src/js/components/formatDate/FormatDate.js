@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 
-import formatDate from '@/helpers/format-date';
+import formatDate from '@/helpers/date/format-date';
 
 
 //this component is Pure

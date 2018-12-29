@@ -3,7 +3,7 @@ import React from 'react';
 import ExpandableRow from './ExpandableRow';
 import Row from './Row';
 
-import css from '@/helpers/css-class-list-to-string';
+import css from '@/helpers/css/class-list-to-string';
 
 import isReactComponent from '@/prop-types/is-react-component';
 

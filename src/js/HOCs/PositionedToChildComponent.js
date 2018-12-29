@@ -1,5 +1,5 @@
 //NOT SURE I WANT/NEED THIS
-
+/*
 import React from 'react';
 import {compose, getDisplayName} from 'recompose';
 
@@ -80,3 +80,4 @@ export default function PositionedToChildComponent({
     )(Component);
   };
 }
+*/

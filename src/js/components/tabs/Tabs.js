@@ -9,9 +9,9 @@ import ResponsiveComponent, {makeCheckSizeWidthFunc} from '@/HOCs/ResponsiveComp
 //Components
 
 //Helpers
-import reactOmitElementProp from '@/helpers/react-omit-element-prop';
-import reactChildrenToArray from '@/helpers/react-children-to-array';
-import css from '@/helpers/css-class-list-to-string';
+import cloneOmittingProps from '@/helpers/react/clone-omitting-props';
+import reactChildrenToArray from '@/helpers/react/children-to-array';
+import css from '@/helpers/css/class-list-to-string';
 
 //Custom prop types
 import isPositiveInteger from '@/prop-types/is-positive-integer';
@@ -141,7 +141,7 @@ class Tabs extends React.Component {
               inert={isSelected ? null: 'inert'}
               ref={(ref) => {this._registerPanel(ref, index)}}
             >
-              {reactOmitElementProp(child, 'tab-title')}
+              {cloneOmittingProps(child, 'tab-title')}
             </div>
           );
 

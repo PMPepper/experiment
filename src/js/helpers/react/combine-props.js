@@ -1,9 +1,9 @@
-import funcCombine from './func-combine';
-import css from './css-class-list-to-string';
+import combine from '@/helpers/func/combine';
+import css from '@/helpers/css/class-list-to-string';
 
 //TODO handle special props like className (concatenate)
 
-export default function reactCombineProps() {
+export default function combineProps() {
   const props = {};
 
   for(let i = 0, l = arguments.length; i < l; ++i) {
@@ -15,7 +15,7 @@ export default function reactCombineProps() {
         let value = addProps[key];
 
         if(value instanceof Function) {
-          value = funcCombine(props[key], value);
+          value = combine(props[key], value);
         }
 
         switch(key) {

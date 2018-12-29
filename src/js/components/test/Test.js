@@ -5,7 +5,7 @@ import DataTable from '@/components/datatable/LocalStateDataTable';
 import Tabs from '@/components/tabs/LocalStateTabs';
 import Tab from '@/components/tabs/Tab';
 
-import objectModify from '@/helpers/object-modify';
+import modify from '@/helpers/object/modify';
 
 
 //positioning example
@@ -17,15 +17,6 @@ const PositionComponent = compose(
   MonitorElementSizeComponent()
 )('div');
 
-/*({getRef, ...props}) => {
-
-  return <div
-    {...props}
-    ref={getRef}
-  >
-    <div style={{padding: '8px', background: '#EEE'}}>Positioned component thing</div>
-  </div>;
-}*/
 
 //Datatable example
 const baseMemberTypes = {'1': 10, '2': 25};
@@ -80,7 +71,7 @@ export default compose(
     setMemberTypes: ({columns}) => (memberTypes) => {
       return {
         memberTypes,
-        columns: objectModify(columns, [3, 'mappedValues'], memberTypes)
+        columns: modify(columns, [3, 'mappedValues'], memberTypes)
       }
     },
     setMembers: () => (members) => ({members}),

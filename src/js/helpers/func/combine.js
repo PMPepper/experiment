@@ -1,7 +1,6 @@
-//TODO automatically flatten combine funcs?
-import arrayAdd from './array-add';
+import add from '@/helpers/array/add';
 
-export default function funcCombine() {
+export default function combine() {
   const args = [];
 
   //build array of functions from arguments
@@ -11,7 +10,7 @@ export default function funcCombine() {
     if(arg instanceof Function) {
 
       if(arg[combinedFuncIdentifierPropName] === combinedFuncIdentifier && arg[combinedFuncArgsPropName]) {
-        arrayAdd(args, arg[combinedFuncArgsPropName]);
+        add(args, arg[combinedFuncArgsPropName]);
       } else {
         args.push(arg);
       }

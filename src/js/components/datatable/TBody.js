@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Row from './Row';
 
-import css from '@/helpers/css-class-list-to-string';
+import css from '@/helpers/css/class-list-to-string';
 
 import isReactComponent from '@/prop-types/is-react-component';
 

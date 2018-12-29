@@ -2,7 +2,7 @@ import React from 'react';
 
 import Pagination from '@/components/pagination/Pagination';
 
-import css from '@/helpers/css-class-list-to-string';
+import css from '@/helpers/css/class-list-to-string';
 
 
 export default function Tfoot({styles, itemsPerPage, page, setPage, numRows, columns, stacked}) {

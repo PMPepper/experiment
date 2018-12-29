@@ -10,7 +10,7 @@ import Tfoot from './Tfoot';
 
 import ResponsiveComponent, {makeCheckSizeWidthFunc} from '@/HOCs/ResponsiveComponent';
 
-import css from '@/helpers/css-class-list-to-string';
+import css from '@/helpers/css/class-list-to-string';
 
 import isReactComponent from '@/prop-types/is-react-component';
 

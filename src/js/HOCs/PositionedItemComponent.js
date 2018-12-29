@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import memoize from 'memoize-one';
 import {getDisplayName} from 'recompose';
 
-import objectOmit from '@/helpers/object-omit';
-import reactCombineProps from '@/helpers/react-combine-props';
+import omit from '@/helpers/object/omit';
+import combineProps from '@/helpers/react/combine-props';
 
 
 /*
@@ -29,8 +29,8 @@ export default function PositionedItemComponent({
   zIndexProp = 'positionedItemZIndex',
   mapProps = (props, positionedCoords, setPositionedItemSize) =>
   {
-    return reactCombineProps(
-      objectOmit(props, ['portalElement', positionProp, boundsProp, zIndexProp]),
+    return combineProps(
+      omit(props, ['portalElement', positionProp, boundsProp, zIndexProp]),
       {
         style: {
           position: 'fixed',
@@ -54,7 +54,6 @@ export default function PositionedItemComponent({
 
       setPositionedItemSize = (contentWidth = 0, contentHeight = 0) => {
         if(contentWidth !== this.state.contentWidth || contentHeight !== this.state.contentHeight) {
-          console.log(contentWidth, contentHeight);
           this.setState({contentWidth, contentHeight});
         }
       }

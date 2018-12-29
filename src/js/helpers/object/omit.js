@@ -1,4 +1,4 @@
-export default function objectOmit(object, keys) {
+export default function omit(object, keys) {
   if(!object) {
     return null;
   }
