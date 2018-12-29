@@ -22,7 +22,7 @@ export default function reactCombineProps() {
           case 'className':
             props[key] = css(props[key], value);
             break;
-          case 'styles':
+          case 'style':
             props[key] = {...props[key], ...value};
             break;
           default:

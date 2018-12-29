@@ -1,19 +1,20 @@
-//NOT SURE I WANT/NEED THIS
-//TODO re-implement as component that passes props to children!
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import memoize from 'memoize-one';
-import {compose, getDisplayName} from 'recompose';
+import {getDisplayName} from 'recompose';
 
-import {addItem, removeItem, isItemAdded} from  '@/modules/onFrameIterator';
+import objectOmit from '@/helpers/object-omit';
+import reactCombineProps from '@/helpers/react-combine-props';
 
 
-/*Needs:
+/*
+Needs:
+-position: x/y coords and optional width/height (window coords)
+-bounds (optional): x/y/width/height of bounding area for positioning (window coords)
 
--the contents (as an element, so it can measure it's size)
--The bounds (optional?)
--where it should be positioned (x/y + width/height OR top right bottom left?)
+Default passes props:
+-setPositionedItemSize: function to allow child to tell this component how big the child is (can use in combination with MonitorElementSizeComponent)
+-style: object with styles for specifying how to position
 
 */
 
@@ -23,66 +24,46 @@ export default function PositionedItemComponent({
   usePortal = true,
   xPosRule = alignStart,
   yPosRule = afterOrBefore,
-  mapProps = ({portalElement,
-      boundsX, boundsY, boundsWidth, boundsHeight,
-      positionX, positionY, positionWidth, positionHeight,
-      positionedItemZIndex,
-      ...rest
-    },
-    state,
-    style
-  ) => ({...rest, style})
+  positionProp = 'position',
+  boundsProp = 'bounds',
+  zIndexProp = 'positionedItemZIndex',
+  mapProps = (props, positionedCoords, setPositionedItemSize) =>
+  {
+    return reactCombineProps(
+      objectOmit(props, ['portalElement', positionProp, boundsProp, zIndexProp]),
+      {
+        style: {
+          position: 'fixed',
+          zIndex: props[zIndexProp] || 10,
+          left: `${positionedCoords.x}px`,
+          top: `${positionedCoords.y}px`,
+        },
+        setPositionedItemSize
+      }
+    )
+  }
 } = {}) {
   return (PresentationalComponent) => {
     return class extends React.Component {
       static displayName = `PositionedItemComponent${getDisplayName(PresentationalComponent)}`;
 
-      _positionedItem = null;
+      state = {
+        contentWidth: 0,
+        contentHeight: 0
+      };
 
-      constructor(props) {
-        super(props);
-
-        this.state = {
-          positionedItemContentWidth: 0,
-          positionedItemContentHeight: 0
-        };
-
-        addItem(this.updateContentSize);
-      }
-
-      //tidy up on unmount
-      componentWillUnmount() {
-        removeItem(this.updateContentSize);
-      }
-
-      //As long as you are mounted, update the size
-      updateContentSize = () => {
-        const positionedItemElement = this._positionedItem;
-
-        if(positionedItemElement) {
-          const positionedItemContentWidth = positionedItemElement.clientWidth;
-          const positionedItemContentHeight = positionedItemElement.clientHeight;
-
-          if(this.state.positionedItemContentWidth !== positionedItemContentWidth || this.state.positionedItemContentHeight !== positionedItemContentHeight) {
-            this.setState({positionedItemContentWidth, positionedItemContentHeight});
-          }
-        } else {
-          this.setState({positionedItemContentWidth: 0, positionedItemContentHeight: 0});
+      setPositionedItemSize = (contentWidth = 0, contentHeight = 0) => {
+        if(contentWidth !== this.state.contentWidth || contentHeight !== this.state.contentHeight) {
+          console.log(contentWidth, contentHeight);
+          this.setState({contentWidth, contentHeight});
         }
       }
 
-      //record the ref to the element that is being positioned
-      setPositionedItemElement = (positionedItemElement) => {
-        this._positionedItem = positionedItemElement;
-      }
-
       //calculate where the element should be positioned
-      getPositionStyles = memoize((positionedItemContentWidth, positionedItemContentHeight, boundsX, boundsY, boundsWidth, boundsHeight, positionX, positionY, positionWidth, positionHeight, positionedItemZIndex) => {
+      getPositionedCoords = memoize((contentWidth, contentHeight, boundsX, boundsY, boundsWidth, boundsHeight, positionX, positionY, positionWidth, positionHeight) => {
         return {
-          position: 'fixed',
-          zIndex: positionedItemZIndex,
-          left: `${xPosRule(positionedItemContentWidth, boundsX, boundsWidth, positionX, positionWidth)}px`,
-          top: `${yPosRule(positionedItemContentHeight, boundsY, boundsHeight, positionY, positionHeight)}px`,
+          x: xPosRule(contentWidth, boundsX, boundsWidth, positionX, positionWidth),
+          y: yPosRule(contentHeight, boundsY, boundsHeight, positionY, positionHeight),
         };
       })
 
@@ -91,14 +72,18 @@ export default function PositionedItemComponent({
         const props = this.props;
         const state = this.state;
 
+        const bounds = props[boundsProp] || emptyObj;
+        const position = props[positionProp] || emptyObj;
+
         //calculate the position
-        const style = this.getPositionStyles(state.positionedItemContentWidth, state.positionedItemContentHeight, props.boundsX, props.boundsY, props.boundsWidth, props.boundsHeight, props.positionX, props.positionY, props.positionWidth || 0, props.positionHeight || 0, props.positionedItemZIndex || 10);
+        const positionedCoords = this.getPositionedCoords(
+          state.contentWidth, state.contentHeight,
+          bounds.x || null, bounds.y || null, bounds.width || null, props.height || null,
+          position.x || 0, position.y || 0, position.width || 0, position.height || 0
+        );
 
         //map the props
-        const mappedProps = mapProps(props, state, style);
-
-        //add the ref to the props
-        mappedProps[typeof(PresentationalComponent) === 'string' ? 'ref' : 'getRef'] = this.setPositionedItemElement;
+        const mappedProps = mapProps(props, positionedCoords, this.setPositionedItemSize);
 
         //create the PresentationalComponent element
         const element = <PresentationalComponent {...mappedProps} />;
@@ -110,6 +95,8 @@ export default function PositionedItemComponent({
     }
   };
 }
+
+const emptyObj = {};
 
 
 
