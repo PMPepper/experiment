@@ -8,6 +8,17 @@ import Tab from '@/components/tabs/Tab';
 import objectModify from '@/helpers/object-modify';
 
 
+//positioning example
+import PositionedItemComponent from '@/HOCs/PositionedItemComponent';
+
+const PositionComponent = PositionedItemComponent()(
+  ({getRef, ...props}) => {
+    console.log(props);
+    return <div {...props} ref={getRef}><div style={{padding: '8px', background: '#EEE'}}>Positioned component thing</div></div>;
+  }
+);
+
+
 //Datatable example
 const baseMemberTypes = {'1': 10, '2': 25};
 
@@ -75,6 +86,8 @@ export default compose(
     })}}>
       New types
     </button>
+
+    <PositionComponent positionX={100} positionY={200} positionWidth={100} positionHeight={400} />
 
     <button onClick={() => {
       const newMembers = {

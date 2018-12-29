@@ -4,24 +4,34 @@ import ReactDOM from 'react-dom';
 import * as dom from './dom';
 import core from '../css/core.scss';
 
-//polyfills
-import 'wicg-inert';
+import polyfills from './polyfills';
 
-
+//vars
 const title = 'React/Webpack testing';
 
+//TODO list:
+//-finish datatables
+//-add context menus
+//-add tooltips
+//-add forms support
 
+
+//Test code
 import Test from '@/components/test/Test';
 
-
-ReactDOM.render(
-  <div style={{padding: '16px'}}>
-    <h1>{title}</h1>
-    <Test />
-  </div>,
-  document.getElementById('app')
-);
-
+polyfills.then(() => {
+    ReactDOM.render(
+      <div style={{padding: '16px'}}>
+        <h1>{title}</h1>
+        <Test />
+      </div>,
+      document.getElementById('app')
+    );
+  })
+  /*.catch(error => {
+    //TODO better error handling
+    console.error('Failed fetching polyfills ', error);
+  });*/
 
 if(process.env.NODE_ENV !== 'production') {
   module.hot.accept();
