@@ -4,24 +4,13 @@ import {compose, withStateHandlers} from 'recompose';
 import DataTable from '@/components/datatable/LocalStateDataTable';
 import Tabs from '@/components/tabs/LocalStateTabs';
 import Tab from '@/components/tabs/Tab';
-import {SPACER} from '@/components/menu/Menu';
-import Icon from '@/components/icon/Icon';
 
-import ContextMenu from '@/components/menu/ContextMenu';
+import AddContextMenu from '@/components/contextMenu/AddContextMenu';
+
+//import Icon from '@/components/icon/Icon';
 
 import modify from '@/helpers/object/modify';
 
-
-//positioning example
-import PositionedItemComponent from '@/HOCs/PositionedItemComponent';
-import MonitorElementSizeComponent from '@/HOCs/MonitorElementSizeComponent';
-
-/*
-const PositionComponent = compose(
-  PositionedItemComponent(),
-  MonitorElementSizeComponent()
-)('div');
-*/
 
 //Datatable example
 const baseMemberTypes = {'1': 10, '2': 25};
@@ -91,53 +80,38 @@ export default compose(
       New types
     </button>
 
-    <ContextMenu
-      position={{x: 300, y:50}}
-      items={[
-        {label: 'Action', action: () => {alert('w00t!');}},
-        {label: 'Icon action', icon: <Icon icon="globe" />, action: () => {alert('w00t!');}},
-        {label: 'Icon', icon: <Icon icon="globe" />},
-        {label: 'Action', info: 'info', action: () => {alert('w00t!');}},
-        {label: 'Icon action', info: 'info', icon: <Icon icon="globe" />, action: () => {alert('w00t!');}},
-        {label: 'Icon', info: 'info', icon: <Icon icon="globe" />},
-        {label: 'Disabled', disabled: true},
-        {label: 'Disabled icon', icon: <Icon icon="globe" />, disabled: true},
-        SPACER,
-        {label: 'Bar', items: [
-          {label: 'Far', action: () => {alert('Far')}},
-          {label: 'Gar', action: () => {alert('Gar')}},
-          SPACER,
-          {label: 'A', action: () => {alert('A')}},
-          {label: 'B', action: () => {alert('B')}},
-          {label: 'C', action: () => {alert('C')}},
-          {label: 'D', action: () => {alert('D')}},
-          {label: 'E', icon: <Icon icon="chevron-right" />, items: [
-            {label: 'E1', action: () => {alert('E1')}},
-            {label: 'E2', action: () => {alert('E2')}}
-          ]},
+    <AddContextMenu getItems={() => {return [
+      {label: 'Hello!', action: () => {console.log('Hello?!?!?!?')}},
+      {label: 'Goodbye', items: [
+        {label: 'Foo', action: () => {console.log('Foo?!?!?!?')}},
+        {label: 'Bar', action: () => {console.log('Bar?!?!?!?')}},
+        'spacer',
+        {label: 'w00t', items: [
+          {label: 'Foo1', action: () => {console.log('Foo1?!?!?!?')}},
+          {label: 'Bar1', action: () => {console.log('Bar1?!?!?!?')}},
         ]}
       ]}
-    />
+    ]}}>
+      <button onClick={() => {
+        const newMembers = {
+          ...members,
+          [Date.now() + Math.random()]: {
+            name: 'New member',
+            age: Math.round((Math.random() * 60) + 10),
+            joined: new Date(
+              2010 + Math.round(Math.random() * 8),
+              Math.ceil(Math.random() * 12),
+              Math.ceil(Math.random() * 28)
+            ),
+            memberType: Math.random() > 0.5 ? '1' : '2'
+          }
+        };
 
-    <button onClick={() => {
-      const newMembers = {
-        ...members,
-        [Date.now() + Math.random()]: {
-          name: 'New member',
-          age: Math.round((Math.random() * 60) + 10),
-          joined: new Date(
-            2010 + Math.round(Math.random() * 8),
-            Math.ceil(Math.random() * 12),
-            Math.ceil(Math.random() * 28)
-          ),
-          memberType: Math.random() > 0.5 ? '1' : '2'
-        }
-      };
-
-      setMembers(newMembers);
-    }}>
-      New member
-    </button>
+        setMembers(newMembers);
+      }}>
+        New member
+      </button>
+    </AddContextMenu>
 
     <DataTable
       columns={columns}

@@ -8,7 +8,7 @@ import MonitorElementSizeComponent from '@/HOCs/MonitorElementSizeComponent';
 import WindowBoundsComponent from '@/HOCs/WindowBoundsComponent';
 
 //Components
-import Menu from './Menu';
+import Menu from '@/components/menu/Menu';
 
 
 //The component
@@ -17,7 +17,8 @@ export default compose(
   GetElementPositionComponent(),
   PositionedItemComponent({
     xPosRule: afterOrBefore,
-    yPosRule: startOrEnd
+    yPosRule: startOrEnd,
+    usePortal: false
   }),
   MonitorElementSizeComponent()
 )(Menu);

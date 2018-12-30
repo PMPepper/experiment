@@ -11,7 +11,9 @@ export default function({
       _initialFocusElement = null;
       _element;
 
-      componentWillMount() {
+      constructor(props) {
+        super(props);
+        
         if(returnFocusOnUnmount) {
           this._initialFocusElement = document.activeElement
         }
@@ -35,7 +37,7 @@ export default function({
 
       _getRef = (ref) => {
         this.props.getRef && this.props.getRef(ref);
-        
+
         this._element = ref;
       }
 

@@ -86,8 +86,10 @@ export default class Menu extends React.Component {
             onMouseOver={(!item.disabled && setSelectedItem) ? () => {
               !isSelectedItem && setSelectedItem(index, level, hasChildren);
             } : null}
-            onMouseLeave={(!item.disabled && setSelectedItem) ? () => {
-              isSelectedItem && setSelectedItem(null, level);
+            onMouseLeave={(!item.disabled && setSelectedItem) ? (e) => {
+              e.stopPropagation();
+              //debugger;
+              isSelectedItem && setSelectedItem(null, level, true);
             } : null}
             ref={(ref) => {this._itemRef(ref, index)}}
           >
@@ -96,6 +98,7 @@ export default class Menu extends React.Component {
               onClick={hasClickHandler && !item.disabled ? (e) => {
                 item.action();
                 e.preventDefault();
+                props.doRequestClose && props.doRequestClose(e);
               } : null}
             >
               <span className={css(styles.icon, extraClasses)}>{item.icon}</span>
@@ -103,7 +106,7 @@ export default class Menu extends React.Component {
               <span className={css(styles.info, extraClasses)}>{item.info}</span>
             </Component>
 
-            {showChildren && SubMenuComponent && <SubMenuComponent {...props} level={props.level + 1} items={item.items} element={this.state.itemElements[index]} />}
+            {showChildren && SubMenuComponent && <SubMenuComponent {...props} getRef={null} level={props.level + 1} items={item.items} element={this.state.itemElements[index]} />}
           </li>
         })}
       </ul>
@@ -123,7 +126,7 @@ if(process.env.NODE_ENV !== 'production') {
   //Prop types
   const itemPropType = PropTypes.shape({
     label: isReactRenderable.isRequired,
-    info: isReactRenderable.isRequired,
+    info: isReactRenderable,
     icon: isReactRenderable,
     disabled: PropTypes.bool,
     action: PropTypes.func,
