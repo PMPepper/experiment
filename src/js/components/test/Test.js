@@ -94,9 +94,14 @@ export default compose(
     <ContextMenu
       position={{x: 300, y:50}}
       items={[
-        {label: 'Hello', action: () => {alert('w00t!');}},
-        {label: 'World', icon: <Icon icon="globe" />},
-        {label: 'Foo', icon: <Icon icon="globe" />, disabled: true},
+        {label: 'Action', action: () => {alert('w00t!');}},
+        {label: 'Icon action', icon: <Icon icon="globe" />, action: () => {alert('w00t!');}},
+        {label: 'Icon', icon: <Icon icon="globe" />},
+        {label: 'Action', info: 'info', action: () => {alert('w00t!');}},
+        {label: 'Icon action', info: 'info', icon: <Icon icon="globe" />, action: () => {alert('w00t!');}},
+        {label: 'Icon', info: 'info', icon: <Icon icon="globe" />},
+        {label: 'Disabled', disabled: true},
+        {label: 'Disabled icon', icon: <Icon icon="globe" />, disabled: true},
         SPACER,
         {label: 'Bar', items: [
           {label: 'Far', action: () => {alert('Far')}},

@@ -1,12 +1,16 @@
 @import '../../../css/shared';
 
 $menuFontCol: $fontCol;
+$menuMinorFontCol: $grey60;
 $menuBorderCol: $borderCol;
 $menuBg: $grey0;
 $menuBgSelected: $grey30;
 $menuBasePadding: $basePadding;
 
 $menuSpacerCol: $menuBorderCol;
+
+$menuFontSize: 1.4rem;
+$menuIconSize: $menuFontSize;
 
 .menu {
 
@@ -19,7 +23,7 @@ $menuSpacerCol: $menuBorderCol;
   border: 1px solid $menuBorderCol;
   border-bottom-width: 0.1rem;
   color: $menuFontCol;
-  font-size: 1.4rem;
+  font-size: $menuFontSize;
   //margin-left: -0.3rem;
   list-style: none;
   padding: 0;
@@ -44,11 +48,12 @@ $menuSpacerCol: $menuBorderCol;
 }
 
 .action {
-  display: block;
-  text-align: left;
+  //resetting button styles
   width: 100%;
   border: none;
   background: transparent;
+
+  display: flex;
   padding: $menuBasePadding/2;
   cursor: default;
   position: relative;
@@ -62,14 +67,19 @@ $menuSpacerCol: $menuBorderCol;
     color: rgba($menuFontCol, 0.5);
   }
 
+  //has children triangle stuff
+  $triangleWidth: 0.6rem;
+  $triangleHeight: 0.8rem;
+  $triangleHPadding: 0.4rem;
+
+  padding-right: $triangleWidth + ($triangleHPadding * 2);
+
   &.hasChildren {
     &:after {
-      $triangleWidth: 0.6rem;
-      $triangleHeight: 0.8rem;
       @include triangle(right, $triangleWidth, $triangleHeight, currentColor);
 
       position: absolute;
-      right: 0.5rem;
+      right: $triangleHPadding;
       top: 50%;
       margin-top: - $triangleHeight / 2;
     }
@@ -77,6 +87,19 @@ $menuSpacerCol: $menuBorderCol;
 }
 
 .icon {
-  display: inline-block;
-  width: 1.1rem + ($menuBasePadding/2);
+  font-size: $menuIconSize;
+  flex: ($menuIconSize+($menuBasePadding/2)) 0 0;
+  padding-right: $menuBasePadding/2;
+}
+
+.label {
+  composes: alignStart from "../../../css/generic.scss";
+  flex: auto 1 1;
+  padding-right: $menuBasePadding/2;
+}
+
+.info {
+  composes: alignEnd from "../../../css/generic.scss";
+  color: $menuMinorFontCol;
+  flex: auto 1 1;
 }

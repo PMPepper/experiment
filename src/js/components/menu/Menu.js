@@ -15,16 +15,6 @@ import isValue from '@/prop-types/is-value';
 //Consts
 export const SPACER = 'spacer';
 
-//TODO change this:
-//-fix the below:
-
-//Not happy that the presentational component knows/cares about or controls:
-//-keyboard input
-//-the sub-context menus
-//-focus on mount
-
-//-only 'top level' context menu takes keyboard input
-
 
 export default class Menu extends React.Component {
   state = {
@@ -110,6 +100,7 @@ export default class Menu extends React.Component {
             >
               <span className={css(styles.icon, extraClasses)}>{item.icon}</span>
               <span className={css(styles.label, extraClasses)}>{item.label}</span>
+              <span className={css(styles.info, extraClasses)}>{item.info}</span>
             </Component>
 
             {showChildren && SubMenuComponent && <SubMenuComponent {...props} level={props.level + 1} items={item.items} element={this.state.itemElements[index]} />}
@@ -132,6 +123,7 @@ if(process.env.NODE_ENV !== 'production') {
   //Prop types
   const itemPropType = PropTypes.shape({
     label: isReactRenderable.isRequired,
+    info: isReactRenderable.isRequired,
     icon: isReactRenderable,
     disabled: PropTypes.bool,
     action: PropTypes.func,
@@ -149,5 +141,5 @@ if(process.env.NODE_ENV !== 'production') {
 
 //Helpers
 export function isItemSelectable(item) {
-  return item !== SPACER && !item.disabled && item.action
+  return item !== SPACER && !item.disabled && (item.action || item.items && item.items.length > 0)
 }
