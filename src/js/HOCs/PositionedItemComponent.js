@@ -70,13 +70,13 @@ export default function PositionedItemComponent({
         const props = this.props;
         const state = this.state;
 
-        const bounds = props[boundsProp] || emptyObj;
+        const bounds = props[boundsProp] || null;
         const position = props[positionProp] || emptyObj;
 
         //calculate the position
         const positionedCoords = this.getPositionedCoords(
           state.contentWidth, state.contentHeight,
-          bounds.x || null, bounds.y || null, bounds.width || null, props.height || null,
+          bounds ? bounds.x : null, bounds ? bounds.y : null, bounds ? bounds.width : null, bounds ? bounds.height : null,
           position.x || 0, position.y || 0, position.width || 0, position.height || 0
         );
 

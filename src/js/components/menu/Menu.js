@@ -19,7 +19,6 @@ export const SPACER = 'spacer';
 //-fix the below:
 
 //Not happy that the presentational component knows/cares about or controls:
-//-bounds
 //-keyboard input
 //-the sub-context menus
 //-focus on mount
@@ -34,9 +33,6 @@ export default class Menu extends React.Component {
 
   _itemRef = (element, index) => {
     if(element && element !== this.state.itemElements[index]) {
-      //console.log(element, index, this.state.itemElements[index]);
-      //console.log(modify(this.state, ['itemElements', index], element))
-
       this.setState(modify(this.state, ['itemElements', index], element))
     }
   }
@@ -77,6 +73,7 @@ export default class Menu extends React.Component {
 
           const hasChildren = item.items && item.items.length > 0;
           const isSelectedItem = selectedItemIndex === index;
+          const isSelectableItem = isItemSelectable(item);
           const showChildren = hasChildren && isSelectedItem && selectedItems.length > level+1;
           const hasClickHandler = item.action && !hasChildren;
           const Component = hasClickHandler ? 'button' : 'div';
@@ -84,6 +81,7 @@ export default class Menu extends React.Component {
           const extraClasses = css(
             hasChildren && styles.hasChildren,
             showChildren && styles.showChildren,
+            isSelectableItem && styles.selectable,
             isSelectedItem && styles.selected,
             item.disabled && styles.disabled,
             hasClickHandler && styles.btn
@@ -151,5 +149,5 @@ if(process.env.NODE_ENV !== 'production') {
 
 //Helpers
 export function isItemSelectable(item) {
-  return item !== SPACER && !item.disabled
+  return item !== SPACER && !item.disabled && item.action
 }

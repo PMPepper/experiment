@@ -16,11 +16,12 @@ import modify from '@/helpers/object/modify';
 import PositionedItemComponent from '@/HOCs/PositionedItemComponent';
 import MonitorElementSizeComponent from '@/HOCs/MonitorElementSizeComponent';
 
+/*
 const PositionComponent = compose(
   PositionedItemComponent(),
   MonitorElementSizeComponent()
 )('div');
-
+*/
 
 //Datatable example
 const baseMemberTypes = {'1': 10, '2': 25};
@@ -91,11 +92,11 @@ export default compose(
     </button>
 
     <ContextMenu
-      position={{x: 50, y:50}}
+      position={{x: 300, y:50}}
       items={[
         {label: 'Hello', action: () => {alert('w00t!');}},
         {label: 'World', icon: <Icon icon="globe" />},
-        {label: 'Foo', disabled: true},
+        {label: 'Foo', icon: <Icon icon="globe" />, disabled: true},
         SPACER,
         {label: 'Bar', items: [
           {label: 'Far', action: () => {alert('Far')}},
@@ -112,10 +113,6 @@ export default compose(
         ]}
       ]}
     />
-
-    <PositionComponent position={{x: 100, y:200, width: 100, height: 100}} style={{border: '1px solid #F00', margin: '10px'}}>
-      <div style={{padding: '8px', background: '#EEE'}}>Positioned component thing lorem ipsum dolor sit amet</div>
-    </PositionComponent>
 
     <button onClick={() => {
       const newMembers = {

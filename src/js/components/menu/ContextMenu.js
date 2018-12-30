@@ -6,6 +6,7 @@ import {compose} from 'recompose';
 import PositionedItemComponent from '@/HOCs/PositionedItemComponent';
 import MonitorElementSizeComponent from '@/HOCs/MonitorElementSizeComponent';
 import FocusOnMountComponent from '@/HOCs/FocusOnMountComponent';
+import WindowBoundsComponent from '@/HOCs/WindowBoundsComponent';
 //import PositionedToChildComponent from '../highOrderComponents/PositionedToChildComponent';
 
 
@@ -18,6 +19,7 @@ import combineProps from '@/helpers/react/combine-props';
 
 
 export default compose(
+  WindowBoundsComponent(),
   PositionedItemComponent(),
   MonitorElementSizeComponent(),
   FocusOnMountComponent({

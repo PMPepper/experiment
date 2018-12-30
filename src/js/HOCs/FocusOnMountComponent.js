@@ -33,8 +33,10 @@ export default function({
         }
       }
 
-      _getRef = (element) => {
-        this._element = element;
+      _getRef = (ref) => {
+        this.props.getRef && this.props.getRef(ref);
+        
+        this._element = ref;
       }
 
       render() {

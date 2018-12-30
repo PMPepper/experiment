@@ -45,6 +45,8 @@ export default function MonitorElementSizeComponent({
       }
 
       _getRef = (ref) => {
+        this.props.getRef && this.props.getRef(ref);
+
         this._ref = ref;
       }
 

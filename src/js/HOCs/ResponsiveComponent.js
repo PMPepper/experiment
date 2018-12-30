@@ -41,6 +41,8 @@ export default function ResponsiveComponent(
       }
 
       _getRef = (elem) => {
+        this.props.getRef && this.props.getRef(ref);
+
         if(elem && elem !== this._elem) {
           this._elem = elem;
 

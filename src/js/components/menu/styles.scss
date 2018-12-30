@@ -32,7 +32,9 @@ $menuSpacerCol: $menuBorderCol;
 
 }
 
-.item.selected {
+.item.selectable.selected,
+.item.hasChildren.selected
+ {
   background: $menuBgSelected;
 }
 
@@ -48,18 +50,22 @@ $menuSpacerCol: $menuBorderCol;
   border: none;
   background: transparent;
   padding: $menuBasePadding/2;
-  cursor: pointer;
+  cursor: default;
   position: relative;
   outline: none;
 
-  .disabled {
+  &.selectable {
+    cursor: pointer;
+  }
+
+  &.disabled {
     color: rgba($menuFontCol, 0.5);
   }
 
-  .hasChildren {
+  &.hasChildren {
     &:after {
-      $triangleWidth: 1.2rem;
-      $triangleHeight: 1.2rem;
+      $triangleWidth: 0.6rem;
+      $triangleHeight: 0.8rem;
       @include triangle(right, $triangleWidth, $triangleHeight, currentColor);
 
       position: absolute;
