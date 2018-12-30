@@ -44,7 +44,7 @@ export default function PositionedItemComponent({
 } = {}) {
   return (PresentationalComponent) => {
     return class extends React.Component {
-      static displayName = `PositionedItemComponent${getDisplayName(PresentationalComponent)}`;
+      static displayName = `PositionedItemComponent(${getDisplayName(PresentationalComponent)})`;
 
       state = {
         contentWidth: 0,
@@ -53,7 +53,6 @@ export default function PositionedItemComponent({
 
       setPositionedItemSize = (contentWidth = 0, contentHeight = 0) => {
         if(contentWidth !== this.state.contentWidth || contentHeight !== this.state.contentHeight) {
-          console.log(contentWidth, contentHeight);
           this.setState({contentWidth, contentHeight});
         }
       }

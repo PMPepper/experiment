@@ -11,9 +11,7 @@ import outerHeight from '@/helpers/dom/get-element-outer-height';
 
 export default function MonitorElementSizeComponent({
   setSizeCallbackFuncPropName = 'setPositionedItemSize',
-  mapProps = (props) => {
-    return omit(props, [setSizeCallbackFuncPropName]);
-  }
+  mapProps = null
 } = {}) {
   return (PresentationalComponent) => {
     const isDOMElement = typeof(PresentationalComponent) === 'string';
@@ -51,7 +49,7 @@ export default function MonitorElementSizeComponent({
       }
 
       render() {
-        const props = this.props;
+        const props = omit(this.props, [setSizeCallbackFuncPropName]);
 
         const mappedProps = mapProps ? mapProps(props) : props;
 

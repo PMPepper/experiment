@@ -5,6 +5,7 @@ import defaultStyles from './styles.scss';
 
 //Helpers
 import css from '@/helpers/css/class-list-to-string';
+import modify from '@/helpers/object/modify';
 
 //Others
 import isReactRenderable from '@/prop-types/is-react-renderable';
@@ -26,82 +27,99 @@ export const SPACER = 'spacer';
 //-only 'top level' context menu takes keyboard input
 
 
-export default function Menu(props) {
-  const {
-    styles,
-    items,
-    level = 0, selectedItems = [],
-    setSelectedItem = null, openSelectedItem = null,
-    closeCurrentLevel = null, doRequestClose = null,
-    subMenuComponent: SubMenuComponent = null,
-    getRef,
-    ...rest
-  } = props;
+export default class Menu extends React.Component {
+  state = {
+    itemElements: {}
+  };
 
-  let selectedItemIndex = selectedItems[level];
+  _itemRef = (element, index) => {
+    if(element && element !== this.state.itemElements[index]) {
+      //console.log(element, index, this.state.itemElements[index]);
+      //console.log(modify(this.state, ['itemElements', index], element))
 
-  if(selectedItemIndex === -1) {//-1 means select the first selectable item
-    selectedItemIndex = items.findIndex(isItemSelectable);
-
-    if(selectedItemIndex === -1) {
-      selectedItemIndex = null;
+      this.setState(modify(this.state, ['itemElements', index], element))
     }
   }
 
-  return <div
-    {...rest}
-    ref={getRef}
-    className={css(styles.menu, rest.className)}
-  >
-    <ul className={styles.list}>
-      {items.map((item, index) => {
-        if(item === SPACER) {
-          return <li key={index} className={styles.spacer}></li>
-        }
+  render() {
+    const props = this.props;
+    const {
+      styles,
+      items,
+      level = 0, selectedItems = [],
+      setSelectedItem = null, openSelectedItem = null,
+      closeCurrentLevel = null, doRequestClose = null,
+      subMenuComponent: SubMenuComponent = null,
+      getRef,
+      ...rest
+    } = props;
 
-        const hasChildren = item.items && item.items.length > 0;
-        const isSelectedItem = selectedItemIndex === index;
-        const showChildren = hasChildren && isSelectedItem && selectedItems.length > level+1;
-        const hasClickHandler = item.action && !hasChildren;
-        const Component = hasClickHandler ? 'button' : 'div';
+    let selectedItemIndex = selectedItems[level];
 
-        const extraClasses = css(
-          hasChildren && styles.hasChildren,
-          showChildren && styles.showChildren,
-          isSelectedItem && styles.selected,
-          item.disabled && styles.disabled,
-          hasClickHandler && styles.btn
-        );
+    if(selectedItemIndex === -1) {//-1 means select the first selectable item
+      selectedItemIndex = items.findIndex(isItemSelectable);
 
-        return <li
-          className={css(styles.item, extraClasses)}
-          key={index}
-          onMouseEnter={(!item.disabled && setSelectedItem) ? () => {
-            !isSelectedItem && setSelectedItem(index, level, hasChildren);
-          } : null}
-          onMouseOver={(!item.disabled && setSelectedItem) ? () => {
-            !isSelectedItem && setSelectedItem(index, level, hasChildren);
-          } : null}
-          onMouseLeave={(!item.disabled && setSelectedItem) ? () => {
-            isSelectedItem && setSelectedItem(null, level);
-          } : null}
-        >
-          <Component
-            className={css(styles.action, extraClasses)}
-            onClick={hasClickHandler && !item.disabled ? (e) => {
-              item.action();
-              e.preventDefault();
+      if(selectedItemIndex === -1) {
+        selectedItemIndex = null;
+      }
+    }
+
+    return <div
+      {...rest}
+      ref={getRef}
+      className={css(styles.menu, rest.className)}
+    >
+      <ul className={styles.list}>
+        {items.map((item, index) => {
+          if(item === SPACER) {
+            return <li key={index} className={styles.spacer}></li>
+          }
+
+          const hasChildren = item.items && item.items.length > 0;
+          const isSelectedItem = selectedItemIndex === index;
+          const showChildren = hasChildren && isSelectedItem && selectedItems.length > level+1;
+          const hasClickHandler = item.action && !hasChildren;
+          const Component = hasClickHandler ? 'button' : 'div';
+
+          const extraClasses = css(
+            hasChildren && styles.hasChildren,
+            showChildren && styles.showChildren,
+            isSelectedItem && styles.selected,
+            item.disabled && styles.disabled,
+            hasClickHandler && styles.btn
+          );
+
+          return <li
+            className={css(styles.item, extraClasses)}
+            key={index}
+            onMouseEnter={(!item.disabled && setSelectedItem) ? () => {
+              !isSelectedItem && setSelectedItem(index, level, hasChildren);
             } : null}
+            onMouseOver={(!item.disabled && setSelectedItem) ? () => {
+              !isSelectedItem && setSelectedItem(index, level, hasChildren);
+            } : null}
+            onMouseLeave={(!item.disabled && setSelectedItem) ? () => {
+              isSelectedItem && setSelectedItem(null, level);
+            } : null}
+            ref={(ref) => {this._itemRef(ref, index)}}
           >
-            <span className={css(styles.icon, extraClasses)}>{item.icon}</span>
-            <span className={css(styles.label, extraClasses)}>{item.label}</span>
-          </Component>
+            <Component
+              className={css(styles.action, extraClasses)}
+              onClick={hasClickHandler && !item.disabled ? (e) => {
+                item.action();
+                e.preventDefault();
+              } : null}
+            >
+              <span className={css(styles.icon, extraClasses)}>{item.icon}</span>
+              <span className={css(styles.label, extraClasses)}>{item.label}</span>
+            </Component>
 
-          {showChildren && SubMenuComponent && <SubMenuComponent {...props} level={props.level + 1} items={item.items} />}
-        </li>
-      })}
-    </ul>
-  </div>
+            {showChildren && SubMenuComponent && <SubMenuComponent {...props} level={props.level + 1} items={item.items} element={this.state.itemElements[index]} />}
+          </li>
+        })}
+      </ul>
+    </div>
+  }
 }
 
 Menu.defaultProps = {
