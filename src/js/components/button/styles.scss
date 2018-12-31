@@ -1,0 +1,14 @@
+@import '../../../css/shared';
+
+
+
+.btn {
+  background: $grey30;
+  border: 0.1rem solid $borderCol;
+  padding: $basePadding/4 $basePadding/2;
+  border-radius: $basePadding/4;
+  font-size: 1.4rem;
+  color: $fontCol;
+
+  @include blockInteraction($mouseBg: $grey35);
+}

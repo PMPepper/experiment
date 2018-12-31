@@ -1,9 +1,58 @@
+@import 'vars';
+@import 'functions';
+@import 'mixins';
+
 :global(.alignStart) {
   text-align: left;
+
+  :global(.rtl) & {
+    text-align: right;
+  }
+}
+
+:global(.alignEnd) {
+  text-align: right;
+
+  :global(.rtl) & {
+    text-align: left;
+  }
 }
 
 :global(.offscreen) {
   position: absolute;
   top: -9999px;
   left: -9999px;
+}
+
+$columnSpace: $basePadding/2;
+$rowSpace: $basePadding/2;
+:global(.hspaceStart) {
+  display: flex;
+  flex-flow: row wrap;
+  margin: (-$rowSpace) 0 0 (-$columnSpace);
+
+  > * {
+    margin-top: $rowSpace;
+    margin-left: $columnSpace;
+  }
+
+  :global(.rtl) & {
+    flex-flow: row-reverse wrap;
+  }
+}
+
+:global(.hspaceEnd) {
+  display: flex;
+  flex-flow: row wrap;
+  margin: (-$rowSpace) 0 0 (-$columnSpace);
+  justify-content: flex-end;
+
+  > * {
+    margin-top: $rowSpace;
+    margin-left: $columnSpace;
+  }
+
+  :global(.rtl) & {
+    flex-flow: row-reverse wrap;
+  }
 }
