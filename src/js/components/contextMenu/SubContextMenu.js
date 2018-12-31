@@ -5,7 +5,7 @@ import {compose} from 'recompose';
 import PositionedItemComponent, {afterOrBefore, startOrEnd} from '@/HOCs/PositionedItemComponent';
 import GetElementPositionComponent from '@/HOCs/GetElementPositionComponent';
 import MonitorElementSizeComponent from '@/HOCs/MonitorElementSizeComponent';
-import WindowBoundsComponent from '@/HOCs/WindowBoundsComponent';
+import WindowSizeComponent from '@/HOCs/WindowSizeComponent';
 
 //Components
 import Menu from '@/components/menu/Menu';
@@ -13,7 +13,7 @@ import Menu from '@/components/menu/Menu';
 
 //The component
 export default compose(
-  WindowBoundsComponent(),
+  WindowSizeComponent({mapProps: (props, bounds) => ({...props, bounds})}),
   GetElementPositionComponent(),
   PositionedItemComponent({
     xPosRule: afterOrBefore,

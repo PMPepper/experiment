@@ -6,6 +6,8 @@ import core from '../css/core.scss';
 
 import polyfills from './polyfills';
 
+import Game from '@/components/game/Game';
+
 //vars
 const title = 'React/Webpack testing';
 
@@ -17,14 +19,12 @@ const title = 'React/Webpack testing';
 
 
 //Test code
-import Test from '@/components/test/Test';
+//import Test from '@/components/test/Test';
+
 
 polyfills.then(() => {
     ReactDOM.render(
-      <div style={{padding: '16px'}}>
-        <h1>{title}</h1>
-        <Test />
-      </div>,
+      <Game />,
       document.getElementById('app')
     );
   })

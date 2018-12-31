@@ -5,7 +5,7 @@ import {compose} from 'recompose';
 import PositionedItemComponent from '@/HOCs/PositionedItemComponent';
 import MonitorElementSizeComponent from '@/HOCs/MonitorElementSizeComponent';
 import FocusOnMountComponent from '@/HOCs/FocusOnMountComponent';
-import WindowBoundsComponent from '@/HOCs/WindowBoundsComponent';
+import WindowSizeComponent from '@/HOCs/WindowSizeComponent';
 
 //Presentational
 import Menu, {SPACER, isItemSelectable} from '@/components/menu/Menu';
@@ -21,7 +21,7 @@ import combineProps from '@/helpers/react/combine-props';
 
 //The component
 export default compose(
-  WindowBoundsComponent(),
+  WindowSizeComponent({mapProps: (props, bounds) => ({...props, bounds})}),
   PositionedItemComponent(),
   MonitorElementSizeComponent(),
   FocusOnMountComponent({

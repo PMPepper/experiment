@@ -74,3 +74,10 @@
   top: -9999px;
   left: -9999px;
 }
+
+@mixin clearfix() {
+  &:before, &:after {
+    content: ' ';
+    display: table;
+  }
+}

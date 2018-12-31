@@ -76,7 +76,7 @@ export default function PositionedItemComponent({
         //calculate the position
         const positionedCoords = this.getPositionedCoords(
           state.contentWidth, state.contentHeight,
-          bounds ? bounds.x : null, bounds ? bounds.y : null, bounds ? bounds.width : null, bounds ? bounds.height : null,
+          bounds ? bounds.x || 0 : null, bounds ? bounds.y || 0 : null, bounds ? bounds.width : null, bounds ? bounds.height : null,
           position.x || 0, position.y || 0, position.width || 0, position.height || 0
         );
 

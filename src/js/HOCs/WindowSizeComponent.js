@@ -2,8 +2,8 @@ import React from 'react';
 import {getDisplayName} from 'recompose';
 
 
-export default function WindowBoundsComponent({
-  mapProps = (props, bounds) => ({...props, bounds})
+export default function WindowSizeComponent({
+  mapProps = (props, windowSize) => ({...props, windowSize})
 } = {}) {
   return (PresentationalComponent) => {
     return class extends React.Component {
@@ -22,16 +22,16 @@ export default function WindowBoundsComponent({
       }
 
       render() {
-        return <PresentationalComponent {...mapProps(this.props, windowBounds)} />
+        return <PresentationalComponent {...mapProps(this.props, windowSize)} />
       }
 
-      static displayName = `WindowBoundsComponent(${getDisplayName(PresentationalComponent)})`;
+      static displayName = `WindowSizeComponent(${getDisplayName(PresentationalComponent)})`;
     }
   }
 }
 
 //
-let windowBounds;
+let windowSize;
 
 
 const items = [];
@@ -65,9 +65,7 @@ function stop() {
 }
 
 function updateBounds() {
-  windowBounds = {
-    x: 0,
-    y: 0,
+  windowSize = {
     width: document.documentElement.clientWidth,
     height: document.documentElement.clientHeight
   }
