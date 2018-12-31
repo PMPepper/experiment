@@ -1,5 +1,5 @@
 //Very much a WIP/TODO
-
+/*
 import React from 'react';
 import {compose} from 'recompose';
 
@@ -25,7 +25,7 @@ export default class TransitionBetween extends React.Component {
   }
 
   render() {
-    const ({
+    const {
       children,
       selectedChild,
       onChangeSection,

@@ -1,10 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { I18nProvider } from '@lingui/react'
 
 import * as dom from './dom';
 import core from '../css/core.scss';
 
 import polyfills from './polyfills';
+
 
 import Game from '@/components/game/Game';
 
@@ -24,7 +26,9 @@ const title = 'React/Webpack testing';
 
 polyfills.then(() => {
     ReactDOM.render(
-      <Game />,
+      <I18nProvider language="en-GB">
+        <Game />
+      </I18nProvider>,
       document.getElementById('app')
     );
   })

@@ -34,7 +34,7 @@ module.exports = {
                 '@babel/plugin-transform-runtime',
                 '@babel/plugin-proposal-class-properties',
                 '@babel/plugin-syntax-dynamic-import',
-                'transform-remove-console'
+                'transform-remove-console',
               ]
             }
           ]

@@ -1,0 +1,47 @@
+{
+  "toolbar.colonies": {
+    "defaults": "Colonies",
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        15
+      ]
+    ]
+  },
+  "toolbar.research": {
+    "defaults": "Research",
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        16
+      ]
+    ]
+  },
+  "toolbar.fleets": {
+    "defaults": "Fleets",
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        17
+      ]
+    ]
+  },
+  "toolbar.shipDesign": {
+    "defaults": "Ship design",
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        18
+      ]
+    ]
+  },
+  "optionsPanel.title": {
+    "defaults": "Options",
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        23
+      ]
+    ]
+  }
+}
