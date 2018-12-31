@@ -5,6 +5,7 @@ import {getDisplayName} from 'recompose';
 import combineProps from '@/helpers/react/combine-props';
 import omit from '@/helpers/object/omit';
 
+
 //The HOC
 export default function({
   moveBy = (props, x, y) => {
@@ -40,7 +41,7 @@ export default function({
 
       _onMouseMove = (e) => {
         e.preventDefault();
-        
+
         moveBy(this.props, e.clientX - this._lastX, e.clientY - this._lastY);
 
         this._lastX = e.clientX;

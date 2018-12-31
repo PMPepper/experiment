@@ -3,12 +3,13 @@ import React from 'react';
 import styles from './styles.scss';
 
 import combineProps from '@/helpers/react/combine-props';
+import css from '@/helpers/css/class-list-to-string';
 
-const defaultProps = {
-  className: styles.btn,
-  type: 'button'
-};
 
-export default function Button(props) {
-  return <button {...combineProps(defaultProps, props)} />
+//The component
+export default function Button({theme, ...props}) {
+  return <button {...combineProps({
+    className: css(styles.btn, theme ? styles[`theme_${theme}`] : null),
+    type: 'button',
+  }, props)} />
 }

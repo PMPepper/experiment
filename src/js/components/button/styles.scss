@@ -11,4 +11,15 @@
   color: $fontCol;
 
   @include blockInteraction($mouseBg: $grey35);
+
+  //button themes
+  &.theme_close {
+    padding: 0;
+    width: calc(1em + #{$basePadding/4});
+    height: calc(1em + #{$basePadding/4});
+    background: #C33;
+    color: #FFF;
+
+    @include blockInteraction($mouseBg: #F33, $mouseCol: #FFF);
+  }
 }

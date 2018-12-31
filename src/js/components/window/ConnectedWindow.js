@@ -2,13 +2,16 @@ import React from 'react';
 import {compose} from 'recompose';
 import {connect} from 'react-redux';
 
+//Internal
 import Window from './Window';
 
 //Helpers
 import resolvePath from '@/helpers/object/resolve-path';
 
-//reducers
+//Reducers
 import {moveBy} from '@/redux/HORs/position';
+import {close} from '@/redux/HORs/isOpen';
+
 
 //The component
 export default compose(
@@ -23,18 +26,28 @@ export default compose(
       };
     },
     {
-      moveBy
+      moveBy,
+      close
     },
     (stateProps, dispatchProps, ownProps) => {
       return {
         ...ownProps,
         ...stateProps,
-        moveBy: (x, y) => {
-          dispatchProps.moveBy(ownProps.reduxPath, x, y)
-        }
+        ...bindReactHandlers(dispatchProps, ownProps.reduxPath, {moveBy: 'moveBy', close: 'onRequestClose'})
       }
     }
   )
 )(({isOpen, reduxPath, ...props}) => {
   return isOpen && <Window {...props} />
 });
+
+//Internal handlers
+function bindReactHandlers(dispatchProps, reduxPath, handlers) {
+  return Object.keys(handlers).reduce((bound, handler) => {
+    bound[handlers[handler]] = (...args) => {
+      dispatchProps[handler].apply(null, [reduxPath, ...args]);
+    }
+
+    return bound;
+  }, {})
+}

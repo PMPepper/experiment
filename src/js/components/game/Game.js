@@ -9,6 +9,7 @@ import SystemMap from './SystemMap';
 import Panel from '@/components/panel/Panel';
 import Button from '@/components/button/Button';
 import Window from '@/components/window/ConnectedWindow';
+//import Icon from '@/components/icon/Icon';
 
 //reducers
 import {open, close} from '@/redux/HORs/isOpen';

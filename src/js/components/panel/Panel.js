@@ -23,7 +23,7 @@ export default function Panel({
   return <Component {...combineProps(rest, {className: styles.panel, [isDOMComponent(Component) ? 'ref' : 'getRef']: getRef})}>
     <HeaderComponent {...combineProps({className: styles.header}, headerProps)}>
       <TitleComponent className={styles.title}>{title}</TitleComponent>
-      {headerBtns && <div className={styles.headerBtns}>{headerBtns}</div>}
+      {headerBtns && <div className={`${styles.headerBtns} alignEnd`} onMouseDown={stopPropagation}>{headerBtns}</div>}
     </HeaderComponent>
     <BodyComponent className={styles.body}>{children}</BodyComponent>
     {footer && <FooterComponent {...combineProps({className: styles.footer}, footerProps)}>{footer}</FooterComponent>}
@@ -42,3 +42,7 @@ Panel.defaultProps = {
   headerProps: null,
   footerProps: null,
 };
+
+function stopPropagation(e) {
+  e.stopPropagation();
+}

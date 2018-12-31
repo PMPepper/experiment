@@ -5,9 +5,9 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 //Import icons and build library
-import {faChevronLeft, faChevronRight, faEllipsisH, faGlobe} from '@fortawesome/free-solid-svg-icons'
+import {faChevronLeft, faChevronRight, faEllipsisH, faGlobe, faTimes} from '@fortawesome/free-solid-svg-icons'
 
-library.add(faChevronLeft, faChevronRight, faEllipsisH, faGlobe)
+library.add(faChevronLeft, faChevronRight, faEllipsisH, faGlobe, faTimes)
 
 
 export default FontAwesomeIcon;
