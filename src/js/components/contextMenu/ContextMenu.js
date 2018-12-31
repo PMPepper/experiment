@@ -21,7 +21,7 @@ import combineProps from '@/helpers/react/combine-props';
 
 //The component
 export default compose(
-  WindowSizeComponent({mapProps: (props, bounds) => ({...props, bounds})}),
+  WindowSizeComponent({mapProps: (props, bounds) => ({bounds, ...props})}),
   PositionedItemComponent(),
   MonitorElementSizeComponent(),
   FocusOnMountComponent({

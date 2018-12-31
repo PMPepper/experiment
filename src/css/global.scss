@@ -56,3 +56,7 @@ $rowSpace: $basePadding/2;
     flex-flow: row-reverse wrap;
   }
 }
+
+:global(.draggable) {
+  cursor: all-scroll;
+}

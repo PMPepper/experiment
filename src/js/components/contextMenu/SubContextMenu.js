@@ -13,7 +13,7 @@ import Menu from '@/components/menu/Menu';
 
 //The component
 export default compose(
-  WindowSizeComponent({mapProps: (props, bounds) => ({...props, bounds})}),
+  WindowSizeComponent({mapProps: (props, bounds) => ({bounds, ...props})}),
   GetElementPositionComponent(),
   PositionedItemComponent({
     xPosRule: afterOrBefore,
