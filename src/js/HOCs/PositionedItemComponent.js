@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom';
 import memoize from 'memoize-one';
 import {getDisplayName} from 'recompose';
 
+//Helpers
 import omit from '@/helpers/object/omit';
 import combineProps from '@/helpers/react/combine-props';
-
 
 /*
 Needs:
@@ -16,6 +16,7 @@ Default passes props:
 -setPositionedItemSize: function to allow child to tell this component how big the child is (can use in combination with MonitorElementSizeComponent)
 -style: object with styles for specifying how to position
 */
+
 
 //The component
 export default function PositionedItemComponent({
@@ -64,7 +65,6 @@ export default function PositionedItemComponent({
           y: yPosRule(contentHeight, boundsY, boundsHeight, positionY, positionHeight),
         };
       })
-
 
       render() {
         const props = this.props;

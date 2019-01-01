@@ -9,7 +9,7 @@ import Window from './Window';
 import resolvePath from '@/helpers/object/resolve-path';
 
 //Reducers
-import {moveBy} from '@/redux/HORs/position';
+import {moveTo} from '@/redux/HORs/position';
 import {close} from '@/redux/HORs/isOpen';
 
 
@@ -26,28 +26,20 @@ export default compose(
       };
     },
     {
-      moveBy,
+      moveTo,
       close
     },
     (stateProps, dispatchProps, ownProps) => {
       return {
         ...ownProps,
         ...stateProps,
-        ...bindReactHandlers(dispatchProps, ownProps.reduxPath, {moveBy: 'moveBy', close: 'onRequestClose'})
+        onRequestClose: () => {dispatchProps.close(ownProps.reduxPath)},
+        moveBy: function (dx, dy, props) {
+          dispatchProps.moveTo(ownProps.reduxPath, props.position.x + dx, props.position.y + dy);
+        }
       }
     }
   )
 )(({isOpen, reduxPath, ...props}) => {
   return isOpen && <Window {...props} />
 });
-
-//Internal handlers
-function bindReactHandlers(dispatchProps, reduxPath, handlers) {
-  return Object.keys(handlers).reduce((bound, handler) => {
-    bound[handlers[handler]] = (...args) => {
-      dispatchProps[handler].apply(null, [reduxPath, ...args]);
-    }
-
-    return bound;
-  }, {})
-}

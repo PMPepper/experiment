@@ -3,16 +3,15 @@ import {getDisplayName} from 'recompose';
 
 //helpers
 import combineProps from '@/helpers/react/combine-props';
-import omit from '@/helpers/object/omit';
 
 
 //The HOC
 export default function({
   moveBy = (props, x, y) => {
-    props.moveBy && props.moveBy(x, y)
+    props.moveBy && props.moveBy(x, y, props)
   },
-  mapProps = (props, draggingProps) => {
-    return combineProps(omit(props, ['moveBy']), draggingProps);
+  mapProps = ({moveBy, ...props}, draggingProps) => {
+    return combineProps(props, draggingProps);
   }
 } = {}) {
   return (PresentationalComponent) => {

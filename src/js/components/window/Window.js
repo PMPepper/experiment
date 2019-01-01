@@ -15,6 +15,7 @@ import Button from '@/components/button/Button';
 
 //Helpers
 import combineProps from '@/helpers/react/combine-props';
+import omit from '@/helpers/object/omit';
 
 //Consts
 const minimumWithinBounds = 16;
@@ -25,11 +26,27 @@ export default compose(
   WindowSizeComponent({mapProps: (props, bounds) => ({bounds, ...props})}),
   PositionedItemComponent({
     xPosRule: minWithinBounds(minimumWithinBounds, minimumWithinBounds),
-    yPosRule: minWithinBounds(-minimumWithinBounds, minimumWithinBounds)
+    yPosRule: minWithinBounds(-minimumWithinBounds, minimumWithinBounds),
+    mapProps: (props, positionedCoords, setPositionedItemSize) =>
+    {
+      return combineProps(
+        omit(props, ['portalElement', 'position', 'bounds', 'positionedItemZIndex']),
+        {
+          style: {
+            position: 'fixed',
+            zIndex: props['positionedItemZIndex'] || 10,
+            left: `${positionedCoords.x}px`,
+            top: `${positionedCoords.y}px`,
+          },
+          position: positionedCoords,
+          setPositionedItemSize
+        }
+      )
+    }
   }),
   MonitorElementSizeComponent(),
   DraggableComponent({
-    mapProps: ({moveBy, onRequestClose, ...props}, draggingProps) => {
+    mapProps: ({moveBy, onRequestClose, position, ...props}, draggingProps) => {
       const mappedProps = {
         ...props,
         headerProps: combineProps(props.headerProps, draggingProps)
@@ -43,6 +60,7 @@ export default compose(
     }
   })
 )(Panel);
+
 
 export function makeCloseBtn(onRequestClose) {
   return <Button onClick={onRequestClose} theme="close">
