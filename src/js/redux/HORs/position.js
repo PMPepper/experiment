@@ -1,5 +1,5 @@
-const MOVE_TO = 'position.moveTo';
-const MOVE_BY = 'position.moveBy';
+export const MOVE_TO = 'position.moveTo';
+export const MOVE_BY = 'position.moveBy';
 
 const DEFAULT_STATE = {x: 100, y: 100};
 
@@ -29,7 +29,8 @@ export function moveTo(id, x, y) {
     id,
     type: MOVE_TO,
     x,
-    y
+    y,
+    time: Date.now(),
   };
 }
 
@@ -38,6 +39,7 @@ export function moveBy(id, x, y) {
     id,
     type: MOVE_BY,
     x,
-    y
+    y,
+    time: Date.now(),
   };
 }

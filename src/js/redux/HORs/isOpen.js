@@ -1,5 +1,5 @@
-const OPEN = 'isOpen.open';
-const CLOSE = 'isOpen.cose';
+export const OPEN = 'isOpen.open';
+export const CLOSE = 'isOpen.cose';
 
 const DEFAULT_STATE = false;
 
@@ -22,6 +22,7 @@ export function open(id) {
   return {
     id,
     type: OPEN,
+    time: Date.now(),
   };
 }
 
@@ -29,5 +30,6 @@ export function close(id) {
   return {
     id,
     type: CLOSE,
+    time: Date.now(),
   };
 }

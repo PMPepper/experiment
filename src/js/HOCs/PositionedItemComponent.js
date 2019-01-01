@@ -20,8 +20,9 @@ Default passes props:
 
 //The component
 export default function PositionedItemComponent({
-  defaultPortalElement = document.body,
-  usePortal = true,
+  getPortalElement = (props) => {
+    return document.body
+  },
   xPosRule = alignStart,
   yPosRule = afterOrBefore,
   positionProp = 'position',
@@ -87,7 +88,9 @@ export default function PositionedItemComponent({
         const element = <PresentationalComponent {...mappedProps} />;
 
         //if needed create portal
-        return usePortal ? ReactDOM.createPortal(element, getElement(props.portalElement || defaultPortalElement)) : element;
+        const portalElement = getPortalElement && getPortalElement(props);
+
+        return portalElement ? ReactDOM.createPortal(element, portalElement) : element;
       }
 
     }

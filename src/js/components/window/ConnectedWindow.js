@@ -7,10 +7,12 @@ import Window from './Window';
 
 //Helpers
 import resolvePath from '@/helpers/object/resolve-path';
+import combineProps from '@/helpers/react/combine-props';
 
 //Reducers
 import {moveTo} from '@/redux/HORs/position';
 import {close} from '@/redux/HORs/isOpen';
+import {interact} from '@/redux/HORs/lastInteracted';
 
 
 //The component
@@ -27,17 +29,21 @@ export default compose(
     },
     {
       moveTo,
-      close
+      close,
+      interact
     },
     (stateProps, dispatchProps, ownProps) => {
-      return {
-        ...ownProps,
-        ...stateProps,
-        onRequestClose: () => {dispatchProps.close(ownProps.reduxPath)},
-        moveBy: function (dx, dy, props) {
-          dispatchProps.moveTo(ownProps.reduxPath, props.position.x + dx, props.position.y + dy);
+      return combineProps(
+        ownProps,
+        stateProps,
+        {
+          onMouseDown: () => {dispatchProps.interact(ownProps.reduxPath)},
+          onRequestClose: () => {dispatchProps.close(ownProps.reduxPath)},
+          moveBy: function (dx, dy, props) {
+            dispatchProps.moveTo(ownProps.reduxPath, props.position.x + dx, props.position.y + dy);
+          }
         }
-      }
+      )
     }
   )
 )(({isOpen, reduxPath, ...props}) => {

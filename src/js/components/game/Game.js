@@ -9,34 +9,54 @@ import SystemMap from './SystemMap';
 import Panel from '@/components/panel/Panel';
 import Button from '@/components/button/Button';
 import Window from '@/components/window/ConnectedWindow';
+import SortChildren from '@/components/sortChildren/SortChildren';
 //import Icon from '@/components/icon/Icon';
+
+//helpers
+import cloneOmittingProps from '@/helpers/react/clone-omitting-props';
 
 //reducers
 import {open, close} from '@/redux/HORs/isOpen';
 
 
-function Game({open, close}) {
+function Game({
+  coloniesWindow, fleetsWindow, researchWindow, shipDesignWindow,
+  open, close
+}) {
   return <div className={styles.game}>
+    <SystemMap />
     <div className={styles.toolbar}>
       <div className="hspaceStart">
         <Button onClick={() => {open('coloniesWindow')}}><Trans id="toolbar.colonies">Colonies</Trans></Button>
-        <Button><Trans id="toolbar.research">Research</Trans></Button>
-        <Button><Trans id="toolbar.fleets">Fleets</Trans></Button>
-        <Button><Trans id="toolbar.shipDesign">Ship design</Trans></Button>
+        <Button onClick={() => {open('researchWindow')}}><Trans id="toolbar.research">Research</Trans></Button>
+        <Button onClick={() => {open('fleetsWindow')}}><Trans id="toolbar.fleets">Fleets</Trans></Button>
+        <Button onClick={() => {open('shipDesignWindow')}}><Trans id="toolbar.shipDesign">Ship design</Trans></Button>
       </div>
     </div>
-    <div className={styles.controls}>[TODO controls]</div>
-    <div className={styles.selectSystem}>[TODO Sol]</div>
-    <Panel title={<Trans id="optionsPanel.title">Options</Trans>} className={styles.options}>[TODO options panel]</Panel>
-    <SystemMap />
 
-    <Window reduxPath="coloniesWindow" title={<Trans id="coloniesWindow.title">Colonies</Trans>}>TODO colonies window!</Window>
+    <div className={styles.controls}>[TODO controls]</div>
+
+    <div className={styles.selectSystem}>[TODO Sol]</div>
+
+    <Panel title={<Trans id="optionsPanel.title">Options</Trans>} className={styles.options}>[TODO options panel]</Panel>
+
+    <SortChildren sort={(a, b) => (a.props.lastInteracted - b.props.lastInteracted)} mapChild={(child) => (cloneOmittingProps(child, 'lastInteracted'))}>
+      <Window lastInteracted={coloniesWindow.lastInteracted} reduxPath="coloniesWindow" title={<Trans id="coloniesWindow.title">Colonies</Trans>}>TODO colonies window!</Window>
+      <Window lastInteracted={fleetsWindow.lastInteracted} reduxPath="fleetsWindow" title={<Trans id="fleetsWindow.title">Fleets</Trans>}>TODO fleets window!</Window>
+      <Window lastInteracted={researchWindow.lastInteracted} reduxPath="researchWindow" title={<Trans id="researchWindow.title">Research</Trans>}>TODO research window!</Window>
+      <Window lastInteracted={shipDesignWindow.lastInteracted} reduxPath="shipDesignWindow" title={<Trans id="shipDesignWindow.title">Ship design</Trans>}>TODO ship design window!</Window>
+    </SortChildren>
   </div>
 }
 
 export default compose(
   connect(state => {
-    return {}
+    return {
+      coloniesWindow: state.coloniesWindow,
+      fleetsWindow: state.fleetsWindow,
+      researchWindow: state.researchWindow,
+      shipDesignWindow: state.shipDesignWindow,
+    }
   }, {
     open,
     close

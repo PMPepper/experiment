@@ -1,5 +1,5 @@
-const RESIZE_TO = 'size.resizeTo';
-const RESIZE_BY = 'size.resizeBy';
+export const RESIZE_TO = 'size.resizeTo';
+export const RESIZE_BY = 'size.resizeBy';
 
 const DEFAULT_STATE = {width: null, height: null};
 
@@ -29,7 +29,8 @@ export function resizeTo(id, width, height) {
     id,
     type: RESIZE_TO,
     width,
-    height
+    height,
+    time: Date.now(),
   };
 }
 
@@ -38,6 +39,7 @@ export function resizeBy(id, width, height) {
     id,
     type: RESIZE_BY,
     width,
-    height
+    height,
+    time: Date.now(),
   };
 }

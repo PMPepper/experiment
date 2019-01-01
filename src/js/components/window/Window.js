@@ -25,6 +25,9 @@ const minimumWithinBounds = 16;
 export default compose(
   WindowSizeComponent({mapProps: (props, bounds) => ({bounds, ...props})}),
   PositionedItemComponent({
+    getPortalElement: (props) => (
+      ('portalElement' in props) ? props.portalElement : false
+    ),
     xPosRule: minWithinBounds(minimumWithinBounds, minimumWithinBounds),
     yPosRule: minWithinBounds(-minimumWithinBounds, minimumWithinBounds),
     mapProps: (props, positionedCoords, setPositionedItemSize) =>

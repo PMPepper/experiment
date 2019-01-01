@@ -1,7 +1,6 @@
 import {combineReducers} from 'redux';
-//import * as reducers from './coloniesWindow';
 
-const reduxId = 'coloniesWindow';
+const reduxId = 'researchWindow';
 
 import isOpen, {OPEN} from '@/redux/HORs/isOpen';
 import position, {MOVE_TO, MOVE_BY} from '@/redux/HORs/position';

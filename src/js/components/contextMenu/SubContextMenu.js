@@ -18,7 +18,7 @@ export default compose(
   PositionedItemComponent({
     xPosRule: afterOrBefore,
     yPosRule: startOrEnd,
-    usePortal: false
+    getPortalElement: false
   }),
   MonitorElementSizeComponent()
 )(Menu);
