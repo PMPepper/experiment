@@ -1,4 +1,3 @@
-import * as FactionPlayerTypes from '../FactionPlayerTypes';
 import systems from './systems';
 
 const worldDefinition = {
@@ -45,41 +44,6 @@ const worldDefinition = {
       //money, structures, minerals, fuel, technology, etc
     }]
   }],
-
-
-  players: [
-    {
-      name: 'Billy',
-      factions: [
-        {
-          name: 'Humans',
-          role: FactionPlayerTypes.OWNER
-        },
-        {
-          name: 'Martians',
-          role: FactionPlayerTypes.OWNER
-        }
-      ]
-    },
-    /*{
-      name: 'Willy',
-      factions: [
-        {
-          name: 'Martians',
-          role: FactionPlayerTypes.OWNER
-        }
-      ]
-    },
-    {
-      name: 'Dilly',
-      factions: [
-        {
-          name: 'Martians',
-          role: FactionPlayerTypes.OWNER
-        }
-      ]
-    }*/
-  ],
 
   //TODO
   //To be implemented

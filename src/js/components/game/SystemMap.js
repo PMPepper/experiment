@@ -12,9 +12,9 @@ class SystemMap extends React.Component {
 
   render() {
     const props = this.props;
-    const {windowSize, server, factionId, zool} = props;
+    const {windowSize, client, zoom} = props;
 
-    const renderableEntities = server.getEntitiesByIds(server.getCachedEntities('renderable'))
+    const renderableEntities = [];//server.getEntitiesByIds(server.getCachedEntities('renderable'))
 
     return <svg className={styles.systemMap}>
       {renderableEntities.map(entity => {

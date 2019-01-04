@@ -101,6 +101,7 @@ export default function createWorldFromDefinition(server, definition) {
     })
   })
 
+  /*
   definition.players.forEach(playerDefinition => {
     const player = server._newEntity('player', {player: {name: playerDefinition.name}, factionIds: []});
 
@@ -119,7 +120,7 @@ export default function createWorldFromDefinition(server, definition) {
       //record factionPlayer
       server.factionPlayers[factionPlayer.id] = factionPlayer;
     });
-  })
+  })*/
 
   //TODO clients
   //const client1 = server._newEntity('client', {playerId: player1.id, factionId: faction1.id});

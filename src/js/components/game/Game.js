@@ -21,11 +21,11 @@ import {open, close} from '@/redux/HORs/isOpen';
 
 function Game({
   coloniesWindow, fleetsWindow, researchWindow, shipDesignWindow,
-  server, factionId,
+  client,
   open, close
 }) {
   return <div className={styles.game}>
-    <SystemMap server={server} factionId={factionId} />
+    <SystemMap client={client} />
     <div className={styles.toolbar}>
       <div className="hspaceStart">
         <Button onClick={() => {open('coloniesWindow')}}><Trans id="toolbar.colonies">Colonies</Trans></Button>

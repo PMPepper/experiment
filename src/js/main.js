@@ -13,6 +13,12 @@ import root from '@/redux/root';
 import Game from '@/components/game/Game';
 
 
+//Game engine
+import * as GameEngine from '@/game/Game';
+import Client from '@/game/Client';
+import LocalConnector from '@/game/LocalConnector';
+
+import baseGameDefinition from '@/game/data/baseGameDefinition';//TEMP CODE
 
 //vars
 const title = 'React/Webpack testing';
@@ -22,9 +28,7 @@ console.log(store);
 console.log(store.getState());
 
 //REAL TEMP CODE!
-import * as GameEngine from '@/game/Game';
-import baseGameDefinition from '@/game/data/baseGameDefinition';
-const gameServer = GameEngine.startGame(baseGameDefinition);
+
 
 //TODO list:
 //-finish datatables
@@ -33,14 +37,19 @@ const gameServer = GameEngine.startGame(baseGameDefinition);
 
 
 polyfills.then(() => {
-    ReactDOM.render(
-      <Provider store={store}>
-        <I18nProvider language="en-GB">
-          <Game server={gameServer} factionId={1} />
-        </I18nProvider>
-      </Provider>,
-      document.getElementById('app')
-    );
+  //TEMP CODE
+  const gameServer = GameEngine.startGame(baseGameDefinition, new Client('local', new LocalConnector())).then((client) => {
+      console.log('[MAIN] render');
+
+      ReactDOM.render(
+        <Provider store={store}>
+          <I18nProvider language="en-GB">
+            <Game client={client} />
+          </I18nProvider>
+        </Provider>,
+        document.getElementById('app')
+      );
+    });
   })
   /*.catch(error => {
     //TODO better error handling for failed polyfills loading
