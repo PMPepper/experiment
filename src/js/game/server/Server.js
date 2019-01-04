@@ -6,16 +6,19 @@ import createWorldFromDefinition from './createWorldFromDefinition';
 import * as entityCacheTypes from './entityCacheTypes';
 import * as FactionClientTypes from '../FactionClientTypes';
 
+import movementFactory from './entityProcessorFactories/movement';
+
 
 //Server phases
 const INITIALISING = 'initialising';
 const CONNECTING = 'connecting';
+const RUNNING = 'running';
 
 
 export default class Server {
   connector = null;
 
-  _phase = INITIALISING;
+  phase = INITIALISING;
 
   factions = {};//e.g. The in-game factions Humans, martians (factions are also entities)
   clients = {};//a client is a player connected to a faction by a connector method with a permissions e.g. Bob spectating Martians on connectionId 1
@@ -27,11 +30,17 @@ export default class Server {
   entityCacheDirty = false;
   entityIds = null;
 
+  entityProcessorFactories = [movementFactory];
+
   constructor(connector) {
     this.connector = connector;
   }
 
-  //message handlers
+  //////////////////////
+  // message handlers //
+  //////////////////////
+
+  //-initialising server
   message_createWorld(definition, connectionId) {
     if(this.phase !== INITIALISING) {
       throw new Error('Can only create world while Server is in "initialising" phase');
@@ -42,8 +51,18 @@ export default class Server {
     //initialise the world based on supplied definition
     createWorldFromDefinition(this, definition);
 
-    //Now waiting for players to connect - will broadcast to clients
+    console.log('[Server] created world: ', this.entities);
+
+    this.gameTime = new Date(definition.startDate);
+
+    //this._advanceTime(0);
+    this.entities = map(this.entities, this._getEntityProcessors());
+
+    //Now waiting for players to connect
     this.phase = CONNECTING;
+
+    //broadcast to players that state has updated
+    this.connector.broadcastToClients('phaseChanged', this.phase);
 
     //Report back to clients that game is ready
     return Promise.resolve();
@@ -58,13 +77,14 @@ export default class Server {
       throw new Error('Each client can only connect once');
     }
 
-    //TODO check client name is valid
+    //check client name is valid
+    this._checkValidClientName(name, connectionId);
 
     console.log('[Server] connectClient: ', name, connectionId);
 
     //create a client
     //factions are the available factions (id: role hash), factionId is the actual faction they are connected as right now
-    this.clients[connectionId] = {name, id: connectionId, type: 'human', ready: false, factions: {}, factionId: null};
+    this.clients[connectionId] = {name, id: connectionId, type: 'human', ready: false, factions: {}, factionId: null, gameTime: this.gameTime};
 
     //Broadcast updated clients info
     this.connector.broadcastToClients('clientConnected', this.clients);
@@ -78,17 +98,14 @@ export default class Server {
       throw new Error('Can only set connected player settings while Server is in "connecting" phase');
     }
 
-    if(!name) {
-      throw new Error('Client must have a name');
-    }
+    this._checkValidClient(connectionId);
+    this._checkValidClientName(name, connectionId);
 
     //TODO check that name is unique
 
     const client = this.clients[connectionId];
 
-    if(!client) {
-      throw new Error('Unknown client');
-    }
+
 
 
     //TODO check that client settings are valid e.g. is connecting to valid faction(s) not already controlled by someone else
@@ -130,17 +147,21 @@ export default class Server {
       throw new Error('Can only start game while Server is in "connecting" phase');
     }
 
+    this._checkValidClient(connectionId);
+
     const client = this.clients[connectionId];
 
-    if(!client) {
-      throw new Error('Unknown client');
-    }
 
     console.log('[Server] startGame');
+    this.phase = RUNNING;
 
     //Only only start game if all players are ready
     if(Object.values(this.clients).every(client => (client.ready))) {
-      this.connector.broadcastToClients('startGame');
+      //For each client, tell them the game is starting and send them their client state
+      Object.values(this.clients).forEach(client => {
+        this.connector.sendMessageToClient(client.id, 'startingGame', this._getClientState(client.id));
+      });
+
 
       return Promise.resolve(true);
     }
@@ -148,9 +169,42 @@ export default class Server {
     return Promise.resolve(false);
   }
 
+  //-in game
+  message_getClientState(data, connectionId) {
+    if(this.phase !== RUNNING) {
+      throw new Error('Can only get client state while server is in "running" phase');
+    }
+
+    this._checkValidClient(connectionId);
+
+    return Promise.resolve(this._getClientState(connectionId))
+  }
+
+  //-validation methods
+  _checkValidClientName(name, connectionId) {
+    if(!name) {
+      throw new Error('Client required a name');
+    }
+
+    Object.values(this.clients).some(client => {
+      if(client.id !== connectionId && client.name === name) {
+        throw new Error('Client name already in use by another client');
+      }
+    });
+  }
+
+  _checkValidClient(connectionId) {
+    if(!this.clients[connectionId]) {
+      throw new Error('Unknown client');
+    }
+  }
 
 
-  //Getters/setters
+  /////////////////////
+  // Getters/setters //
+  /////////////////////
+
+  /*
   get phase() {
     return this._phase
   }
@@ -163,9 +217,13 @@ export default class Server {
 
       this.connector.broadcastToClients('onPhaseChanged', {newPhase: phase, oldPhase});
     }
-  }
+  }*/
 
-  //public methods
+
+  ////////////////////
+  // public methods //
+  ////////////////////
+
   onMessage(type, data, connectionId) {
     const name = `message_${type}`;
 
@@ -213,7 +271,48 @@ export default class Server {
     return resolvePath(entityCache, cachePath);
   }
 
-  //Internal helper methods
+
+  /////////////////////////////
+  // Internal helper methods //
+  /////////////////////////////
+
+  _advanceTime(elapsedTime) {
+    let newEntities = null;
+
+    for(let i = 0; i < elapsedTime; ++i) {
+      //update game time
+      this.gameTime.setSeconds(this.gameTime.getSeconds() + elapsedTime);
+
+      //update the game entities
+      newEntities = map(this.entities, this._getEntityProcessors());
+    }
+
+    this.entities = newEntities;
+  }
+
+  _getEntityProcessors() {
+    const gameTime = this.gameTime;
+
+    //create entity processors
+    const entityProcessors = this.entityProcessorFactories.map(factory => (factory(gameTime / 1000)));
+
+    //create composed function for processing all entities
+    //entity processors are currently mutating objects - could clone the object once at the start if needed? although it would only be a shallow clone
+    return (entity, entityId, entities) => {
+      //entity = {...entity};
+
+      for(let i = 0, l = entityProcessors.length; i < l;++i) {
+        entity = entityProcessors[i](entity, entities)
+      }
+
+      return entity;
+    }
+  }
+
+  _getClientState(clientId) {
+    return {};//TODO implement
+  }
+
   _newEntity(type, props) {
     const newEntity = {
       ...props,

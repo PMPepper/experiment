@@ -1,4 +1,4 @@
-
+import orbitPeriod from '@/helpers/physics/orbitPeriod';
 
 export default function createWorldFromDefinition(server, definition) {
   //internal lookup hashes
@@ -21,11 +21,24 @@ export default function createWorldFromDefinition(server, definition) {
 
     //now create the bodies
     const bodies = systemDefinition.bodies.map(bodyDefinition => {
+      const bodyMass = bodyDefinition.mass || 1;
+      const orbitingId = bodyDefinition.parent && systemBodiesBySystemBodyDefinitionName[bodyDefinition.parent] && systemBodiesBySystemBodyDefinitionName[bodyDefinition.parent].id || null;
+
       const body = server._newEntity('systemBody', {
         systemId: system.id,
-        orbitingId: bodyDefinition.parent && systemBodiesBySystemBodyDefinitionName[bodyDefinition.parent] && systemBodiesBySystemBodyDefinitionName[bodyDefinition.parent].id || null,
-        mass: bodyDefinition.mass,
-        movement: bodyDefinition.orbit ? {type: 'orbit', data: {...bodyDefinition.orbit}} : null,
+        orbitingId: orbitingId,
+        mass: bodyMass,
+        movement: bodyDefinition.orbit ?
+          {
+            type: 'orbit',
+            data: {
+              ...bodyDefinition.orbit,
+              period: orbitPeriod(bodyDefinition.orbit.radius, bodyMass, orbitingId ? systemBodiesBySystemBodyDefinitionName[bodyDefinition.parent].mass : 0)//orbitRadius, orbitingBodyMass, orbitedBodyMass
+            }
+          }
+          :
+          null,
+        position: {x: 0, y: 0},
         systemBody: {
           type: bodyDefinition.type,
           radius: bodyDefinition.radius,

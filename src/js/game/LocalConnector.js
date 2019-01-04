@@ -16,4 +16,8 @@ export default class LocalConnector {
   broadcastToClients(messageType, data) {
     console.log('TODO broadcastToClients: ', messageType, data);
   }
+
+  sendMessageToClient(connectionId, messageType, data) {
+    console.log('TODO sendMessageToClient: ', messageType, data);
+  }
 }

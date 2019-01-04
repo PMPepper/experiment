@@ -1,5 +1,5 @@
 export default function mapObject(obj, mapFunc) {
-  output = {};
+  const output = {};
 
   for(let i = 0, k = Object.keys(obj), l = k.length; i < l; ++i) {
     const key = k[i];
