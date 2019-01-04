@@ -12,7 +12,7 @@ import core from '../css/core.scss';
 import root from '@/redux/root';
 import Game from '@/components/game/Game';
 
-import * as GameEngine from '@/game/Game';
+
 
 //vars
 const title = 'React/Webpack testing';
@@ -21,7 +21,10 @@ const store = createStore(root)
 console.log(store);
 console.log(store.getState());
 
-const gameServer = GameEngine.startGame();
+//REAL TEMP CODE!
+import * as GameEngine from '@/game/Game';
+import baseGameDefinition from '@/game/data/baseGameDefinition';
+const gameServer = GameEngine.startGame(baseGameDefinition);
 
 //TODO list:
 //-finish datatables

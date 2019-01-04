@@ -17,8 +17,6 @@ class SystemMap extends React.Component {
     const renderableEntities = server.getEntitiesByIds(server.getCachedEntities('renderable'))
 
     return <svg className={styles.systemMap}>
-      <rect x="100" y="200" width="50" height="75" fill="#F00"></rect>
-
       {renderableEntities.map(entity => {
         const Renderer = EntityRenderers[entity.render.type];
 
