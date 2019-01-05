@@ -46,12 +46,12 @@ export default class Server {
       throw new Error('Can only create world while Server is in "initialising" phase');
     }
 
-    console.log('[Server] createWorld: ', definition, connectionId);
+    //c/onsole.log('[Server] createWorld: ', definition, connectionId);
 
     //initialise the world based on supplied definition
     createWorldFromDefinition(this, definition);
 
-    console.log('[Server] created world: ', this.entities);
+    //c/onsole.log('[Server] created world: ', this.entities);
 
     this.gameTime = new Date(definition.startDate);
 
@@ -80,7 +80,7 @@ export default class Server {
     //check client name is valid
     this._checkValidClientName(name, connectionId);
 
-    console.log('[Server] connectClient: ', name, connectionId);
+    //c/onsole.log('[Server] connectClient: ', name, connectionId);
 
     //create a client
     //factions are the available factions (id: role hash), factionId is the actual faction they are connected as right now
@@ -128,7 +128,7 @@ export default class Server {
       }
     }
 
-    console.log('[Server] setClientSettings: ', name, factions, factionId, ready, connectionId);
+    //c/onsole.log('[Server] setClientSettings: ', name, factions, factionId, ready, connectionId);
 
     ready = !!ready;
 
@@ -152,7 +152,7 @@ export default class Server {
     const client = this.clients[connectionId];
 
 
-    console.log('[Server] startGame');
+    //c/onsole.log('[Server] startGame');
     this.phase = RUNNING;
 
     //Only only start game if all players are ready
@@ -191,6 +191,28 @@ export default class Server {
         );
       }, 1000);
       //*/
+
+      let lastTime = null;
+      const speed = 3600;
+      const step = 1;
+
+      const play = (timestamp) => {
+        if(lastTime !== null) {
+          const elapsedTime = (timestamp - lastTime) /1000;
+
+          this._advanceTime(Math.min(3600, Math.ceil(elapsedTime * speed)), step);
+
+          Object.values(this.clients).forEach(client => {
+            this.connector.sendMessageToClient(client.id, 'updatingGame', this._getClientState(client.id));
+          });
+        }
+
+        lastTime = timestamp
+
+        window.requestAnimationFrame(play);
+      };
+
+      window.requestAnimationFrame(play);
 
 
       return Promise.resolve(true);
@@ -292,7 +314,7 @@ export default class Server {
   // Internal helper methods //
   /////////////////////////////
 
-  _advanceTime(elapsedTime) {
+  _advanceTime(elapsedTime, step = 1) {
     const entities = this.entities;
 
     if(this.entityCacheDirty) {
@@ -316,9 +338,9 @@ export default class Server {
       return;
     }
 
-    for(let i = 0; i < elapsedTime; ++i) {
+    for(let i = 0; i < elapsedTime; i += step) {
       //update game time
-      this.gameTime.setSeconds(this.gameTime.getSeconds() + elapsedTime);
+      this.gameTime.setSeconds(this.gameTime.getSeconds() + step);
 
       let processors = this._getEntityProcessors();
 

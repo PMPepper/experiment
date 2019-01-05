@@ -71,7 +71,7 @@
     "name": "Hygiea",
     "parent": "Sol A",
     "type": "asteroid",
-    "mass": null,
+    "mass": 1,
     "radius": 203560,
     "diameter": 407120,
     "day": 99468,
@@ -80,7 +80,7 @@
     "albedo": 0.0717,
     "orbit": {
       "type": "regular",
-      "radius": null,
+      "radius": 4.700515e+11,
       "offset": 0.9573975839184232
     }
   },
@@ -105,7 +105,7 @@
     "name": "Interamnia (1910 KU)",
     "parent": "Sol A",
     "type": "asteroid",
-    "mass": null,
+    "mass": 1,
     "radius": 153157,
     "diameter": 306313,
     "day": 31417,
@@ -114,7 +114,7 @@
     "albedo": 0.078,
     "orbit": {
       "type": "regular",
-      "radius": null,
+      "radius": 457400000000,
       "offset": 0.9763063290121776
     }
   },
@@ -190,7 +190,7 @@
     "name": "Camilla",
     "parent": "Sol A",
     "type": "asteroid",
-    "mass": null,
+    "mass": 1,
     "radius": 127000,
     "diameter": 254000,
     "day": 17438,
@@ -199,7 +199,7 @@
     "albedo": 0.059,
     "orbit": {
       "type": "regular",
-      "radius": null,
+      "radius": 5.222761e+11,
       "offset": 0.6158364461038581
     }
   },
@@ -326,7 +326,7 @@
     "name": "Psyche",
     "parent": "Sol A",
     "type": "asteroid",
-    "mass": null,
+    "mass": 1,
     "radius": 113000,
     "diameter": 226000,
     "day": 15106,
@@ -335,7 +335,7 @@
     "albedo": 0.1203,
     "orbit": {
       "type": "regular",
-      "radius": null,
+      "radius": 4.36975e+11,
       "offset": 0.4161467855479759
     }
   },
@@ -1023,7 +1023,7 @@
     "name": "Kalliope",
     "parent": "Sol A",
     "type": "asteroid",
-    "mass": null,
+    "mass": 1,
     "radius": 83768,
     "diameter": 167536,
     "day": 14934,
@@ -1032,7 +1032,7 @@
     "albedo": 0.166,
     "orbit": {
       "type": "regular",
-      "radius": null,
+      "radius": 435090000000,
       "offset": 0.25021005855580514
     }
   },

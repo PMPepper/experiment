@@ -10,7 +10,11 @@ import Panel from '@/components/panel/Panel';
 import Button from '@/components/button/Button';
 import Window from '@/components/window/ConnectedWindow';
 import SortChildren from '@/components/sortChildren/SortChildren';
+
+import FPSStats from '@/components/dev/FPSStats';
 //import Icon from '@/components/icon/Icon';
+
+
 
 //helpers
 import cloneOmittingProps from '@/helpers/react/clone-omitting-props';
@@ -25,7 +29,7 @@ function Game({
   open, close
 }) {
   return <div className={styles.game}>
-    <SystemMap gameTime={game.gameTime} entities={game.entities} />
+    <SystemMap gameTime={game.gameTime} entities={game.entities} sysemMapOptions={systemMapOptions} />
     <div className={styles.toolbar}>
       <div className="hspaceStart">
         <Button onClick={() => {open('coloniesWindow')}}><Trans id="toolbar.colonies">Colonies</Trans></Button>
@@ -35,7 +39,7 @@ function Game({
       </div>
     </div>
 
-    <div className={styles.controls}>[TODO controls]</div>
+    <div className={styles.controls}>{game.gameTime.toLocaleDateString(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
 
     <div className={styles.selectSystem}>[TODO Sol]</div>
 
@@ -47,6 +51,7 @@ function Game({
       <Window lastInteracted={researchWindow.lastInteracted} reduxPath="researchWindow" title={<Trans id="researchWindow.title">Research</Trans>}>TODO research window!</Window>
       <Window lastInteracted={shipDesignWindow.lastInteracted} reduxPath="shipDesignWindow" title={<Trans id="shipDesignWindow.title">Ship design</Trans>}>TODO ship design window!</Window>
     </SortChildren>
+    <FPSStats isActive={true} />
   </div>
 }
 
@@ -64,3 +69,36 @@ export default compose(
     close
   })
 )(Game);
+
+
+//temp
+import * as RenderFlags from './renderFlags';
+
+
+const systemMapOptions = {
+  asteroid: {
+    body: RenderFlags.ALL,
+    label: RenderFlags.ALL,
+    orbit: 0
+  },
+  moon: {
+    body: RenderFlags.ALL,
+    label: RenderFlags.ALL,
+    orbit: RenderFlags.ALL
+  },
+  planet: {
+    body: RenderFlags.ALL,
+    label: RenderFlags.ALL,
+    orbit: RenderFlags.ALL
+  },
+  gasGiant: {
+    body: RenderFlags.ALL,
+    label: RenderFlags.ALL,
+    orbit: RenderFlags.ALL
+  },
+  star: {
+    body: RenderFlags.ALL,
+    label: RenderFlags.ALL,
+    orbit: RenderFlags.ALL
+  },
+};

@@ -5,6 +5,11 @@
   width: 100%;
   height: 100%;
   background: transparent url(../../../assets/images/bg.png) repeat;
+  outline: 0!important;
+
+  &:focus {
+    outline: 0!important;
+  }
 }
 
 //svg styles
@@ -31,8 +36,16 @@
 }
 
 .systemBodyLabel {
-  //stroke: #FFF;
   fill: #FFF;
   font: normal 12px sans-serif;
   text-anchor: middle;
+
+  //filter: url(#textShadow);
+}
+
+.orbit {
+  stroke: #FFF;
+  stroke-width: 0.5px;
+  stroke-opacity: 0.5;
+  fill: none;
 }

@@ -21,7 +21,7 @@ export default class LocalConnector {
 
   //Server comms methods
   broadcastToClients(messageType, data) {
-    console.log('[LC] broadcastToClients: ', messageType, data);
+    //c/onsole.log('[LC] broadcastToClients: ', messageType, data);
 
     return this.client.onMessageFromServer(messageType, cloneMessage(data));
   }
@@ -31,7 +31,7 @@ export default class LocalConnector {
       throw new Error('Invalid connectionId');
     }
 
-    console.log('[LC] sendMessageToClient: ', messageType, data);
+    //c/onsole.log('[LC] sendMessageToClient: ', messageType, data);
 
     return this.client.onMessageFromServer(messageType, cloneMessage(data));
 

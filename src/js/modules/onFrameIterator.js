@@ -43,6 +43,8 @@ function start() {
   if(!isRunning) {
     isRunning = true;
 
+    lastTime = performance.now();
+
     run();
   }
 }
@@ -58,9 +60,16 @@ function run() {
     return;
   }
 
+  const now = performance.now();
+  const elapsedTime = (now - lastTime) / 1000;
+
   //Call all registered handlers
-  items.forEach(item => {item()})
+  items.forEach(item => {item(elapsedTime)})
 
   //Queue up next call
   window.requestAnimationFrame(run);
+
+  lastTime = now;
 }
+
+let lastTime = 0;
