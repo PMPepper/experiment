@@ -42,10 +42,3 @@ $optionsWidth: $controlsWidth;
   left: $basePadding;
   width: 32rem - ($basePadding*2);
 }
-
-.systemMap {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: transparent url(../../../assets/images/bg.png) repeat;
-}

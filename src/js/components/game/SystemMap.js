@@ -1,7 +1,7 @@
 import React from 'react';
 import {compose} from 'recompose';
 
-import styles from './styles.scss';
+import defaultStyles from './systemMap.scss';
 
 import * as EntityRenderers from './entityRenderers';
 
@@ -11,10 +11,22 @@ import reduce from '@/helpers/object/reduce';
 
 
 class SystemMap extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      x: props.x,
+      y: props.y,
+    };
+  }
 
   render() {
     const props = this.props;
-    const {windowSize, entities, zoom} = props;
+    const {windowSize, entities, zoom, styles, cx, cy} = props;
+    let {x, y} = this.state;
+
+    x -= (windowSize.width * cx) / zoom;
+    y -= (windowSize.height * cy) / zoom;
 
     const renderableEntities = reduce(entities, (output, entity) => {
       if(entity.render) {
@@ -28,15 +40,18 @@ class SystemMap extends React.Component {
       {renderableEntities.map(entity => {
         const Renderer = EntityRenderers[entity.render.type];
 
-        return Renderer && <Renderer {...props} entity={entity} key={entity.id} />;
+        return Renderer && <Renderer {...props} x={x} y={y} entity={entity} key={entity.id} />;
       })}
     </svg>
   }
 
   static defaultProps = {
+    styles: defaultStyles,
     zoom: 1/1000000000,
     x: 0,
     y: 0,
+    cx: 0.5,
+    cy: 0.5
   };
 }
 
