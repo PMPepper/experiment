@@ -7,14 +7,22 @@ import * as EntityRenderers from './entityRenderers';
 
 import WindowSizeComponent from '@/HOCs/WindowSizeComponent';
 
+import reduce from '@/helpers/object/reduce';
+
 
 class SystemMap extends React.Component {
 
   render() {
     const props = this.props;
-    const {windowSize, client, zoom} = props;
+    const {windowSize, entities, zoom} = props;
 
-    const renderableEntities = [];//server.getEntitiesByIds(server.getCachedEntities('renderable'))
+    const renderableEntities = reduce(entities, (output, entity) => {
+      if(entity.render) {
+        output.push(entity);
+      }
+
+      return output
+    }, [])//[];//server.getEntitiesByIds(server.getCachedEntities('renderable'))
 
     return <svg className={styles.systemMap}>
       {renderableEntities.map(entity => {

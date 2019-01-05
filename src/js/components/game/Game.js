@@ -21,11 +21,11 @@ import {open, close} from '@/redux/HORs/isOpen';
 
 function Game({
   coloniesWindow, fleetsWindow, researchWindow, shipDesignWindow,
-  client,
+  game,
   open, close
 }) {
   return <div className={styles.game}>
-    <SystemMap client={client} />
+    <SystemMap gameTime={game.gameTime} entities={game.entities} />
     <div className={styles.toolbar}>
       <div className="hspaceStart">
         <Button onClick={() => {open('coloniesWindow')}}><Trans id="toolbar.colonies">Colonies</Trans></Button>
@@ -57,6 +57,7 @@ export default compose(
       fleetsWindow: state.fleetsWindow,
       researchWindow: state.researchWindow,
       shipDesignWindow: state.shipDesignWindow,
+      game: state.game,
     }
   }, {
     open,

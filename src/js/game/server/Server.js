@@ -162,11 +162,11 @@ export default class Server {
         this.connector.sendMessageToClient(client.id, 'startingGame', this._getClientState(client.id));
       });
 
-      ///*
+      /*
       //45-50 ~20/millisecond
       //43-47
       //42-47
-      //
+      //30-33 ~30/millisecond
       const start = performance.now();
 
       this._advanceTime(1000);
@@ -234,20 +234,6 @@ export default class Server {
   // Getters/setters //
   /////////////////////
 
-  /*
-  get phase() {
-    return this._phase
-  }
-
-  set phase(phase) {
-    if(phase !== this._phase) {
-      const oldPhase = this._phase;
-
-      this._phase = phase;
-
-      this.connector.broadcastToClients('onPhaseChanged', {newPhase: phase, oldPhase});
-    }
-  }*/
 
 
   ////////////////////
@@ -367,7 +353,31 @@ export default class Server {
   }
 
   _getClientState(clientId) {
-    return {};//TODO implement
+    const entities = this.entities;
+    const client = this.clients[clientId];
+    const factionId = client.factionId;
+
+
+    if(this.entityCacheDirty) {
+      this.entityIds = Object.keys(entities);
+
+      this.entityCacheDirty = false;
+    }
+
+    const entityIds = this.entityIds;
+
+    const clientEntities = {};
+
+    for(let i = 0, l = entityIds.length; i < l; ++i) {
+      let entity = entities[entityIds[i]];
+
+      //Filter to just entities that do not have a factionId AND entities that have the clients faction id
+      if(!entity.factionId || entity.factionId === factionId) {
+        clientEntities[entity.id] = entity;
+      }
+    }
+
+    return {entities: clientEntities, gameTime: this.gameTime.valueOf()};
   }
 
   _newEntity(type, props) {

@@ -1,12 +1,14 @@
-
+import {setGameState} from '@/redux/reducers/game';
 
 
 export default class Client {
-  constructor(name, connector) {
+  constructor(name, store, connector) {
     this.name = name;
+    this.store = store;
 
     //connector deals with communications, e.g. ip address of remote server
     this.connector = connector;
+    this.connector.setClient(this);
   }
 
   //contact the server and create a new game with this definition
@@ -33,6 +35,27 @@ export default class Client {
     console.log('[CLIENT] startGame: ');
 
     return this.connector.sendMessageToServer('startGame', null)
+  }
+
+  //message handlers
+  message_startingGame(gameState) {
+    //TODO dispatch a redux action?
+    this.gameState = gameState;
+
+    this.store.dispatch(setGameState(gameState))
+  }
+
+
+  onMessageFromServer(messageType, data) {
+    console.log('[CLIENT] on message from server: ', messageType, data);
+
+    const name = `message_${messageType}`;
+
+    if(this[name]) {
+      return this[name](data);
+    }
+
+    console.log('Unknown message from server: ', messageType, data);
   }
 
 }

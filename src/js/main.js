@@ -23,7 +23,7 @@ import baseGameDefinition from '@/game/data/baseGameDefinition';//TEMP CODE
 //vars
 const title = 'React/Webpack testing';
 
-const store = createStore(root)
+const store = createStore(root, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
 console.log(store);
 console.log(store.getState());
 
@@ -38,13 +38,13 @@ console.log(store.getState());
 
 polyfills.then(() => {
   //TEMP CODE
-  const gameServer = GameEngine.startGame(baseGameDefinition, new Client('local', new LocalConnector())).then((client) => {
+  const gameServer = GameEngine.startGame(baseGameDefinition, new Client('local', store, new LocalConnector())).then((client) => {
       console.log('[MAIN] render');
 
       ReactDOM.render(
         <Provider store={store}>
           <I18nProvider language="en-GB">
-            <Game client={client} />
+            <Game />
           </I18nProvider>
         </Provider>,
         document.getElementById('app')

@@ -174,6 +174,22 @@ const systems = {
         }
       },
       {
+        "name": "Metis",
+        "type": "moon",
+        "parent": "Jupiter",
+        "mass": 3.6e16,
+        "radius": 21500,
+        "day": 25470,
+        "axialTilt": 0,
+        "tidalLock": true,
+        "albedo": 0.061,
+        "orbit": {
+          "type": "regular",
+          "radius": 128852000,
+          "offset": 0.34
+        }
+      },
+      {
         "name": "Saturn",
         "type": "gasGiant",
         "parent": "Sol A",
