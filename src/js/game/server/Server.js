@@ -55,8 +55,8 @@ export default class Server {
 
     this.gameTime = new Date(definition.startDate);
 
-    //this._advanceTime(0);
-    this.entities = map(this.entities, this._getEntityProcessors());
+    this._advanceTime(null);
+    //this.entities = map(this.entities, this._getEntityProcessors());
 
     //Now waiting for players to connect
     this.phase = CONNECTING;
@@ -162,6 +162,36 @@ export default class Server {
         this.connector.sendMessageToClient(client.id, 'startingGame', this._getClientState(client.id));
       });
 
+      ///*
+      //45-50 ~20/millisecond
+      //43-47
+      //42-47
+      //
+      const start = performance.now();
+
+      this._advanceTime(1000);
+
+      const end = performance.now();
+
+      alert('[PERF] '+(end - start));
+      //*/
+
+      /*
+      setTimeout(() => {
+        performance.mark('advanceTime-start');
+
+        this._advanceTime(1000);
+
+        performance.mark('advanceTime-end');
+
+        performance.measure(
+          "advanceTime",
+          "advanceTime-start",
+          "advanceTime-end"
+        );
+      }, 1000);
+      //*/
+
 
       return Promise.resolve(true);
     }
@@ -244,7 +274,7 @@ export default class Server {
     return ids.map(id => (entities[id]));
   }
 
-  getCachedEntities(...cachePath) {
+  /*getCachedEntities(...cachePath) {
     const entityCacheTypeName = cachePath[0];
     const entities = this.entities;
     const entityCache = this.entityCache;
@@ -269,7 +299,7 @@ export default class Server {
 
     //get the requested data
     return resolvePath(entityCache, cachePath);
-  }
+  }*/
 
 
   /////////////////////////////
@@ -277,17 +307,44 @@ export default class Server {
   /////////////////////////////
 
   _advanceTime(elapsedTime) {
-    let newEntities = null;
+    const entities = this.entities;
+
+    if(this.entityCacheDirty) {
+      this.entityIds = Object.keys(entities);
+
+      this.entityCacheDirty = false;
+    }
+
+    const entityIds = this.entityIds;
+    const numEntities = entityIds.length;
+    let processors = null;
+
+    if(elapsedTime === null) {
+      //initial entity initialisation
+      processors = this._getEntityProcessors();
+
+      for(let j = 0; j < numEntities; ++j) {
+        processors(entities[entityIds[j]], entities);
+      }
+
+      return;
+    }
 
     for(let i = 0; i < elapsedTime; ++i) {
       //update game time
       this.gameTime.setSeconds(this.gameTime.getSeconds() + elapsedTime);
 
+      let processors = this._getEntityProcessors();
+
+      for(let j = 0; j < numEntities; ++j) {
+        processors(entities[entityIds[j]], entities);
+      }
+
       //update the game entities
-      newEntities = map(this.entities, this._getEntityProcessors());
+      //newEntities = map(this.entities, this._getEntityProcessors());
     }
 
-    this.entities = newEntities;
+    //this.entities = newEntities;
   }
 
   _getEntityProcessors() {
@@ -298,7 +355,7 @@ export default class Server {
 
     //create composed function for processing all entities
     //entity processors are currently mutating objects - could clone the object once at the start if needed? although it would only be a shallow clone
-    return (entity, entityId, entities) => {
+    return (entity, entities) => {
       //entity = {...entity};
 
       for(let i = 0, l = entityProcessors.length; i < l;++i) {

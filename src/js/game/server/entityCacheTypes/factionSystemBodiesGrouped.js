@@ -41,8 +41,8 @@ function groupFactionSystemBodies(entities, factionSystemBodyIds) {
       rootSystemBodyGrouped = grouped;
     }
 
-    if(systemBody.orbitingId) {
-      systemBodyIdToGrouped[systemBody.orbitingId].children.push(grouped);
+    if(systemBody.movement && systemBody.movement.orbitingId) {
+      systemBodyIdToGrouped[systemBody.movement.orbitingId].children.push(grouped);
     }
   })
 
