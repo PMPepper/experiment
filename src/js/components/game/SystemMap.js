@@ -124,7 +124,7 @@ class SystemMap extends React.Component {
       return output
     }, [])//[];//server.getEntitiesByIds(server.getCachedEntities('renderable'))
 
-    return <svg className={styles.systemMap} tabIndex="0" onKeyDown={this._onKeyDown} onKeyUp={this._onKeyUp} onBlur={this._onBlur}>
+    return <div className={styles.systemMapWrapper} tabIndex="0" onKeyDown={this._onKeyDown} onKeyUp={this._onKeyUp} onBlur={this._onBlur}><svg className={styles.systemMap}>
       <filter id="textShadow" height="130%">
         <feGaussianBlur in="SourceAlpha" stdDeviation="1"/> {/*<!-- stdDeviation is how much to blur -->*/}
         {/*<feOffset dx="2" dy="2" result="offsetblur"/> <!-- how much to offset -->*/}
@@ -141,7 +141,7 @@ class SystemMap extends React.Component {
 
         return Renderer && <Renderer {...props} x={x} y={y} zoom={zoom} entity={entity} key={entity.id} />;
       })}
-    </svg>
+    </svg></div>
   }
 
   static defaultProps = {

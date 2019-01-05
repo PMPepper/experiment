@@ -1,5 +1,9 @@
 @import '../../../css/shared';
 
+.systemMapWrapper {
+  height: 100%;
+}
+
 .systemMap {
   display: block;
   width: 100%;
@@ -45,7 +49,7 @@
 
 .orbit {
   stroke: #FFF;
-  stroke-width: 0.5px;
-  stroke-opacity: 0.5;
+  stroke-width: 1px;
+  stroke-opacity: 0.25;
   fill: none;
 }
