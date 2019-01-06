@@ -16,8 +16,21 @@ import {addItem, removeItem} from '@/modules/onFrameIterator';
 const normalScrollSpeed = 200;//pixels per second
 const fastScrollSpeed = 500;//pixels per second
 
+const baseScrollEaseFactor = 1/3;
+
 const normalZoomSpeed = 2;
 const fastZoomSpeed = 4;
+
+const normalWheelZoomSpeed = 1.15;
+const fastWheelZoomSpeed = 1.5;
+
+const zoomEaseFactor = 1/3;
+const zoomEaseThreshold = 0.0001;
+
+
+//time (in seconds) over which easing gets ramped from base to 1 when following a position
+//this is to catch up with fast objects
+const followExtraEaseTime = 3;
 
 
 class SystemMap extends React.Component {
@@ -55,35 +68,37 @@ class SystemMap extends React.Component {
 
   _onFrameUpdate = (elapsedTime) => {
     const {props, state, mouseClientX, mouseClientY} = this;
-    const isKeyDown = props.isKeyDown;
+    const {isKeyDown, options} = props;
 
     const newState = {x: state.x, y: state.y, zoom: state.zoom};
     let hasScrolled = false;//has moved camera left/right/up/down, doesn't care about zooming < used to determine if we should stop following
     let isFollowing = false;
 
     //Take keyboard input
-    const scrollSpeed = ((isKeyDown(16) ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / state.zoom;
-    const zoomSpeed = (isKeyDown(16) ? fastZoomSpeed : normalZoomSpeed);
+    const scrollSpeed = ((isKeyDown(options.controls.fast) ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / state.zoom;
+    const zoomSpeed = (isKeyDown(options.controls.fast) ? fastZoomSpeed : normalZoomSpeed);//<TODO take into account elapsed time (frame rate)
 
-    if(isKeyDown([39, 68])) {//right
+    //-scrolling
+    if(isKeyDown(options.controls.scrollRight)) {//right
       this.tx += scrollSpeed;
       hasScrolled = true;
-    } else if(isKeyDown([37, 65])) {//left
+    } else if(isKeyDown(options.controls.scrollLeft)) {//left
       this.tx -= scrollSpeed;
       hasScrolled = true;
     }
 
-    if(isKeyDown([40, 83])) {//down
+    if(isKeyDown(options.controls.scrollDown)) {//down
       this.ty += scrollSpeed;
       hasScrolled = true;
-    } else if(isKeyDown([38, 87])) {//up
+    } else if(isKeyDown(options.controls.scrollUp)) {//up
       this.ty -= scrollSpeed;
       hasScrolled = true;
     }
 
-    if(isKeyDown(34)) {//zoom in
+    //-zooming
+    if(isKeyDown(options.controls.zoomIn)) {//zoom in
       this.tzoom *= Math.pow(zoomSpeed, elapsedTime);
-    } else if(isKeyDown(33)) {//zoom out
+    } else if(isKeyDown(options.controls.zoomOut)) {//zoom out
       this.tzoom *= Math.pow(1 / zoomSpeed, elapsedTime);
     }
 
@@ -92,6 +107,8 @@ class SystemMap extends React.Component {
       if(hasScrolled) {
         //user has scrolled, stop following current target
         props.setFollowing(null);
+        this.lastFollowing = null;
+        this.followingTime = 0;
       } else {
         const followEntity = props.entities[props.following];
 
@@ -126,13 +143,10 @@ class SystemMap extends React.Component {
     }
 
     //Ease zooming
-    const zoomEaseFactor = 1/3;
-    const zoomEaseThreshold = 0.0001;
-
     newState.zoom += ((this.tzoom - newState.zoom) * zoomEaseFactor);
 
     if(Math.abs(1 - (newState.zoom / this.tzoom)) < zoomEaseThreshold) {
-      newState.zoom = this.tzoom;//easing finished
+      newState.zoom = this.tzoom;//zoom easing finished
     }
 
     //keep zooming centered
@@ -153,9 +167,8 @@ class SystemMap extends React.Component {
     }
 
     //convert target x/y to real x/y with easing
-    let easeFactor = 1/3;
+    let easeFactor = baseScrollEaseFactor;
     const easeThreshold = 1 / state.zoom;
-    const followExtraEaseTime = 3;
     const distanceFromTarget = Math.sqrt(Math.pow(this.tx - newState.x, 2) + Math.pow(this.ty - newState.y, 2));
 
     //if you're following something slowly reduce the easing to nothing so the
@@ -164,21 +177,15 @@ class SystemMap extends React.Component {
       easeFactor += (this.followingTime / followExtraEaseTime) * (1 - easeFactor);
     }
 
-
+    //if easing not required
     if(easeFactor >= 1 || distanceFromTarget <= easeThreshold) {
+      //just move to target
       newState.x = this.tx;
       newState.y = this.ty;
     } else {
+      //apply easing
       newState.x += ((this.tx - newState.x) * easeFactor);
       newState.y += ((this.ty - newState.y) * easeFactor);
-    }
-
-    if(Math.abs(newState.x - this.tx) < easeThreshold) {
-      newState.x = this.tx;//easing finished
-    }
-
-    if(Math.abs(newState.y - this.ty) < easeThreshold) {
-      newState.y = this.ty;//easing finished
     }
 
     //If any state changes, update the state
@@ -244,7 +251,7 @@ class SystemMap extends React.Component {
   }
 
   _onWheel = (e) => {
-    const wheelZoomSpeed = this.props.isKeyDown(16) ? 1.5 : 1.15;
+    const wheelZoomSpeed = this.props.isKeyDown(this.props.options.controls.fast) ? fastWheelZoomSpeed : normalWheelZoomSpeed;
 
     if(e.deltaY < 0) {
       this.tzoom *= wheelZoomSpeed;
