@@ -33,6 +33,8 @@ class SystemMap extends React.Component {
     this.tx = props.x;
     this.ty = props.y;
     this.tzoom = props.zoom;
+    this.followingTime = 0;
+    this.lastFollowing = null;
 
     addItem(this._onFrameUpdate);
 
@@ -102,6 +104,27 @@ class SystemMap extends React.Component {
       }
     }
 
+    if(this.lastFollowing) {
+      if(isFollowing) {
+        if(props.following === this.lastFollowing) {
+          //still following the same thing
+          this.followingTime += elapsedTime;
+        } else {
+          //switched to following something new
+          this.lastFollowing = props.following;
+          this.followingTime = 0;
+        }
+      } else {
+        //no longer following a thing
+        this.lastFollowing = null;
+        this.followingTime = 0;
+      }
+    } else if(isFollowing) {
+      //am now following something
+      this.lastFollowing = props.following;
+      this.followingTime = 0;
+    }
+
     //Ease zooming
     const zoomEaseFactor = 1/3;
     const zoomEaseThreshold = 0.0001;
@@ -130,11 +153,25 @@ class SystemMap extends React.Component {
     }
 
     //convert target x/y to real x/y with easing
-    const easeFactor = 1/3;
-    const easeThreshold = 1;
+    let easeFactor = 1/3;
+    const easeThreshold = 1 / state.zoom;
+    const followExtraEaseTime = 3;
+    const distanceFromTarget = Math.sqrt(Math.pow(this.tx - newState.x, 2) + Math.pow(this.ty - newState.y, 2));
 
-    newState.x += ((this.tx - newState.x) * easeFactor);
-    newState.y += ((this.ty - newState.y) * easeFactor);
+    //if you're following something slowly reduce the easing to nothing so the
+    //camera will catch up with it, even if it's moving quickly
+    if(this.followingTime > 0) {
+      easeFactor += (this.followingTime / followExtraEaseTime) * (1 - easeFactor);
+    }
+
+
+    if(easeFactor >= 1 || distanceFromTarget <= easeThreshold) {
+      newState.x = this.tx;
+      newState.y = this.ty;
+    } else {
+      newState.x += ((this.tx - newState.x) * easeFactor);
+      newState.y += ((this.ty - newState.y) * easeFactor);
+    }
 
     if(Math.abs(newState.x - this.tx) < easeThreshold) {
       newState.x = this.tx;//easing finished
