@@ -179,7 +179,7 @@ const systems = {
         "parent": "Jupiter",
         "mass": 3.6e16,
         "radius": 21500,
-        "day": 25470,
+        "day": null,
         "axialTilt": 0,
         "tidalLock": true,
         "albedo": 0.061,
@@ -187,6 +187,90 @@ const systems = {
           "type": "regular",
           "radius": 128852000,
           "offset": 0.34
+        }
+      },
+
+      {
+        "name": "Adrastea",
+        "type": "moon",
+        "parent": "Jupiter",
+        "mass": 0.2e16,
+        "radius": 8200,
+        "day": null,
+        "axialTilt": 0,
+        "tidalLock": true,
+        "albedo": 0.1,
+        "orbit": {
+          "type": "regular",
+          "radius": 129000000,
+          "offset": 0.81
+        }
+      },
+
+      {
+        "name": "Amalthea",
+        "type": "moon",
+        "parent": "Jupiter",
+        "mass": 208e16,
+        "radius": 83500,
+        "day": null,
+        "axialTilt": 0,
+        "tidalLock": true,
+        "albedo": 0.09,
+        "orbit": {
+          "type": "regular",
+          "radius": 181366000,
+          "offset": 0.5
+        }
+      },
+
+      {
+        "name": "Thebe",
+        "type": "moon",
+        "parent": "Jupiter",
+        "mass": 43e16,
+        "radius": 49300,
+        "day": null,
+        "axialTilt": 0,
+        "tidalLock": true,
+        "albedo": 0.047,
+        "orbit": {
+          "type": "regular",
+          "radius": 222452000,
+          "offset": 0.03
+        }
+      },
+
+      {
+        "name": "Io",
+        "type": "moon",
+        "parent": "Jupiter",
+        "mass": 8.931938e22,
+        "radius": 1821600,
+        "day": null,
+        "axialTilt": 0,
+        "tidalLock": true,
+        "albedo": 0.63,
+        "orbit": {
+          "type": "regular",
+          "radius": 421700000,
+          "offset": 0.61
+        }
+      },
+      {
+        "name": "Europa",
+        "type": "moon",
+        "parent": "Jupiter",
+        "mass": 4.799844e22,
+        "radius": 1560800,
+        "day": null,
+        "axialTilt": 0,
+        "tidalLock": true,
+        "albedo": 0.67,
+        "orbit": {
+          "type": "regular",
+          "radius": 670900000,
+          "offset": 0.78
         }
       },
       {

@@ -44,6 +44,8 @@
   font: normal 12px sans-serif;
   text-anchor: middle;
 
+  pointer-events: none;
+
   //filter: url(#textShadow);
 }
 
@@ -52,4 +54,6 @@
   stroke-width: 1px;
   stroke-opacity: 0.25;
   fill: none;
+
+  pointer-events: none;
 }

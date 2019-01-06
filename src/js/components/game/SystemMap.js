@@ -16,8 +16,8 @@ const normalScrollSpeed = 200;//pixels per second
 const fastScrollSpeed = 500;//pixels per second
 const keysInUse = [16, 33, 34, 37, 38, 39, 40].reduce((obj, k) => {obj[k] = true; return obj;}, {});
 
-const normalZoomSpeed = 1.2;
-const fastZoomSpeed = 2;
+const normalZoomSpeed = 2;
+const fastZoomSpeed = 4;
 
 
 class SystemMap extends React.Component {
@@ -39,42 +39,65 @@ class SystemMap extends React.Component {
   }
 
   _onFrameUpdate = (elapsedTime) => {
-    //console.log('elapsedTime: ', elapsedTime);
+    const props = this.props;
     const state = this.state;
     const {keysDown, zoom, x, y} = state;
     const newState = {};
     let hasChanged = false;
+    let hasScrolled = false;//has moved camera left/right/up/down, doesn't care about zooming < used to determine if we should stop following
 
+    //Take keyboard input
     const scrollSpeed = ((keysDown[16] ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / zoom;
     const zoomSpeed = (keysDown[16] ? fastZoomSpeed : normalZoomSpeed);
 
     if(keysDown[39]) {//right
       newState.x = x + scrollSpeed;
       hasChanged = true;
+      hasScrolled = true;
     } else if(keysDown[37]) {//left
       newState.x = x - scrollSpeed;
       hasChanged = true;
+      hasScrolled = true;
     }
 
-    if(keysDown[40]) {//right
+    if(keysDown[40]) {//down
       newState.y = y + scrollSpeed;
       hasChanged = true;
-    } else if(keysDown[38]) {//left
+      hasScrolled = true;
+    } else if(keysDown[38]) {//up
       newState.y = y - scrollSpeed;
       hasChanged = true;
+      hasScrolled = true;
     }
 
-    if(keysDown[34]) {//zoom
+    if(keysDown[34]) {//zoom in
       newState.zoom = zoom * Math.pow(zoomSpeed, elapsedTime);
       hasChanged = true;
-    } else if(keysDown[33]) {//zoom
+    } else if(keysDown[33]) {//zoom out
       newState.zoom = zoom * Math.pow(1 / zoomSpeed, elapsedTime);
       hasChanged = true;
     }
 
-    if(hasChanged) {
-      this.setState(newState);
+    //follow current target
+    if(props.following) {
+      if(hasScrolled) {
+        //user has scrolled, stop following current target
+        props.setFollowing(null);
+      } else {
+        const followEntity = props.entities[props.following];
+
+        //This is an entity that has a position, so can be followed...
+        if(followEntity.position) {
+          newState.x = followEntity.position.x;
+          newState.y = followEntity.position.y;
+          hasChanged = true;
+          //hasScrolled = true;
+        }
+      }
     }
+
+    //If any state changes, update the state
+    hasChanged && this.setState(newState);
   }
 
   _onKeyDown = (e) => {
@@ -108,6 +131,21 @@ class SystemMap extends React.Component {
     this.setState({keysDown: {}});
   }
 
+  _onMouseDown = (e) => {
+    //e.preventDefault();
+  }
+
+  _onClick = (e) => {
+    console.log('onClick: ', e.target);
+    const target = e.target;
+
+    if('entityId' in target.dataset) {
+      const entityId = +target.dataset.entityId;
+
+      this.props.setFollowing(entityId);
+    }
+  }
+
   render() {
     const props = this.props;
     const {windowSize, entities, styles, cx, cy} = props;
@@ -122,26 +160,25 @@ class SystemMap extends React.Component {
       }
 
       return output
-    }, [])//[];//server.getEntitiesByIds(server.getCachedEntities('renderable'))
+    }, [])
 
-    return <div className={styles.systemMapWrapper} tabIndex="0" onKeyDown={this._onKeyDown} onKeyUp={this._onKeyUp} onBlur={this._onBlur}><svg className={styles.systemMap}>
-      <filter id="textShadow" height="130%">
-        <feGaussianBlur in="SourceAlpha" stdDeviation="1"/> {/*<!-- stdDeviation is how much to blur -->*/}
-        {/*<feOffset dx="2" dy="2" result="offsetblur"/> <!-- how much to offset -->*/}
-        <feComponentTransfer>
-          <feFuncA type="linear" slope="1"/> {/*<!-- slope is the opacity of the shadow -->*/}
-        </feComponentTransfer>
-        <feMerge>
-          <feMergeNode/> {/*<!-- this contains the offset blurred image -->*/}
-          <feMergeNode in="SourceGraphic"/> {/*<!-- this contains the element that the filter is applied to -->*/}
-        </feMerge>
-      </filter>
-      {renderableEntities.map(entity => {
-        const Renderer = EntityRenderers[entity.render.type];
+    return <div
+        className={styles.systemMapWrapper}
+        tabIndex="0"
+        onKeyDown={this._onKeyDown}
+        onKeyUp={this._onKeyUp}
+        onBlur={this._onBlur}
+        onMouseDown={this._onMouseDown}
+        onClick={this._onClick}
+      >
+        <svg className={styles.systemMap}>
+          {renderableEntities.map(entity => {
+            const Renderer = EntityRenderers[entity.render.type];
 
-        return Renderer && <Renderer {...props} x={x} y={y} zoom={zoom} entity={entity} key={entity.id} />;
-      })}
-    </svg></div>
+            return Renderer && <Renderer {...props} x={x} y={y} zoom={zoom} entity={entity} key={entity.id} />;
+          })}
+        </svg>
+      </div>
   }
 
   static defaultProps = {
@@ -177,4 +214,18 @@ export default compose(
     ctx.fillRect(430, 130, 50, 50);
   }
 }}></canvas>
+*/
+
+/*
+<filter id="textShadow" height="130%">
+  <feGaussianBlur in="SourceAlpha" stdDeviation="1"/> <!-- stdDeviation is how much to blur -->
+  {/*<feOffset dx="2" dy="2" result="offsetblur"/> <!-- how much to offset -->
+  <feComponentTransfer>
+    <feFuncA type="linear" slope="1"/> <!-- slope is the opacity of the shadow -->
+  </feComponentTransfer>
+  <feMerge>
+    <feMergeNode/> <!-- this contains the offset blurred image -->
+    <feMergeNode in="SourceGraphic"/> <!-- this contains the element that the filter is applied to -->
+  </feMerge>
+</filter>
 */

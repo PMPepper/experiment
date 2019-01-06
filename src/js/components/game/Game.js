@@ -21,15 +21,17 @@ import cloneOmittingProps from '@/helpers/react/clone-omitting-props';
 
 //reducers
 import {open, close} from '@/redux/HORs/isOpen';
+import {setFollowing as setSystemMapFollowing, setOptions as setSystemMapOptions} from '@/redux/reducers/systemMap';
 
 
 function Game({
   coloniesWindow, fleetsWindow, researchWindow, shipDesignWindow,
   game,
+  systemMap, setSystemMapFollowing, setSystemMapOptions,
   open, close
 }) {
   return <div className={styles.game}>
-    <SystemMap gameTime={game.gameTime} entities={game.entities} sysemMapOptions={systemMapOptions} />
+    <SystemMap gameTime={game.gameTime} entities={game.entities} {...systemMap} setFollowing={setSystemMapFollowing} />
     <div className={styles.toolbar}>
       <div className="hspaceStart">
         <Button onClick={() => {open('coloniesWindow')}}><Trans id="toolbar.colonies">Colonies</Trans></Button>
@@ -63,42 +65,13 @@ export default compose(
       researchWindow: state.researchWindow,
       shipDesignWindow: state.shipDesignWindow,
       game: state.game,
+
+      systemMap: state.systemMap,
     }
   }, {
     open,
-    close
+    close,
+    setSystemMapFollowing,
+    setSystemMapOptions,
   })
 )(Game);
-
-
-//temp
-import * as RenderFlags from './renderFlags';
-
-
-const systemMapOptions = {
-  asteroid: {
-    body: RenderFlags.ALL,
-    label: RenderFlags.ALL,
-    orbit: 0
-  },
-  moon: {
-    body: RenderFlags.ALL,
-    label: RenderFlags.ALL,
-    orbit: RenderFlags.ALL
-  },
-  planet: {
-    body: RenderFlags.ALL,
-    label: RenderFlags.ALL,
-    orbit: RenderFlags.ALL
-  },
-  gasGiant: {
-    body: RenderFlags.ALL,
-    label: RenderFlags.ALL,
-    orbit: RenderFlags.ALL
-  },
-  star: {
-    body: RenderFlags.ALL,
-    label: RenderFlags.ALL,
-    orbit: RenderFlags.ALL
-  },
-};

@@ -5,10 +5,10 @@ import * as RenderFlags from '../renderFlags';
 
 //The component
 export default function factionSystemBody(props) {
-  const {entity, entities, zoom, styles, x, y, windowSize, sysemMapOptions} = props;
+  const {entity, entities, zoom, styles, x, y, windowSize, options} = props;
   const systemBodyEntity = entities[entity.systemBodyId];
   const systemBody = systemBodyEntity.systemBody;
-  const systemBodyDisplayOptions = sysemMapOptions[systemBody.type];
+  const systemBodyDisplayOptions = options[systemBody.type];
 
   const parent = systemBodyEntity.movement && systemBodyEntity.movement.orbitingId && entities[systemBodyEntity.movement.orbitingId];
 
@@ -94,6 +94,7 @@ export default function factionSystemBody(props) {
     displayBody && <circle
       {...bodyProps}
       key="body"
+      data-entity-id={entity.systemBodyId}
     />,
     displayLabel && <text
       className={`${styles.systemBodyLabel} ${styles[systemBody.type]}`}
