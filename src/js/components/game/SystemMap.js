@@ -48,6 +48,7 @@ class SystemMap extends React.Component {
     this.tzoom = props.zoom;
     this.followingTime = 0;
     this.lastFollowing = null;
+    this.isMouseDragging = false;
 
     addItem(this._onFrameUpdate);
 
@@ -67,80 +68,92 @@ class SystemMap extends React.Component {
   }
 
   _onFrameUpdate = (elapsedTime) => {
-    const {props, state, mouseClientX, mouseClientY} = this;
+    const {props, state, mouseClientX, mouseClientY, isMouseDragging} = this;
     const {isKeyDown, options} = props;
 
     const newState = {x: state.x, y: state.y, zoom: state.zoom};
     let hasScrolled = false;//has moved camera left/right/up/down, doesn't care about zooming < used to determine if we should stop following
     let isFollowing = false;
 
-    //Take keyboard input
-    const scrollSpeed = ((isKeyDown(options.controls.fast) ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / state.zoom;
+    //-keyboard zooming
     const zoomSpeed = (isKeyDown(options.controls.fast) ? fastZoomSpeed : normalZoomSpeed);//<TODO take into account elapsed time (frame rate)
 
-    //-scrolling
-    if(isKeyDown(options.controls.scrollRight)) {//right
-      this.tx += scrollSpeed;
-      hasScrolled = true;
-    } else if(isKeyDown(options.controls.scrollLeft)) {//left
-      this.tx -= scrollSpeed;
-      hasScrolled = true;
-    }
-
-    if(isKeyDown(options.controls.scrollDown)) {//down
-      this.ty += scrollSpeed;
-      hasScrolled = true;
-    } else if(isKeyDown(options.controls.scrollUp)) {//up
-      this.ty -= scrollSpeed;
-      hasScrolled = true;
-    }
-
-    //-zooming
     if(isKeyDown(options.controls.zoomIn)) {//zoom in
       this.tzoom *= Math.pow(zoomSpeed, elapsedTime);
     } else if(isKeyDown(options.controls.zoomOut)) {//zoom out
       this.tzoom *= Math.pow(1 / zoomSpeed, elapsedTime);
     }
 
-    //follow current target
-    if(props.following) {
-      if(hasScrolled) {
-        //user has scrolled, stop following current target
+    if(isMouseDragging) {
+      if(props.following) {
         props.setFollowing(null);
-        this.lastFollowing = null;
-        this.followingTime = 0;
-      } else {
-        const followEntity = props.entities[props.following];
+      }
 
-        //This is an entity that has a position, so can be followed...
-        if(followEntity.position) {
-          this.tx = followEntity.position.x;
-          this.ty = followEntity.position.y;
-          isFollowing = true;
+      //set target position to wherever places the mouseDownWorldCoords at the
+      //current dragMouse screen position
+      this.tx = this.mouseDownWorldCoords.x -((this.dragMouseX - (props.windowSize.width * props.cx) ) / state.zoom);
+      this.ty = this.mouseDownWorldCoords.y -((this.dragMouseY - (props.windowSize.height * props.cy) ) / state.zoom);
+    } else {
+      //Take keyboard input scrolling
+      const scrollSpeed = ((isKeyDown(options.controls.fast) ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / state.zoom;
+
+      //-scrolling
+      if(isKeyDown(options.controls.scrollRight)) {//right
+        this.tx += scrollSpeed;
+        hasScrolled = true;
+      } else if(isKeyDown(options.controls.scrollLeft)) {//left
+        this.tx -= scrollSpeed;
+        hasScrolled = true;
+      }
+
+      if(isKeyDown(options.controls.scrollDown)) {//down
+        this.ty += scrollSpeed;
+        hasScrolled = true;
+      } else if(isKeyDown(options.controls.scrollUp)) {//up
+        this.ty -= scrollSpeed;
+        hasScrolled = true;
+      }
+
+      //follow current target
+      if(props.following) {
+        if(hasScrolled) {
+          //user has scrolled, stop following current target
+          props.setFollowing(null);
+          this.lastFollowing = null;
+          this.followingTime = 0;
+        } else {
+          const followEntity = props.entities[props.following];
+
+          //This is an entity that has a position, so can be followed...
+          if(followEntity.position) {
+            this.tx = followEntity.position.x;
+            this.ty = followEntity.position.y;
+            isFollowing = true;
+          }
         }
       }
-    }
 
-    if(this.lastFollowing) {
-      if(isFollowing) {
-        if(props.following === this.lastFollowing) {
-          //still following the same thing
-          this.followingTime += elapsedTime;
+      if(this.lastFollowing) {
+        if(isFollowing) {
+          if(props.following === this.lastFollowing) {
+            //still following the same thing
+            this.followingTime += elapsedTime;
+          } else {
+            //switched to following something new
+            this.lastFollowing = props.following;
+            this.followingTime = 0;
+          }
         } else {
-          //switched to following something new
-          this.lastFollowing = props.following;
+          //no longer following a thing
+          this.lastFollowing = null;
           this.followingTime = 0;
         }
-      } else {
-        //no longer following a thing
-        this.lastFollowing = null;
+      } else if(isFollowing) {
+        //am now following something
+        this.lastFollowing = props.following;
         this.followingTime = 0;
       }
-    } else if(isFollowing) {
-      //am now following something
-      this.lastFollowing = props.following;
-      this.followingTime = 0;
-    }
+    }//end not currently mouse dragging
 
     //Ease zooming
     newState.zoom += ((this.tzoom - newState.zoom) * zoomEaseFactor);
@@ -196,15 +209,10 @@ class SystemMap extends React.Component {
 
   //event handlers
   _onMouseDown = (e) => {
-    this._lastX = e.clientX;
-    this._lastY = e.clientY;
+    this.dragMouseX = e.clientX;
+    this.dragMouseY = e.clientY;
 
-    //DEV CODE
-    const world = this.screenToWorld(e.clientX, e.clientY);
-    const backToScreen = this.worldToScreen(world.x, world.y);
-
-    //console.log(`onMouseDown: screen(${e.clientX}, ${e.clientY}, world(${world.x}, ${world.y}), backToScreen(${backToScreen.x}, ${backToScreen.y})`);
-    //END DEV CODE
+    this.mouseDownWorldCoords = this.screenToWorld(e.clientX, e.clientY);
 
     window.addEventListener('mousemove', this._onDragMove);
     window.addEventListener('mouseup', this._onDragUp);
@@ -213,10 +221,10 @@ class SystemMap extends React.Component {
   _onDragMove = (e) => {
     e.preventDefault();
 
-    //console.log(this.props, e.clientX - this._lastX, e.clientY - this._lastY);
+    this.isMouseDragging = true;
 
-    this._lastX = e.clientX;
-    this._lastY = e.clientY;
+    this.dragMouseX = e.clientX;
+    this.dragMouseY = e.clientY;
   }
 
   _onDragUp = (e) => {
@@ -226,6 +234,8 @@ class SystemMap extends React.Component {
   }
 
   _endDragging() {
+    this.isMouseDragging = false;
+
     window.removeEventListener('mousemove', this._onDragMove);
     window.removeEventListener('mouseup', this._onDragUp);
   }
