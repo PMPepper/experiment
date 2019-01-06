@@ -69,7 +69,7 @@ class SystemMap extends React.Component {
 
   _onFrameUpdate = (elapsedTime) => {
     const {props, state, mouseClientX, mouseClientY, isMouseDragging} = this;
-    const {isKeyDown, options} = props;
+    const {isKeyDown, options, windowSize} = props;
 
     const newState = {x: state.x, y: state.y, zoom: state.zoom};
     let hasScrolled = false;//has moved camera left/right/up/down, doesn't care about zooming < used to determine if we should stop following
@@ -91,25 +91,25 @@ class SystemMap extends React.Component {
 
       //set target position to wherever places the mouseDownWorldCoords at the
       //current dragMouse screen position
-      this.tx = this.mouseDownWorldCoords.x -((this.dragMouseX - (props.windowSize.width * props.cx) ) / state.zoom);
-      this.ty = this.mouseDownWorldCoords.y -((this.dragMouseY - (props.windowSize.height * props.cy) ) / state.zoom);
+      this.tx = this.mouseDownWorldCoords.x -((this.dragMouseX - (windowSize.width * props.cx) ) / state.zoom);
+      this.ty = this.mouseDownWorldCoords.y -((this.dragMouseY - (windowSize.height * props.cy) ) / state.zoom);
     } else {
       //Take keyboard input scrolling
       const scrollSpeed = ((isKeyDown(options.controls.fast) ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / state.zoom;
 
       //-scrolling
-      if(isKeyDown(options.controls.scrollRight)) {//right
+      if(isKeyDown(options.controls.scrollRight) || (mouseClientX !== null && (options.mouseEdgeScrolling + mouseClientX >= windowSize.width))) {//right
         this.tx += scrollSpeed;
         hasScrolled = true;
-      } else if(isKeyDown(options.controls.scrollLeft)) {//left
+      } else if(isKeyDown(options.controls.scrollLeft) || (mouseClientX !== null && (mouseClientX < options.mouseEdgeScrolling))) {//left
         this.tx -= scrollSpeed;
         hasScrolled = true;
       }
 
-      if(isKeyDown(options.controls.scrollDown)) {//down
+      if(isKeyDown(options.controls.scrollDown) || (mouseClientY !== null && (options.mouseEdgeScrolling + mouseClientY >= windowSize.height))) {//down
         this.ty += scrollSpeed;
         hasScrolled = true;
-      } else if(isKeyDown(options.controls.scrollUp)) {//up
+      } else if(isKeyDown(options.controls.scrollUp) || (mouseClientY !== null && (mouseClientY < options.mouseEdgeScrolling))) {//up
         this.ty -= scrollSpeed;
         hasScrolled = true;
       }

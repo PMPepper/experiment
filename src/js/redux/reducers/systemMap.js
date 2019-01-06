@@ -50,7 +50,8 @@ const defaultSystemMapOptions = {
     scrollLeft: [37, 65],
     zoomIn: [34],
     zoomOut: [33],
-  }
+  },
+  mouseEdgeScrolling: 20,
 };
 
 

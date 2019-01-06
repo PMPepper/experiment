@@ -193,8 +193,8 @@ export default class Server {
       //*/
 
       let lastTime = null;
-      const speed = 86400;
-      const step = 3600//86400;
+      const speed = 3600;
+      const step = 1//86400;
 
       const play = (timestamp) => {
         if(lastTime !== null) {
