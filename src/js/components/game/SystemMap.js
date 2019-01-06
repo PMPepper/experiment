@@ -5,15 +5,16 @@ import defaultStyles from './systemMap.scss';
 import SystemMapSVGRenderer from './SystemMapSVGRenderer';
 
 import WindowSizeComponent from '@/HOCs/WindowSizeComponent';
+import KeyboardControlsComponent from '@/HOCs/KeyboardControlsComponent';
 
 import reduce from '@/helpers/object/reduce';
+import flatten from '@/helpers/array/flatten';
 
 import {addItem, removeItem} from '@/modules/onFrameIterator';
 
 //constants
 const normalScrollSpeed = 200;//pixels per second
 const fastScrollSpeed = 500;//pixels per second
-const keysInUse = [16, 33, 34, 37, 38, 39, 40, 87, 68, 83, 65].reduce((obj, k) => {obj[k] = true; return obj;}, {});
 
 const normalZoomSpeed = 2;
 const fastZoomSpeed = 4;
@@ -26,68 +27,63 @@ class SystemMap extends React.Component {
     this.state = {
       x: props.x,
       y: props.y,
-      zoom: props.zoom,
-
+      zoom: props.zoom
     };
 
     this.tx = props.x;
     this.ty = props.y;
     this.tzoom = props.zoom;
-    this.keysDown = {}
 
     addItem(this._onFrameUpdate);
 
-    this._handlers = {
-      onKeyDown: this._onKeyDown,
-      onKeyUp: this._onKeyUp,
-      onBlur: this._onBlur,
+    this._elementProps = {
+      onKeyDown: props.onKeyDown,
+      onKeyUp: props.onKeyUp,
+      onBlur: props.onBlur,
+      tabIndex: 0,
       onMouseDown: this._onMouseDown,
       onMouseMove: this._onMouseMove,
       onMouseLeave: this._onMouseLeave,
       onClick: this._onClick,
       onWheel: this._onWheel,
     };
-  }
 
-  componentWillUnmount() {
-    removeItem(this._onFrameUpdate);
-
-    this._endDragging();
+    props.setActiveKeys(flatten(Object.values(props.options.controls)));
   }
 
   _onFrameUpdate = (elapsedTime) => {
-    const {keysDown, props, state, mouseClientX, mouseClientY} = this;
+    const {props, state, mouseClientX, mouseClientY} = this;
+    const isKeyDown = props.isKeyDown;
 
     const newState = {x: state.x, y: state.y, zoom: state.zoom};
     let hasScrolled = false;//has moved camera left/right/up/down, doesn't care about zooming < used to determine if we should stop following
     let isFollowing = false;
 
     //Take keyboard input
-    const scrollSpeed = ((keysDown[16] ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / state.zoom;
-    const zoomSpeed = (keysDown[16] ? fastZoomSpeed : normalZoomSpeed);
+    const scrollSpeed = ((isKeyDown(16) ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / state.zoom;
+    const zoomSpeed = (isKeyDown(16) ? fastZoomSpeed : normalZoomSpeed);
 
-    if(keysDown[39] || keysDown[68]) {//right
+    if(isKeyDown([39, 68])) {//right
       this.tx += scrollSpeed;
       hasScrolled = true;
-    } else if(keysDown[37] || keysDown[65]) {//left
+    } else if(isKeyDown([37, 65])) {//left
       this.tx -= scrollSpeed;
       hasScrolled = true;
     }
 
-    if(keysDown[40] || keysDown[83]) {//down
+    if(isKeyDown([40, 83])) {//down
       this.ty += scrollSpeed;
       hasScrolled = true;
-    } else if(keysDown[38] || keysDown[87]) {//up
+    } else if(isKeyDown([38, 87])) {//up
       this.ty -= scrollSpeed;
       hasScrolled = true;
     }
 
-    if(keysDown[34]) {//zoom in
+    if(isKeyDown(34)) {//zoom in
       this.tzoom *= Math.pow(zoomSpeed, elapsedTime);
-    } else if(keysDown[33]) {//zoom out
+    } else if(isKeyDown(33)) {//zoom out
       this.tzoom *= Math.pow(1 / zoomSpeed, elapsedTime);
     }
-
 
     //follow current target
     if(props.following) {
@@ -155,31 +151,6 @@ class SystemMap extends React.Component {
   }
 
   //event handlers
-  _onKeyDown = (e) => {
-    //console.log(e.which);
-
-    if(!keysInUse[e.which]) {
-      return;
-    }
-
-    this.keysDown[e.which] = true;
-
-    //Keys which do something have their default actions cancelled
-    e.preventDefault();
-  }
-
-  _onKeyUp = (e) => {
-    if(!keysInUse[e.which]) {
-      return;
-    }
-
-    this.keysDown[e.which] = false;
-  }
-
-  _onBlur = () => {
-    this.keysDown = {};
-  }
-
   _onMouseDown = (e) => {
     this._lastX = e.clientX;
     this._lastY = e.clientY;
@@ -236,7 +207,7 @@ class SystemMap extends React.Component {
   }
 
   _onWheel = (e) => {
-    const wheelZoomSpeed = this.keysDown[16] ? 1.5 : 1.15;
+    const wheelZoomSpeed = this.props.isKeyDown(16) ? 1.5 : 1.15;
 
     if(e.deltaY < 0) {
       this.tzoom *= wheelZoomSpeed;
@@ -251,13 +222,9 @@ class SystemMap extends React.Component {
     const x = options && ('x' in options) ? options.x : this.state.x;
     const y = options && ('y' in options) ? options.y : this.state.y;
     const zoom = options && ('zoom' in options) ? options.zoom : this.state.zoom;
-    //const {x, y, zoom} = this.state;
 
     screenX -= windowSize.width * cx;
     screenY -= windowSize.height * cy;
-
-    //x -= (windowSize.width * cx) / zoom;
-    //y -= (windowSize.height * cy) / zoom;
 
     return {
       x: x + (screenX / zoom),
@@ -275,6 +242,7 @@ class SystemMap extends React.Component {
     };
   }
 
+  //React lifecycle methods
 
   render() {
     const props = this.props;
@@ -292,12 +260,27 @@ class SystemMap extends React.Component {
       entities={entities}
       styles={styles}
       windowSize={windowSize}
-      options={options}
+      options={options.display}
 
-      handlers={this._handlers}
+      elementProps={this._elementProps}
     />
   }
 
+  componentDidUpdate(prevProps) {
+    const props = this.props;
+
+    if(props.setActiveKeys !== prevProps.setActiveKeys || props.options !== prevProps.options) {
+      props.setActiveKeys(flatten(Object.keys(props.options.controls)));
+    }
+  }
+
+  componentWillUnmount() {
+    removeItem(this._onFrameUpdate);
+
+    this._endDragging();
+  }
+
+  //static props
   static defaultProps = {
     styles: defaultStyles,
     zoom: 1/1000000000,
@@ -311,7 +294,8 @@ class SystemMap extends React.Component {
 
 
 export default compose(
-  WindowSizeComponent()
+  WindowSizeComponent(),
+  KeyboardControlsComponent()
 )(SystemMap);
 
 
