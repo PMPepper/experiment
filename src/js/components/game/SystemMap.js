@@ -26,11 +26,14 @@ class SystemMap extends React.Component {
     this.state = {
       x: props.x,
       y: props.y,
-      tx: props.x,
-      ty: props.y,
       zoom: props.zoom,
-      keysDown: {}
+
     };
+
+    this.tx = props.x;
+    this.ty = props.y;
+    this.tzoom = props.zoom;
+    this.keysDown = {}
 
     addItem(this._onFrameUpdate);
 
@@ -39,6 +42,8 @@ class SystemMap extends React.Component {
       onKeyUp: this._onKeyUp,
       onBlur: this._onBlur,
       onMouseDown: this._onMouseDown,
+      onMouseMove: this._onMouseMove,
+      onMouseLeave: this._onMouseLeave,
       onClick: this._onClick,
       onWheel: this._onWheel,
     };
@@ -51,11 +56,11 @@ class SystemMap extends React.Component {
   }
 
   _onFrameUpdate = (elapsedTime) => {
-    const props = this.props;
-    const state = this.state;
-    const {keysDown, zoom, x, y, tx, ty} = state;
-    const newState = {tx, ty};
-    let hasChanged = false;
+
+    const {keysDown, tx, ty, tzoom, props, state} = this;
+    const {zoom, x, y} = state;
+
+    const newState = {x, y, zoom};
     let hasScrolled = false;//has moved camera left/right/up/down, doesn't care about zooming < used to determine if we should stop following
 
     //Take keyboard input
@@ -63,31 +68,25 @@ class SystemMap extends React.Component {
     const zoomSpeed = (keysDown[16] ? fastZoomSpeed : normalZoomSpeed);
 
     if(keysDown[39]) {//right
-      newState.tx = tx + scrollSpeed;
-      hasChanged = true;
+      this.tx = tx + scrollSpeed;
       hasScrolled = true;
     } else if(keysDown[37]) {//left
-      newState.tx = tx - scrollSpeed;
-      hasChanged = true;
+      this.tx = tx - scrollSpeed;
       hasScrolled = true;
     }
 
     if(keysDown[40]) {//down
-      newState.ty = ty + scrollSpeed;
-      hasChanged = true;
+      this.ty = ty + scrollSpeed;
       hasScrolled = true;
     } else if(keysDown[38]) {//up
-      newState.ty = ty - scrollSpeed;
-      hasChanged = true;
+      this.ty = ty - scrollSpeed;
       hasScrolled = true;
     }
 
     if(keysDown[34]) {//zoom in
       newState.zoom = zoom * Math.pow(zoomSpeed, elapsedTime);
-      hasChanged = true;
     } else if(keysDown[33]) {//zoom out
       newState.zoom = zoom * Math.pow(1 / zoomSpeed, elapsedTime);
-      hasChanged = true;
     }
 
     //follow current target
@@ -100,10 +99,8 @@ class SystemMap extends React.Component {
 
         //This is an entity that has a position, so can be followed...
         if(followEntity.position) {
-          newState.tx = followEntity.position.x;
-          newState.ty = followEntity.position.y;
-          hasChanged = true;
-          //hasScrolled = true;
+          this.tx = followEntity.position.x;
+          this.ty = followEntity.position.y;
         }
       }
     }
@@ -112,23 +109,21 @@ class SystemMap extends React.Component {
     const easeFactor = 1/3;
     const easeThreshold = 1;
 
-    newState.x = x + ((newState.tx - x) * easeFactor);
-    newState.y = y + ((newState.ty - y) * easeFactor);
+    newState.x = x + ((this.tx - x) * easeFactor);
+    newState.y = y + ((this.ty - y) * easeFactor);
 
-    if(Math.abs(newState.x - newState.tx) < easeThreshold) {
-      newState.x = newState.tx;//easing finished
-    } else {
-      hasChanged = true;//continue easing
+    if(Math.abs(newState.x - this.tx) < easeThreshold) {
+      newState.x = this.tx;//easing finished
     }
 
-    if(Math.abs(newState.y - newState.ty) < easeThreshold) {
-      newState.y = newState.ty;//easing finished
-    } else {
-      hasChanged = true;//continue easing
+    if(Math.abs(newState.y - this.ty) < easeThreshold) {
+      newState.y = this.ty;//easing finished
     }
 
     //If any state changes, update the state
-    hasChanged && this.setState(newState);
+    if(newState.x !== state.x || newState.y !== state.y || newState.zoom !== state.zoom) {
+      this.setState(newState);
+    }
   }
 
   //event handlers
@@ -139,10 +134,7 @@ class SystemMap extends React.Component {
       return;
     }
 
-    this.setState({keysDown: {
-      ...this.state.keysDown,
-      [e.which]: true
-    }});
+    this.keysDown[e.which] = true;
 
     //Keys which do something have their default actions cancelled
     e.preventDefault();
@@ -153,14 +145,11 @@ class SystemMap extends React.Component {
       return;
     }
 
-    this.setState({keysDown: {
-      ...this.state.keysDown,
-      [e.which]: false
-    }});
+    this.keysDown[e.which] = false;
   }
 
   _onBlur = () => {
-    this.setState({keysDown: {}});
+    this.keysDown = {};
   }
 
   _onMouseDown = (e) => {
@@ -177,11 +166,11 @@ class SystemMap extends React.Component {
     console.log(`onMouseDown: screen(${e.clientX}, ${e.clientY}, world(${world.x}, ${world.y}), backToScreen(${backToScreen.x}, ${backToScreen.y})`);
     //END DEV CODE
 
-    window.addEventListener('mousemove', this._onMouseMove);
-    window.addEventListener('mouseup', this._onMouseUp);
+    window.addEventListener('mousemove', this._onDragMove);
+    window.addEventListener('mouseup', this._onDragUp);
   }
 
-  _onMouseMove = (e) => {
+  _onDragMove = (e) => {
     e.preventDefault();
 
     //console.log(this.props, e.clientX - this._lastX, e.clientY - this._lastY);
@@ -190,15 +179,25 @@ class SystemMap extends React.Component {
     this._lastY = e.clientY;
   }
 
-  _onMouseUp = (e) => {
+  _onDragUp = (e) => {
     e.preventDefault();
 
     this._endDragging()
   }
 
   _endDragging() {
-    window.removeEventListener('mousemove', this._onMouseMove);
-    window.removeEventListener('mouseup', this._onMouseUp);
+    window.removeEventListener('mousemove', this._onDragMove);
+    window.removeEventListener('mouseup', this._onDragUp);
+  }
+
+  _onMouseMove = (e) => {
+    this._zoomX = e.clientX;
+    this._zoomY = e.clientY;
+  }
+
+  _onMouseLeave = (e) => {
+    this._zoomX = null;
+    this._zoomY = null;
   }
 
   _onClick = (e) => {
@@ -213,7 +212,7 @@ class SystemMap extends React.Component {
   }
 
   _onWheel = (e) => {
-    const wheelZoomSpeed = this.state.keysDown[16] ? 1.5 : 1.15;
+    const wheelZoomSpeed = this.keysDown[16] ? 1.5 : 1.15;
 
     if(e.deltaY < 0) {
       this.setState({zoom: this.state.zoom * wheelZoomSpeed})
