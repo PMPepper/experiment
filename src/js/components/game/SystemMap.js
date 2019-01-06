@@ -27,6 +27,8 @@ class SystemMap extends React.Component {
     this.state = {
       x: props.x,
       y: props.y,
+      tx: props.x,
+      ty: props.y,
       zoom: props.zoom,
       keysDown: {}
     };
@@ -41,8 +43,8 @@ class SystemMap extends React.Component {
   _onFrameUpdate = (elapsedTime) => {
     const props = this.props;
     const state = this.state;
-    const {keysDown, zoom, x, y} = state;
-    const newState = {};
+    const {keysDown, zoom, x, y, tx, ty} = state;
+    const newState = {tx, ty};
     let hasChanged = false;
     let hasScrolled = false;//has moved camera left/right/up/down, doesn't care about zooming < used to determine if we should stop following
 
@@ -51,21 +53,21 @@ class SystemMap extends React.Component {
     const zoomSpeed = (keysDown[16] ? fastZoomSpeed : normalZoomSpeed);
 
     if(keysDown[39]) {//right
-      newState.x = x + scrollSpeed;
+      newState.tx = tx + scrollSpeed;
       hasChanged = true;
       hasScrolled = true;
     } else if(keysDown[37]) {//left
-      newState.x = x - scrollSpeed;
+      newState.tx = tx - scrollSpeed;
       hasChanged = true;
       hasScrolled = true;
     }
 
     if(keysDown[40]) {//down
-      newState.y = y + scrollSpeed;
+      newState.ty = ty + scrollSpeed;
       hasChanged = true;
       hasScrolled = true;
     } else if(keysDown[38]) {//up
-      newState.y = y - scrollSpeed;
+      newState.ty = ty - scrollSpeed;
       hasChanged = true;
       hasScrolled = true;
     }
@@ -78,6 +80,8 @@ class SystemMap extends React.Component {
       hasChanged = true;
     }
 
+
+
     //follow current target
     if(props.following) {
       if(hasScrolled) {
@@ -88,12 +92,31 @@ class SystemMap extends React.Component {
 
         //This is an entity that has a position, so can be followed...
         if(followEntity.position) {
-          newState.x = followEntity.position.x;
-          newState.y = followEntity.position.y;
+          newState.tx = followEntity.position.x;
+          newState.ty = followEntity.position.y;
           hasChanged = true;
           //hasScrolled = true;
         }
       }
+    }
+
+    //convert target x/y to real x/y with easing
+    const easeFactor = 1/4;
+    const easeThreshold = 1;
+
+    newState.x = x + ((newState.tx - x) * easeFactor);
+    newState.y = y + ((newState.ty - y) * easeFactor);
+
+    if(Math.abs(newState.x - newState.tx) < easeThreshold) {
+      newState.x = newState.tx;//easing finished
+    } else {
+      hasChanged = true;//continue easing
+    }
+
+    if(Math.abs(newState.y - newState.ty) < easeThreshold) {
+      newState.y = newState.ty;//easing finished
+    } else {
+      hasChanged = true;//continue easing
     }
 
     //If any state changes, update the state
@@ -146,6 +169,16 @@ class SystemMap extends React.Component {
     }
   }
 
+  _onWheel = (e) => {
+    const wheelZoomSpeed = this.state.keysDown[16] ? 1.5 : 1.15;
+
+    if(e.deltaY < 0) {
+      this.setState({zoom: this.state.zoom * wheelZoomSpeed})
+    } else if(e.deltaY > 0) {
+      this.setState({zoom: this.state.zoom * (1/wheelZoomSpeed)})
+    }
+  }
+
   render() {
     const props = this.props;
     const {windowSize, entities, styles, cx, cy} = props;
@@ -170,6 +203,7 @@ class SystemMap extends React.Component {
         onBlur={this._onBlur}
         onMouseDown={this._onMouseDown}
         onClick={this._onClick}
+        onWheel={this._onWheel}
       >
         <svg className={styles.systemMap}>
           {renderableEntities.map(entity => {
