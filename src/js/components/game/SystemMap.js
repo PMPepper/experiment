@@ -13,7 +13,7 @@ import {addItem, removeItem} from '@/modules/onFrameIterator';
 //constants
 const normalScrollSpeed = 200;//pixels per second
 const fastScrollSpeed = 500;//pixels per second
-const keysInUse = [16, 33, 34, 37, 38, 39, 40].reduce((obj, k) => {obj[k] = true; return obj;}, {});
+const keysInUse = [16, 33, 34, 37, 38, 39, 40, 87, 68, 83, 65].reduce((obj, k) => {obj[k] = true; return obj;}, {});
 
 const normalZoomSpeed = 2;
 const fastZoomSpeed = 4;
@@ -56,63 +56,38 @@ class SystemMap extends React.Component {
   }
 
   _onFrameUpdate = (elapsedTime) => {
-
-    const {keysDown, tx, ty, tzoom, props, state, mouseClientX, mouseClientY} = this;
-    //const {zoom, x, y} = state;
+    const {keysDown, props, state, mouseClientX, mouseClientY} = this;
 
     const newState = {x: state.x, y: state.y, zoom: state.zoom};
     let hasScrolled = false;//has moved camera left/right/up/down, doesn't care about zooming < used to determine if we should stop following
+    let isFollowing = false;
 
     //Take keyboard input
     const scrollSpeed = ((keysDown[16] ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / state.zoom;
     const zoomSpeed = (keysDown[16] ? fastZoomSpeed : normalZoomSpeed);
 
-    if(keysDown[39]) {//right
-      this.tx = tx + scrollSpeed;
+    if(keysDown[39] || keysDown[68]) {//right
+      this.tx += scrollSpeed;
       hasScrolled = true;
-    } else if(keysDown[37]) {//left
-      this.tx = tx - scrollSpeed;
-      hasScrolled = true;
-    }
-
-    if(keysDown[40]) {//down
-      this.ty = ty + scrollSpeed;
-      hasScrolled = true;
-    } else if(keysDown[38]) {//up
-      this.ty = ty - scrollSpeed;
+    } else if(keysDown[37] || keysDown[65]) {//left
+      this.tx -= scrollSpeed;
       hasScrolled = true;
     }
 
-    let deltaZoom = 1;
+    if(keysDown[40] || keysDown[83]) {//down
+      this.ty += scrollSpeed;
+      hasScrolled = true;
+    } else if(keysDown[38] || keysDown[87]) {//up
+      this.ty -= scrollSpeed;
+      hasScrolled = true;
+    }
 
     if(keysDown[34]) {//zoom in
-      deltaZoom = Math.pow(zoomSpeed, elapsedTime);
+      this.tzoom *= Math.pow(zoomSpeed, elapsedTime);
     } else if(keysDown[33]) {//zoom out
-      deltaZoom = Math.pow(1 / zoomSpeed, elapsedTime);
+      this.tzoom *= Math.pow(1 / zoomSpeed, elapsedTime);
     }
 
-    if(deltaZoom !== 1) {
-      //I think I just move the x/y here, ignoring easing...?
-
-      newState.zoom *= deltaZoom;
-
-      if(mouseClientX !== null && mouseClientY !== null) {
-        const mouseZoomWorldCurPos = this.screenToWorld(mouseClientX, mouseClientY);
-        const mouseZoomWorldNewPos = this.screenToWorld(mouseClientX, mouseClientY, {zoom: newState.zoom});
-
-        const zoomDX = -(mouseZoomWorldNewPos.x - mouseZoomWorldCurPos.x);
-        const zoomDY = -(mouseZoomWorldNewPos.y - mouseZoomWorldCurPos.y);
-
-        newState.x += zoomDX;
-        newState.y += zoomDY;
-
-        this.tx += zoomDX;
-        this.ty += zoomDY;
-      }
-
-      //const zoomDX = mouseClientX - (props.windowSize.width * props.cx);
-      //console.log(mouseZoomWorldCurPos, mouseZoomWorldNewPos);
-    }
 
     //follow current target
     if(props.following) {
@@ -126,7 +101,35 @@ class SystemMap extends React.Component {
         if(followEntity.position) {
           this.tx = followEntity.position.x;
           this.ty = followEntity.position.y;
+          isFollowing = true;
         }
+      }
+    }
+
+    //Ease zooming
+    const zoomEaseFactor = 1/3;
+    const zoomEaseThreshold = 0.0001;
+
+    newState.zoom += ((this.tzoom - newState.zoom) * zoomEaseFactor);
+
+    if(Math.abs(1 - (newState.zoom / this.tzoom)) < zoomEaseThreshold) {
+      newState.zoom = this.tzoom;//easing finished
+    }
+
+    //keep zooming centered
+    if(!isFollowing && newState.zoom !== state.zoom) {
+      if(mouseClientX !== null && mouseClientY !== null) {
+        const mouseZoomWorldCurPos = this.screenToWorld(mouseClientX, mouseClientY);
+        const mouseZoomWorldNewPos = this.screenToWorld(mouseClientX, mouseClientY, {zoom: newState.zoom});
+
+        const zoomDX = -(mouseZoomWorldNewPos.x - mouseZoomWorldCurPos.x);
+        const zoomDY = -(mouseZoomWorldNewPos.y - mouseZoomWorldCurPos.y);
+
+        newState.x += zoomDX;
+        newState.y += zoomDY;
+
+        this.tx += zoomDX;
+        this.ty += zoomDY;
       }
     }
 
@@ -236,9 +239,9 @@ class SystemMap extends React.Component {
     const wheelZoomSpeed = this.keysDown[16] ? 1.5 : 1.15;
 
     if(e.deltaY < 0) {
-      this.setState({zoom: this.state.zoom * wheelZoomSpeed})
+      this.tzoom *= wheelZoomSpeed;
     } else if(e.deltaY > 0) {
-      this.setState({zoom: this.state.zoom * (1/wheelZoomSpeed)})
+      this.tzoom *= (1 / wheelZoomSpeed);
     }
   }
 
