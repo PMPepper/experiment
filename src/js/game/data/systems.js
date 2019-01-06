@@ -274,6 +274,70 @@ const systems = {
         }
       },
       {
+        "name": "Ganymede",
+        "type": "moon",
+        "parent": "Jupiter",
+        "mass": 1.4819e23,
+        "radius": 2634100,
+        "day": null,
+        "axialTilt": 0,
+        "tidalLock": true,
+        "albedo": 0.43,
+        "orbit": {
+          "type": "regular",
+          "radius": 1070400000,
+          "offset": 0.64
+        }
+      },
+      {
+        "name": "Callisto",
+        "type": "moon",
+        "parent": "Jupiter",
+        "mass": 1.075938e23,
+        "radius": 2410300,
+        "day": null,
+        "axialTilt": 0,
+        "tidalLock": true,
+        "albedo": 0.22,
+        "orbit": {
+          "type": "regular",
+          "radius": 1882700000,
+          "offset": 0.22
+        }
+      },
+      {
+        "name": "Themisto",
+        "type": "moon",
+        "parent": "Jupiter",
+        "mass": 6.89e14,
+        "radius": 4000,
+        "day": null,
+        "axialTilt": 0,
+        "tidalLock": true,
+        "albedo": 0.04,
+        "orbit": {
+          "type": "regular",
+          "radius": 7391650000,
+          "offset": 0.41
+        }
+      },
+      {
+        "name": "Leda",
+        "type": "moon",
+        "parent": "Jupiter",
+        "mass": 1.1e16,
+        "radius": 10000,
+        "day": null,
+        "axialTilt": 0,
+        "tidalLock": true,
+        "albedo": 0.04,
+        "orbit": {
+          "type": "regular",
+          "radius": 11160000000,
+          "offset": 0.79
+        }
+      },
+      {
         "name": "Saturn",
         "type": "gasGiant",
         "parent": "Sol A",
