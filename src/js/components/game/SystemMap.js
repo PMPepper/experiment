@@ -2,8 +2,7 @@ import React from 'react';
 import {compose} from 'recompose';
 
 import defaultStyles from './systemMap.scss';
-
-import * as EntityRenderers from './entityRenderers';
+import SystemMapSVGRenderer from './SystemMapSVGRenderer';
 
 import WindowSizeComponent from '@/HOCs/WindowSizeComponent';
 
@@ -79,8 +78,6 @@ class SystemMap extends React.Component {
       newState.zoom = zoom * Math.pow(1 / zoomSpeed, elapsedTime);
       hasChanged = true;
     }
-
-
 
     //follow current target
     if(props.following) {
@@ -181,38 +178,29 @@ class SystemMap extends React.Component {
 
   render() {
     const props = this.props;
-    const {windowSize, entities, styles, cx, cy} = props;
+    const {windowSize, entities, styles, cx, cy, options, renderComponent: RenderComponent} = props;
     let {x, y, zoom} = this.state;
 
+    //center in window
     x -= (windowSize.width * cx) / zoom;
     y -= (windowSize.height * cy) / zoom;
 
-    const renderableEntities = reduce(entities, (output, entity) => {
-      if(entity.render) {
-        output.push(entity);
-      }
+    return <RenderComponent
+      x={x}
+      y={y}
+      zoom={zoom}
+      entities={entities}
+      styles={styles}
+      windowSize={windowSize}
+      options={options}
 
-      return output
-    }, [])
-
-    return <div
-        className={styles.systemMapWrapper}
-        tabIndex="0"
-        onKeyDown={this._onKeyDown}
-        onKeyUp={this._onKeyUp}
-        onBlur={this._onBlur}
-        onMouseDown={this._onMouseDown}
-        onClick={this._onClick}
-        onWheel={this._onWheel}
-      >
-        <svg className={styles.systemMap}>
-          {renderableEntities.map(entity => {
-            const Renderer = EntityRenderers[entity.render.type];
-
-            return Renderer && <Renderer {...props} x={x} y={y} zoom={zoom} entity={entity} key={entity.id} />;
-          })}
-        </svg>
-      </div>
+      onKeyDown={this._onKeyDown}
+      onKeyUp={this._onKeyUp}
+      onBlur={this._onBlur}
+      onMouseDown={this._onMouseDown}
+      onClick={this._onClick}
+      onWheel={this._onWheel}
+    />
   }
 
   static defaultProps = {
@@ -221,7 +209,8 @@ class SystemMap extends React.Component {
     x: 0,
     y: 0,
     cx: 0.5,
-    cy: 0.5
+    cy: 0.5,
+    renderComponent: SystemMapSVGRenderer
   };
 }
 
