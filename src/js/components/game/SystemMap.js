@@ -57,14 +57,14 @@ class SystemMap extends React.Component {
 
   _onFrameUpdate = (elapsedTime) => {
 
-    const {keysDown, tx, ty, tzoom, props, state} = this;
-    const {zoom, x, y} = state;
+    const {keysDown, tx, ty, tzoom, props, state, mouseClientX, mouseClientY} = this;
+    //const {zoom, x, y} = state;
 
-    const newState = {x, y, zoom};
+    const newState = {x: state.x, y: state.y, zoom: state.zoom};
     let hasScrolled = false;//has moved camera left/right/up/down, doesn't care about zooming < used to determine if we should stop following
 
     //Take keyboard input
-    const scrollSpeed = ((keysDown[16] ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / zoom;
+    const scrollSpeed = ((keysDown[16] ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / state.zoom;
     const zoomSpeed = (keysDown[16] ? fastZoomSpeed : normalZoomSpeed);
 
     if(keysDown[39]) {//right
@@ -83,10 +83,35 @@ class SystemMap extends React.Component {
       hasScrolled = true;
     }
 
+    let deltaZoom = 1;
+
     if(keysDown[34]) {//zoom in
-      newState.zoom = zoom * Math.pow(zoomSpeed, elapsedTime);
+      deltaZoom = Math.pow(zoomSpeed, elapsedTime);
     } else if(keysDown[33]) {//zoom out
-      newState.zoom = zoom * Math.pow(1 / zoomSpeed, elapsedTime);
+      deltaZoom = Math.pow(1 / zoomSpeed, elapsedTime);
+    }
+
+    if(deltaZoom !== 1) {
+      //I think I just move the x/y here, ignoring easing...?
+
+      newState.zoom *= deltaZoom;
+
+      if(mouseClientX !== null && mouseClientY !== null) {
+        const mouseZoomWorldCurPos = this.screenToWorld(mouseClientX, mouseClientY);
+        const mouseZoomWorldNewPos = this.screenToWorld(mouseClientX, mouseClientY, {zoom: newState.zoom});
+
+        const zoomDX = -(mouseZoomWorldNewPos.x - mouseZoomWorldCurPos.x);
+        const zoomDY = -(mouseZoomWorldNewPos.y - mouseZoomWorldCurPos.y);
+
+        newState.x += zoomDX;
+        newState.y += zoomDY;
+
+        this.tx += zoomDX;
+        this.ty += zoomDY;
+      }
+
+      //const zoomDX = mouseClientX - (props.windowSize.width * props.cx);
+      //console.log(mouseZoomWorldCurPos, mouseZoomWorldNewPos);
     }
 
     //follow current target
@@ -109,8 +134,8 @@ class SystemMap extends React.Component {
     const easeFactor = 1/3;
     const easeThreshold = 1;
 
-    newState.x = x + ((this.tx - x) * easeFactor);
-    newState.y = y + ((this.ty - y) * easeFactor);
+    newState.x += ((this.tx - newState.x) * easeFactor);
+    newState.y += ((this.ty - newState.y) * easeFactor);
 
     if(Math.abs(newState.x - this.tx) < easeThreshold) {
       newState.x = this.tx;//easing finished
@@ -128,7 +153,7 @@ class SystemMap extends React.Component {
 
   //event handlers
   _onKeyDown = (e) => {
-    console.log(e.which);
+    //console.log(e.which);
 
     if(!keysInUse[e.which]) {
       return;
@@ -153,9 +178,6 @@ class SystemMap extends React.Component {
   }
 
   _onMouseDown = (e) => {
-    //e.preventDefault();
-    console.log(e.clientX, e.clientY);
-
     this._lastX = e.clientX;
     this._lastY = e.clientY;
 
@@ -163,7 +185,7 @@ class SystemMap extends React.Component {
     const world = this.screenToWorld(e.clientX, e.clientY);
     const backToScreen = this.worldToScreen(world.x, world.y);
 
-    console.log(`onMouseDown: screen(${e.clientX}, ${e.clientY}, world(${world.x}, ${world.y}), backToScreen(${backToScreen.x}, ${backToScreen.y})`);
+    //console.log(`onMouseDown: screen(${e.clientX}, ${e.clientY}, world(${world.x}, ${world.y}), backToScreen(${backToScreen.x}, ${backToScreen.y})`);
     //END DEV CODE
 
     window.addEventListener('mousemove', this._onDragMove);
@@ -191,17 +213,16 @@ class SystemMap extends React.Component {
   }
 
   _onMouseMove = (e) => {
-    this._zoomX = e.clientX;
-    this._zoomY = e.clientY;
+    this.mouseClientX = e.clientX;
+    this.mouseClientY = e.clientY;
   }
 
   _onMouseLeave = (e) => {
-    this._zoomX = null;
-    this._zoomY = null;
+    this.mouseClientX = null;
+    this.mouseClientY = null;
   }
 
   _onClick = (e) => {
-    console.log('onClick: ', e.target);
     const target = e.target;
 
     if('entityId' in target.dataset) {
@@ -222,9 +243,12 @@ class SystemMap extends React.Component {
   }
 
   //public methods
-  screenToWorld(screenX, screenY) {
+  screenToWorld(screenX, screenY, options) {
     const {cx, cy, windowSize} = this.props;
-    const {x, y, zoom} = this.state;
+    const x = options && ('x' in options) ? options.x : this.state.x;
+    const y = options && ('y' in options) ? options.y : this.state.y;
+    const zoom = options && ('zoom' in options) ? options.zoom : this.state.zoom;
+    //const {x, y, zoom} = this.state;
 
     screenX -= windowSize.width * cx;
     screenY -= windowSize.height * cy;

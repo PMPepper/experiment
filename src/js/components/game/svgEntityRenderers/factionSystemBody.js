@@ -72,7 +72,6 @@ export default function factionSystemBody(props) {
       displayOrbit = false;
     } else if(orbitRadius > startFadeLargeOrbit) {
       orbitOpacity = 1 - ((orbitRadius - startFadeLargeOrbit) / (fullyFadeLargeOrbit - startFadeLargeOrbit));
-      console.log(orbitOpacity);
     }
 
     if(displayOrbit) {
