@@ -46,6 +46,8 @@ class SystemMap extends React.Component {
 
   componentWillUnmount() {
     removeItem(this._onFrameUpdate);
+
+    this._endDragging();
   }
 
   _onFrameUpdate = (elapsedTime) => {
@@ -107,7 +109,7 @@ class SystemMap extends React.Component {
     }
 
     //convert target x/y to real x/y with easing
-    const easeFactor = 1/4;
+    const easeFactor = 1/3;
     const easeThreshold = 1;
 
     newState.x = x + ((newState.tx - x) * easeFactor);
@@ -129,6 +131,7 @@ class SystemMap extends React.Component {
     hasChanged && this.setState(newState);
   }
 
+  //event handlers
   _onKeyDown = (e) => {
     console.log(e.which);
 
@@ -162,6 +165,40 @@ class SystemMap extends React.Component {
 
   _onMouseDown = (e) => {
     //e.preventDefault();
+    console.log(e.clientX, e.clientY);
+
+    this._lastX = e.clientX;
+    this._lastY = e.clientY;
+
+    //DEV CODE
+    const world = this.screenToWorld(e.clientX, e.clientY);
+    const backToScreen = this.worldToScreen(world.x, world.y);
+
+    console.log(`onMouseDown: screen(${e.clientX}, ${e.clientY}, world(${world.x}, ${world.y}), backToScreen(${backToScreen.x}, ${backToScreen.y})`);
+    //END DEV CODE
+
+    window.addEventListener('mousemove', this._onMouseMove);
+    window.addEventListener('mouseup', this._onMouseUp);
+  }
+
+  _onMouseMove = (e) => {
+    e.preventDefault();
+
+    //console.log(this.props, e.clientX - this._lastX, e.clientY - this._lastY);
+
+    this._lastX = e.clientX;
+    this._lastY = e.clientY;
+  }
+
+  _onMouseUp = (e) => {
+    e.preventDefault();
+
+    this._endDragging()
+  }
+
+  _endDragging() {
+    window.removeEventListener('mousemove', this._onMouseMove);
+    window.removeEventListener('mouseup', this._onMouseUp);
   }
 
   _onClick = (e) => {
@@ -184,6 +221,34 @@ class SystemMap extends React.Component {
       this.setState({zoom: this.state.zoom * (1/wheelZoomSpeed)})
     }
   }
+
+  //public methods
+  screenToWorld(screenX, screenY) {
+    const {cx, cy, windowSize} = this.props;
+    const {x, y, zoom} = this.state;
+
+    screenX -= windowSize.width * cx;
+    screenY -= windowSize.height * cy;
+
+    //x -= (windowSize.width * cx) / zoom;
+    //y -= (windowSize.height * cy) / zoom;
+
+    return {
+      x: x + (screenX / zoom),
+      y: y + (screenY / zoom),
+    };
+  }
+
+  worldToScreen(worldX, worldY) {
+    const {cx, cy, windowSize} = this.props;
+    const {x, y, zoom} = this.state;
+
+    return {
+      x: ((worldX - x) * zoom) + (windowSize.width * cx),
+      y: ((worldY - y) * zoom) + (windowSize.height * cy)
+    };
+  }
+
 
   render() {
     const props = this.props;

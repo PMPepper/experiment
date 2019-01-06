@@ -28,6 +28,10 @@ export default function({
         };
       }
 
+      componentWillUnmount() {
+        this._endDragging();
+      }
+
       _onMouseDown = (e) => {
         e.preventDefault();
 

@@ -320,6 +320,70 @@ const systems = {
           "radius": 4504450000000,
           "offset": 0.8
         }
+      },
+      {
+        "name": "Pluto",
+        "type": "dwarfPlanet",
+        "parent": "Sol A",
+        "mass": 1.303e22,
+        "radius": 1188300,
+        "day": 551836,
+        "axialTilt": 2.13855193,
+        "tidalLock": false,
+        "albedo": 0.49,
+        "orbit": {
+          "type": "regular",
+          "radius": 5906380000000,
+          "offset": 0.153
+        }
+      },
+      {
+        "name": "Haumea",
+        "type": "dwarfPlanet",
+        "parent": "Sol A",
+        "mass": 4.006e21,
+        "radius": 816000,
+        "day": 14083,
+        "axialTilt": 0,
+        "tidalLock": false,
+        "albedo": 0.804,//geometric?
+        "orbit": {
+          "type": "regular",
+          "radius": 6.465e12,
+          "offset": 0.5
+        }
+      },
+      {
+        "name": "Makemake",
+        "type": "dwarfPlanet",
+        "parent": "Sol A",
+        "mass": 4.4e21,
+        "radius": 715000,
+        "day": 27975.6,
+        "axialTilt": 0,
+        "tidalLock": false,
+        "albedo": 0.81,//geometric?
+        "orbit": {
+          "type": "regular",
+          "radius": 6.8389e12,
+          "offset": 0.69
+        }
+      },
+      {
+        "name": "Eris",
+        "type": "dwarfPlanet",
+        "parent": "Sol A",
+        "mass": 1.66e22,
+        "radius": 1163000,
+        "day": 93240,
+        "axialTilt": 0,
+        "tidalLock": false,
+        "albedo": 0.96,//geometric?
+        "orbit": {
+          "type": "regular",
+          "radius": 10.166e12,
+          "offset": 0.83
+        }
       }
     ]
   }

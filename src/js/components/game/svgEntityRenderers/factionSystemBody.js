@@ -23,6 +23,7 @@ export default function factionSystemBody(props) {
     r: Math.max(systemBodyTypeMinRadius[systemBody.type], baseRadius),
     opacity: 1
   };
+  let orbitOpacity = 1;
 
   //Which parts should be rendered?
   let displayBody = (systemBodyDisplayOptions.body & RenderFlags.ALL) || (hasColony && systemBodyDisplayOptions.body & RenderFlags.COLONY) || (hasMinerals && systemBodyDisplayOptions.body & RenderFlags.MINERALS)
@@ -66,6 +67,12 @@ export default function factionSystemBody(props) {
       displayOrbit = false;
     } else if(orbitRadius < startFadeOrbitRadius) {
       bodyProps.opacity = Math.min(bodyProps.opacity, (orbitRadius - fullyFadeOrbitRadius) / (startFadeOrbitRadius - fullyFadeOrbitRadius));
+    } else if(orbitRadius > fullyFadeLargeOrbit) {
+      //hide really large orbits because rendering them causes issues in Chrome and Edge
+      displayOrbit = false;
+    } else if(orbitRadius > startFadeLargeOrbit) {
+      orbitOpacity = 1 - ((orbitRadius - startFadeLargeOrbit) / (fullyFadeLargeOrbit - startFadeLargeOrbit));
+      console.log(orbitOpacity);
     }
 
     if(displayOrbit) {
@@ -88,7 +95,7 @@ export default function factionSystemBody(props) {
       cx={orbitX}
       cy={orbitY}
       r={orbitRadius}
-      opacity={bodyProps.opacity}
+      opacity={Math.min(orbitOpacity, bodyProps.opacity)}
       key="orbit"
     />,
     displayBody && <circle
@@ -115,6 +122,7 @@ const systemBodyTypeMinRadius = {
   star: 7,
   gasGiant: 6,
   planet: 5,
+  dwarfPlanet: 4,
   moon: 4,
   asteroid: 2,
 };
@@ -127,3 +135,6 @@ const fullyFadeRadius = 0.00005;
 
 const startFadeOrbitRadius = 10;
 const fullyFadeOrbitRadius = 5;
+
+const startFadeLargeOrbit = 12500;
+const fullyFadeLargeOrbit = 25000;

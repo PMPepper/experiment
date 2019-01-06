@@ -2,7 +2,7 @@
   {
     "name": "Ceres",
     "parent": "Sol A",
-    "type": "asteroid",
+    "type": "dwarfPlanet",
     "mass": 939300000000000000000,
     "radius": 469700,
     "diameter": 939400,

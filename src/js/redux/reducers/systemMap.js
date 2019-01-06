@@ -25,6 +25,11 @@ const defaultSystemMapDisplayOptions = {
     label: RenderFlags.ALL,
     orbit: RenderFlags.ALL
   },
+  dwarfPlanet: {
+    body: RenderFlags.ALL,
+    label: RenderFlags.ALL,
+    orbit: RenderFlags.ALL
+  },
   gasGiant: {
     body: RenderFlags.ALL,
     label: RenderFlags.ALL,
