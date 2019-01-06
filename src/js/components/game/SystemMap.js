@@ -33,6 +33,15 @@ class SystemMap extends React.Component {
     };
 
     addItem(this._onFrameUpdate);
+
+    this._handlers = {
+      onKeyDown: this._onKeyDown,
+      onKeyUp: this._onKeyUp,
+      onBlur: this._onBlur,
+      onMouseDown: this._onMouseDown,
+      onClick: this._onClick,
+      onWheel: this._onWheel,
+    };
   }
 
   componentWillUnmount() {
@@ -194,12 +203,7 @@ class SystemMap extends React.Component {
       windowSize={windowSize}
       options={options}
 
-      onKeyDown={this._onKeyDown}
-      onKeyUp={this._onKeyUp}
-      onBlur={this._onBlur}
-      onMouseDown={this._onMouseDown}
-      onClick={this._onClick}
-      onWheel={this._onWheel}
+      handlers={this._handlers}
     />
   }
 

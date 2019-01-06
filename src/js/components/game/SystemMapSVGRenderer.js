@@ -8,7 +8,7 @@ import reduce from '@/helpers/object/reduce';
 
 //The component
 export default function SystemMapSVGRenderer(props) {
-  const {windowSize, entities, styles, x, y, zoom, options, ...rest} = props;
+  const {windowSize, entities, styles, x, y, zoom, options, handlers} = props;
 
   const renderableEntities = reduce(entities, (output, entity) => {
     if(entity.render) {
@@ -21,7 +21,7 @@ export default function SystemMapSVGRenderer(props) {
   return <div
       className={styles.systemMapWrapper}
       tabIndex="0"
-      {...rest}
+      {...handlers}
     >
       <svg className={styles.systemMap}>
         {renderableEntities.map(entity => {
