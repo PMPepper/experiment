@@ -14,21 +14,29 @@ export default function movementFactory(time, entity, entities) {
     const orbitalPeriod = orbit.period;
     const orbitFraction = ((time + (orbitalPeriod * orbit.offset)) % orbitalPeriod)/orbitalPeriod;
     const orbitAngle = orbitFraction * Math.PI * 2;
+    const position = entity.position;
 
-    const rx = orbitRadius * Math.cos(orbitAngle);
-    const ry = orbitRadius * Math.sin(orbitAngle);
+    let newPositionX = orbitRadius * Math.cos(orbitAngle);
+    let newPositionY = orbitRadius * Math.sin(orbitAngle);
 
     if(parent) {
       if(parent.movement) {
         movement(parent, entities);
       }
 
-      entity.position.x = parent.position.x + rx;
-      entity.position.y = parent.position.y + ry;
-    } else {
-      entity.position.x = rx;
-      entity.position.y = ry;
+      newPositionX += parent.position.x;
+      newPositionX += parent.position.y;
     }
+
+    //this entity has moved, update it's position and return true
+    if(newPositionX !== position.x || newPositionY !== position.y) {
+      position.x = newPositionX;
+      position.y = newPositionY;
+
+      return true;
+    }
+
+    return false;
   }
 
   function movement(entity, entities) {

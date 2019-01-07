@@ -3,7 +3,7 @@ import map from '@/helpers/object/map';
 import isEmpty from '@/helpers/object/isEmpty';
 
 import createWorldFromDefinition from './createWorldFromDefinition';
-import * as entityCacheTypes from './entityCacheTypes';
+//import * as entityCacheTypes from './entityCacheTypes';
 import * as FactionClientTypes from '../FactionClientTypes';
 
 import movementFactory from './entityProcessorFactories/movement';
@@ -14,23 +14,29 @@ const INITIALISING = 'initialising';
 const CONNECTING = 'connecting';
 const RUNNING = 'running';
 
+const global = typeof(window) === 'object' ? {} : {};
+
 
 export default class Server {
   connector = null;
 
   phase = INITIALISING;
 
-  factions = {};//e.g. The in-game factions Humans, martians (factions are also entities)
-  clients = {};//a client is a player connected to a faction by a connector method with a permissions e.g. Bob spectating Martians on connectionId 1
+  gameTime = null;
+  gameSpeed = 3600;//time multiplyer
+  gameSecondsPerStep = 1;//game seconds to process per step - higher = less processing, but risks resolution based issues
 
-  entities = {};
-  entityCache = {};
+  factions;//e.g. The in-game factions Humans, martians (factions are also entities)
+  clients;//a client is a player connected to a faction by a connector method with a permissions e.g. Bob spectating Martians on connectionId 1
 
-  entityId = 1;
-  entityCacheDirty = false;
+  entities = null;
+  entityId = null;//used to keep track of assigned entity IDs - increments after each entity is created
   entityIds = null;
+  entitiesLastUpdated = null;
 
   entityProcessorFactories = [movementFactory];
+
+  clientEntityCache = null
 
   constructor(connector) {
     this.connector = connector;
@@ -49,6 +55,13 @@ export default class Server {
     //c/onsole.log('[Server] createWorld: ', definition, connectionId);
 
     //initialise the world based on supplied definition
+    this.factions = {};
+    this.clients = {};
+    this.entityId = 1;
+    this.entities = {};
+    this.entityIds = [];
+    this.clientEntityCache = {};
+    this.entitiesLastUpdated = {};
     createWorldFromDefinition(this, definition);
 
     //c/onsole.log('[Server] created world: ', this.entities);
@@ -56,7 +69,6 @@ export default class Server {
     this.gameTime = new Date(definition.startDate);
 
     this._advanceTime(null);
-    //this.entities = map(this.entities, this._getEntityProcessors());
 
     //Now waiting for players to connect
     this.phase = CONNECTING;
@@ -162,57 +174,52 @@ export default class Server {
         this.connector.sendMessageToClient(client.id, 'startingGame', this._getClientState(client.id));
       });
 
-      /*
-      //45-50 ~20/millisecond
-      //43-47
-      //42-47
-      //30-33 ~30/millisecond
-      const start = performance.now();
+      this._lastTime = Date.now();
 
-      this._advanceTime(1000);
+      console.log(global);
 
-      const end = performance.now();
 
-      alert('[PERF] '+(end - start));
-      //*/
+      if(global && global.requestAnimationFrame) {
+        const play = () => {
+          //stop if no longer in running phase
+          if(this.phase !== RUNNING) {
+            return;
+          }
 
-      /*
-      setTimeout(() => {
-        performance.mark('advanceTime-start');
+          const now = Date.now();
+          const elapsedTime = (now - this._lastTime)/1000;
 
-        this._advanceTime(1000);
+          this._onTick(elapsedTime);
 
-        performance.mark('advanceTime-end');
+          this._lastTime = now;
 
-        performance.measure(
-          "advanceTime",
-          "advanceTime-start",
-          "advanceTime-end"
-        );
-      }, 1000);
-      //*/
-
-      let lastTime = null;
-      const speed = 3600;
-      const step = 1//86400;
-
-      const play = (timestamp) => {
-        if(lastTime !== null) {
-          const elapsedTime = (timestamp - lastTime) /1000;
-
-          this._advanceTime(Math.min(3600, Math.ceil(elapsedTime * speed)), step);
-
-          Object.values(this.clients).forEach(client => {
-            this.connector.sendMessageToClient(client.id, 'updatingGame', this._getClientState(client.id));
-          });
+          //keep running
+          global.requestAnimationFrame(play);
         }
 
-        lastTime = timestamp
+        global.requestAnimationFrame(play);
+      } else {
+        this._tickIId = setInterval(() => {
+          //stop if no longer in running phase
+          if(this.phase !== RUNNING) {
+            if(this._tickIId) {
+              clearInterval(this._tickIId);
+              this._tickIId = null;
+            } else {
+              debugger;//This should never happen!
+            }
 
-        window.requestAnimationFrame(play);
-      };
+            return;//stop if no longer in running phase
+          }
 
-      window.requestAnimationFrame(play);
+          const now = Date.now();
+          const elapsedTime = (now - this._lastTime) / 1000;
+
+          this._onTick(elapsedTime);
+
+          this._lastTime = now;
+        }, 1000 / 60);
+      }
 
 
       return Promise.resolve(true);
@@ -222,14 +229,14 @@ export default class Server {
   }
 
   //-in game
-  message_getClientState(data, connectionId) {
+  message_getClientState(lastUpdateTime, connectionId) {
     if(this.phase !== RUNNING) {
       throw new Error('Can only get client state while server is in "running" phase');
     }
 
     this._checkValidClient(connectionId);
 
-    return Promise.resolve(this._getClientState(connectionId))
+    return Promise.resolve(this.getClientState(connectionId, lastUpdateTime))
   }
 
   //-validation methods
@@ -282,48 +289,29 @@ export default class Server {
     return ids.map(id => (entities[id]));
   }
 
-  /*getCachedEntities(...cachePath) {
-    const entityCacheTypeName = cachePath[0];
-    const entities = this.entities;
-    const entityCache = this.entityCache;
-
-    if(this.entityCacheDirty) {
-      //clear entity cache
-      for(let i = 0, k = Object.keys(entityCache), l = k.length; i < l; ++i) {
-        entityCache[k[i]] = null;
-      }
-
-      //rebuild and cache ids list
-      this.entityIds = Object.keys(entities);
-
-      this.entityCacheDirty = false;
-    }
-
-    //Only create caches when you need them
-    if(!entityCache.hasOwnProperty(entityCacheTypeName)) {
-      //rebuild this cache
-      entityCache[entityCacheTypeName] = entityCacheTypes[entityCacheTypeName](entities, this.entityIds);
-    }
-
-    //get the requested data
-    return resolvePath(entityCache, cachePath);
-  }*/
+  getClientState(clientId, lastUpdateTime) {
+    return this._getClientState(clientId);
+  }
 
 
   /////////////////////////////
   // Internal helper methods //
   /////////////////////////////
 
+  _onTick = (elapsedTime) => {
+
+    this._advanceTime(Math.min(3600, Math.ceil(elapsedTime * this.gameSpeed)), this.gameSecondsPerStep);
+
+    Object.values(this.clients).forEach(client => {
+      this.connector.sendMessageToClient(client.id, 'updatingGame', this._getClientState(client.id));
+    });
+  }
+
   _advanceTime(elapsedTime, step = 1) {
     const entities = this.entities;
 
-    if(this.entityCacheDirty) {
-      this.entityIds = Object.keys(entities);
-
-      this.entityCacheDirty = false;
-    }
-
     const entityIds = this.entityIds;
+    const entitiesLastUpdated = this.entitiesLastUpdated;
     const numEntities = entityIds.length;
     let processors = null;
 
@@ -338,21 +326,24 @@ export default class Server {
       return;
     }
 
+    //TODO step shouldn't take use past the elapsed time e.g. elapsed time 21, step = 3 - 3rd step should be 1, not 10
     for(let i = 0; i < elapsedTime; i += step) {
       //update game time
       this.gameTime.setSeconds(this.gameTime.getSeconds() + step);
+      const gameTime = this.gameTime.valueOf();
 
       let processors = this._getEntityProcessors();
 
+      //for each entity
       for(let j = 0; j < numEntities; ++j) {
-        processors(entities[entityIds[j]], entities);
+        let entityId = entityIds[j];
+
+        if(processors(entities[entityId], entities)) {
+          //this entity was mutated
+          entitiesLastUpdated[entityId] = gameTime;
+        }
       }
-
-      //update the game entities
-      //newEntities = map(this.entities, this._getEntityProcessors());
     }
-
-    //this.entities = newEntities;
   }
 
   _getEntityProcessors() {
@@ -362,15 +353,15 @@ export default class Server {
     const entityProcessors = this.entityProcessorFactories.map(factory => (factory(gameTime / 1000)));
 
     //create composed function for processing all entities
-    //entity processors are currently mutating objects - could clone the object once at the start if needed? although it would only be a shallow clone
+    //called for each entity - any processor the mutates the entity must return true
     return (entity, entities) => {
-      //entity = {...entity};
+      let entityWasMutated = false;
 
       for(let i = 0, l = entityProcessors.length; i < l;++i) {
-        entity = entityProcessors[i](entity, entities)
+        entityWasMutated = entityProcessors[i](entity, entities) || entityWasMutated;
       }
 
-      return entity;
+      return entityWasMutated;
     }
   }
 
@@ -378,13 +369,6 @@ export default class Server {
     const entities = this.entities;
     const client = this.clients[clientId];
     const factionId = client.factionId;
-
-
-    if(this.entityCacheDirty) {
-      this.entityIds = Object.keys(entities);
-
-      this.entityCacheDirty = false;
-    }
 
     const entityIds = this.entityIds;
 
@@ -410,7 +394,8 @@ export default class Server {
     };
 
     this.entities[newEntity.id] = newEntity;
-    this.entityCacheDirty = true;
+    this.entityIds.push(newEntity.id);
+    this.entitiesLastUpdated[newEntity.id] = null;//never updated
 
     return newEntity;
   }
@@ -420,9 +405,11 @@ export default class Server {
       entity = entity.id;
     }
 
-    this.entityCacheDirty = true;
+    if(this.entities[entity]) {
+      this.entityIds.splice(this.entityIds.indexOf(entity), 1);
 
-    delete this.entities[entity];
+      delete this.entities[entity];
+    }
   }
 
   _getClientsForFaction(factionId, roles = null) {
