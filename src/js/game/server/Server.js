@@ -23,8 +23,8 @@ export default class Server {
   phase = INITIALISING;
 
   gameTime = null;
-  gameSpeed = 3 * 24 * 3600;//time multiplyer
-  gameSecondsPerStep = 60;//game seconds to process per step - higher = less processing, but risks resolution based issues
+  gameSpeed = 3600;//3 * 24 * 3600;//time multiplyer
+  gameSecondsPerStep = 1;//60;//game seconds to process per step - higher = less processing, but risks resolution based issues
 
   factions;//e.g. The in-game factions Humans, martians (factions are also entities)
   clients;//a client is a player connected to a faction by a connector method with a permissions e.g. Bob spectating Martians on connectionId 1
