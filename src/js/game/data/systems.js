@@ -338,6 +338,54 @@ const systems = {
         }
       },
       {
+        "name": "Himalia",
+        "type": "moon",
+        "parent": "Jupiter",
+        "mass": 4.2e18,
+        "radius": 75000,
+        "day": 28015.2,
+        "axialTilt": 0,
+        "tidalLock": false,
+        "albedo": 0.04,
+        "orbit": {
+          "type": "regular",
+          "radius": 11460000000,
+          "offset": 0.27
+        }
+      },
+      {
+        "name": "Lysithea",
+        "type": "moon",
+        "parent": "Jupiter",
+        "mass": 6.3e16,
+        "radius": 18000,
+        "day": null,
+        "axialTilt": 0,
+        "tidalLock": true,
+        "albedo": 0.04,
+        "orbit": {
+          "type": "regular",
+          "radius": 11720000000,
+          "offset": 0.58
+        }
+      },
+      {
+        "name": "Elara",
+        "type": "moon",
+        "parent": "Jupiter",
+        "mass": 8.7e17,
+        "radius": 43000,
+        "day": 43200,
+        "axialTilt": 0,
+        "tidalLock": false,
+        "albedo": 0.04,
+        "orbit": {
+          "type": "regular",
+          "radius": 11740000000,
+          "offset": 0.58
+        }
+      },
+      {
         "name": "Saturn",
         "type": "gasGiant",
         "parent": "Sol A",
