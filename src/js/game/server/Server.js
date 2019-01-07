@@ -14,7 +14,7 @@ const INITIALISING = 'initialising';
 const CONNECTING = 'connecting';
 const RUNNING = 'running';
 
-const global = typeof(window) === 'object' ? {} : {};
+const global = typeof(window) === 'object' ? window : {};
 
 
 export default class Server {
@@ -23,8 +23,8 @@ export default class Server {
   phase = INITIALISING;
 
   gameTime = null;
-  gameSpeed = 3600;//time multiplyer
-  gameSecondsPerStep = 1;//game seconds to process per step - higher = less processing, but risks resolution based issues
+  gameSpeed = 3 * 24 * 3600;//time multiplyer
+  gameSecondsPerStep = 60;//game seconds to process per step - higher = less processing, but risks resolution based issues
 
   factions;//e.g. The in-game factions Humans, martians (factions are also entities)
   clients;//a client is a player connected to a faction by a connector method with a permissions e.g. Bob spectating Martians on connectionId 1
@@ -36,7 +36,7 @@ export default class Server {
 
   entityProcessorFactories = [movementFactory];
 
-  clientEntityCache = null
+  clientLastUpdatedTime = null
 
   constructor(connector) {
     this.connector = connector;
@@ -53,6 +53,7 @@ export default class Server {
     }
 
     //c/onsole.log('[Server] createWorld: ', definition, connectionId);
+    this.gameTime = Math.floor(new Date(definition.startDate).valueOf() / 1000);
 
     //initialise the world based on supplied definition
     this.factions = {};
@@ -60,13 +61,13 @@ export default class Server {
     this.entityId = 1;
     this.entities = {};
     this.entityIds = [];
-    this.clientEntityCache = {};
+    this.clientLastUpdatedTime = {};
     this.entitiesLastUpdated = {};
     createWorldFromDefinition(this, definition);
 
     //c/onsole.log('[Server] created world: ', this.entities);
 
-    this.gameTime = new Date(definition.startDate);
+
 
     this._advanceTime(null);
 
@@ -171,7 +172,7 @@ export default class Server {
     if(Object.values(this.clients).every(client => (client.ready))) {
       //For each client, tell them the game is starting and send them their client state
       Object.values(this.clients).forEach(client => {
-        this.connector.sendMessageToClient(client.id, 'startingGame', this._getClientState(client.id));
+        this.connector.sendMessageToClient(client.id, 'startingGame', this._getClientState(client.id, true));
       });
 
       this._lastTime = Date.now();
@@ -236,7 +237,7 @@ export default class Server {
 
     this._checkValidClient(connectionId);
 
-    return Promise.resolve(this.getClientState(connectionId, lastUpdateTime))
+    return Promise.resolve(this._getClientState(connectionId, true))
   }
 
   //-validation methods
@@ -289,10 +290,6 @@ export default class Server {
     return ids.map(id => (entities[id]));
   }
 
-  getClientState(clientId, lastUpdateTime) {
-    return this._getClientState(clientId);
-  }
-
 
   /////////////////////////////
   // Internal helper methods //
@@ -329,8 +326,8 @@ export default class Server {
     //TODO step shouldn't take use past the elapsed time e.g. elapsed time 21, step = 3 - 3rd step should be 1, not 10
     for(let i = 0; i < elapsedTime; i += step) {
       //update game time
-      this.gameTime.setSeconds(this.gameTime.getSeconds() + step);
-      const gameTime = this.gameTime.valueOf();
+      this.gameTime += step;
+      const gameTime = this.gameTime;
 
       let processors = this._getEntityProcessors();
 
@@ -350,7 +347,7 @@ export default class Server {
     const gameTime = this.gameTime;
 
     //create entity processors
-    const entityProcessors = this.entityProcessorFactories.map(factory => (factory(gameTime / 1000)));
+    const entityProcessors = this.entityProcessorFactories.map(factory => (factory(gameTime)));
 
     //create composed function for processing all entities
     //called for each entity - any processor the mutates the entity must return true
@@ -365,25 +362,40 @@ export default class Server {
     }
   }
 
-  _getClientState(clientId) {
+  _getClientState(clientId, full = false) {
+    const gameTime = this.gameTime;
     const entities = this.entities;
+    const entitiesLastUpdated = this.entitiesLastUpdated;
     const client = this.clients[clientId];
     const factionId = client.factionId;
 
     const entityIds = this.entityIds;
+    const clientLastUpdated = this.clientLastUpdatedTime[clientId];
 
+    //if no clientLastUpdatedTime, then get full state
+    full = full || !clientLastUpdated;
+
+    //entities to be sent
     const clientEntities = {};
 
     for(let i = 0, l = entityIds.length; i < l; ++i) {
-      let entity = entities[entityIds[i]];
+      let entityId = entityIds[i];
+      let entity = entities[entityId];
+      let entityLastUpdatedTime = entitiesLastUpdated[entityId];
 
-      //Filter to just entities that do not have a factionId AND entities that have the clients faction id
-      if(!entity.factionId || entity.factionId === factionId) {
-        clientEntities[entity.id] = entity;
+      if(full || (entityLastUpdatedTime > clientLastUpdated) || entityLastUpdatedTime === null) {
+        //Filter to just entities that do not have a factionId AND entities that have the clients faction id
+        if(!entity.factionId || entity.factionId === factionId) {
+          clientEntities[entity.id] = entity;
+        }
       }
     }
 
-    return {entities: clientEntities, gameTime: this.gameTime.valueOf()};
+    //record last updated time
+    this.clientLastUpdatedTime[clientId] = gameTime;
+
+    //output state to client
+    return {entities: clientEntities, gameTime};
   }
 
   _newEntity(type, props) {
@@ -395,7 +407,7 @@ export default class Server {
 
     this.entities[newEntity.id] = newEntity;
     this.entityIds.push(newEntity.id);
-    this.entitiesLastUpdated[newEntity.id] = null;//never updated
+    this.entitiesLastUpdated[newEntity.id] = this.gameTime - 1;//never updated
 
     return newEntity;
   }

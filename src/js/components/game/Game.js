@@ -30,8 +30,10 @@ function Game({
   systemMap, setSystemMapFollowing, setSystemMapOptions,
   open, close
 }) {
+  const gameTime = new Date(game.gameTime * 1000);
+
   return <div className={styles.game}>
-    <SystemMap gameTime={game.gameTime} entities={game.entities} {...systemMap} setFollowing={setSystemMapFollowing} />
+    <SystemMap entities={game.entities} {...systemMap} setFollowing={setSystemMapFollowing} />
     <div className={styles.toolbar}>
       <div className="hspaceStart">
         <Button onClick={() => {open('coloniesWindow')}}><Trans id="toolbar.colonies">Colonies</Trans></Button>
@@ -41,7 +43,7 @@ function Game({
       </div>
     </div>
 
-    <div className={styles.controls}>{game.gameTime.toLocaleDateString(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+    <div className={styles.controls}>{gameTime.toLocaleDateString(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
 
     <div className={styles.selectSystem}>[TODO Sol]</div>
 

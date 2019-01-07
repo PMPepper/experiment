@@ -9,7 +9,6 @@ export default function movementFactory(time, entity, entities) {
     const parent = entities[entity.movement.orbitingId];
     const orbit = entity.movement;
 
-
     const orbitRadius = orbit.radius;
     const orbitalPeriod = orbit.period;
     const orbitFraction = ((time + (orbitalPeriod * orbit.offset)) % orbitalPeriod)/orbitalPeriod;
@@ -25,18 +24,16 @@ export default function movementFactory(time, entity, entities) {
       }
 
       newPositionX += parent.position.x;
-      newPositionX += parent.position.y;
+      newPositionY += parent.position.y;
     }
 
-    //this entity has moved, update it's position and return true
-    if(newPositionX !== position.x || newPositionY !== position.y) {
-      position.x = newPositionX;
-      position.y = newPositionY;
+    position.x = newPositionX;
+    position.y = newPositionY;
 
-      return true;
-    }
-
-    return false;
+    //right now just always assume moving elements need updating - because we
+    //call movement on parents, meaning they may not change the second time
+    //they are updated..? Also, planets always move!
+    return true;
   }
 
   function movement(entity, entities) {
@@ -48,8 +45,7 @@ export default function movementFactory(time, entity, entities) {
 
     switch(entity.movement.type) {
       case 'orbitRegular':
-        regularOrbitPositionAtTime(entity, entities);
-        break;
+        return regularOrbitPositionAtTime(entity, entities);
     }
   }
 

@@ -1,4 +1,4 @@
-import {setGameState} from '@/redux/reducers/game';
+import {setGameState, updateGameState} from '@/redux/reducers/game';
 
 
 export default class Client {
@@ -47,7 +47,7 @@ export default class Client {
   message_updatingGame(gameState) {
     this.gameState = gameState;
 
-    this.store.dispatch(setGameState(gameState))
+    this.store.dispatch(updateGameState(gameState))
   }
 
 
