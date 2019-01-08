@@ -1,5 +1,5 @@
 export default function movementFactory(time, entity, entities) {
-  //const updatedEntities = {};
+  const updatedEntities = {};
 
   function regularOrbitPositionAtTime(entity, entities) {
     if(!entity.movement || !entity.movement.orbitingId) {
@@ -27,26 +27,37 @@ export default function movementFactory(time, entity, entities) {
       newPositionY += parent.position.y;
     }
 
-    position.x = newPositionX;
-    position.y = newPositionY;
+    if(position.x !== newPositionX || position.y !== newPositionY) {
+      position.x = newPositionX;
+      position.y = newPositionY;
 
-    //right now just always assume moving elements need updating - because we
-    //call movement on parents, meaning they may not change the second time
-    //they are updated..? Also, planets always move!
-    return true;
+      return true;
+    }
+
+    return false;
   }
 
   function movement(entity, entities) {
-    if(!entity.movement) {// || updatedEntities[entity.id]//ignore entities that do not have movement definition OR have already been processed
+    if(!entity.movement) {//ignore entities that do not have movement definitio
       return;
     }
 
-    //updatedEntities[entity.id] = true;
+    const id = entity.id;
+
+    //If this entity has already been processed, return the result of that
+    if(id in updatedEntities) {
+      return updatedEntities[id];
+    }
+
+    let result = false;
 
     switch(entity.movement.type) {
       case 'orbitRegular':
-        return regularOrbitPositionAtTime(entity, entities);
+        result = regularOrbitPositionAtTime(entity, entities);
     }
+
+    //record the result to prevent repeat processing
+    return updatedEntities[id] = result;
   }
 
   return movement;
