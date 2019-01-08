@@ -23,8 +23,10 @@ export default class Server {
   phase = INITIALISING;
 
   gameTime = null;
-  gameSpeed = 3600;//3 * 24 * 3600;//time multiplyer
+  totalElapsedTime = null;
+  timeMultiplier = 60;//3 * 24 * 3600;//time multiplyer
   gameSecondsPerStep = 1;//60;//game seconds to process per step - higher = less processing, but risks resolution based issues
+  isPaused = false;
 
   factions;//e.g. The in-game factions Humans, martians (factions are also entities)
   clients;//a client is a player connected to a faction by a connector method with a permissions e.g. Bob spectating Martians on connectionId 1
@@ -53,7 +55,7 @@ export default class Server {
     }
 
     //c/onsole.log('[Server] createWorld: ', definition, connectionId);
-    this.gameTime = Math.floor(new Date(definition.startDate).valueOf() / 1000);
+    this.totalElapsedTime = this.gameTime = Math.floor(new Date(definition.startDate).valueOf() / 1000);
 
     //initialise the world based on supplied definition
     this.factions = {};
@@ -97,7 +99,7 @@ export default class Server {
 
     //create a client
     //factions are the available factions (id: role hash), factionId is the actual faction they are connected as right now
-    this.clients[connectionId] = {name, id: connectionId, type: 'human', ready: false, factions: {}, factionId: null, gameTime: this.gameTime};
+    this.clients[connectionId] = {name, id: connectionId, type: 'human', ready: false, factions: {}, factionId: null, gameTime: this.gameTime, gameSpeed: 1, isPaused: true};
 
     //Broadcast updated clients info
     this.connector.broadcastToClients('clientConnected', this.clients);
@@ -240,6 +242,27 @@ export default class Server {
     return Promise.resolve(this._getClientState(connectionId, true))
   }
 
+  message_setDesiredSpeed(newDesiredSpeed, connectionId) {
+    if(this.phase !== RUNNING) {
+      throw new Error('Can only set desired speed while server is in "running" phase');
+    }
+
+    this._checkValidClient(connectionId);
+
+    this.clients[connectionId].gameSpeed = Math.max(1, Math.min(5, newDesiredSpeed|0))
+  }
+
+  message_setIsPaused(newIsPaused, connectionId) {
+    if(this.phase !== RUNNING) {
+      throw new Error('Can only set is paused while server is in "running" phase');
+    }
+
+    this._checkValidClient(connectionId);
+
+    this.clients[connectionId].isPaused = !!newIsPaused;
+  }
+
+
   //-validation methods
   _checkValidClientName(name, connectionId) {
     if(!name) {
@@ -295,16 +318,59 @@ export default class Server {
   // Internal helper methods //
   /////////////////////////////
 
-  _onTick = (elapsedTime) => {
+  _updateGameTime() {
+    let newGameSpeed = 5;
+    let isPaused = false;
 
-    this._advanceTime(Math.min(3600, Math.ceil(elapsedTime * this.gameSpeed)), this.gameSecondsPerStep);
+    Object.values(this.clients).forEach(client => {
+      newGameSpeed = Math.min(newGameSpeed, client.gameSpeed);
+      isPaused = isPaused || client.isPaused;
+    });
+
+    switch(newGameSpeed) {
+      case 1:
+        this.timeMultiplier = 1;
+        this.gameSecondsPerStep = 1;
+        break;
+      case 2:
+        this.timeMultiplier = 60;
+        this.gameSecondsPerStep = 1;
+        break;
+      case 3:
+        this.timeMultiplier = 3600;
+        this.gameSecondsPerStep = 1;
+        break;
+      case 4:
+        this.timeMultiplier = 86400;
+        this.gameSecondsPerStep = 60;
+        break;
+      case 5:
+        this.timeMultiplier = 7 * 86400;
+        this.gameSecondsPerStep = 360;
+        break;
+    }
+
+    this.newGameSpeed = newGameSpeed;
+    this.isPaused = isPaused;
+  }
+
+  _onTick = (elapsedTime) => {
+    this._updateGameTime();
+
+    if(!this.isPaused) {
+      const effectiveElapsedTime = elapsedTime * this.timeMultiplier;
+
+      this.totalElapsedTime += effectiveElapsedTime;
+
+      this._advanceTime(this.gameSecondsPerStep);
+    }
 
     Object.values(this.clients).forEach(client => {
       this.connector.sendMessageToClient(client.id, 'updatingGame', this._getClientState(client.id));
     });
   }
 
-  _advanceTime(elapsedTime, step = 1) {
+  _advanceTime(step = 1) {
     const entities = this.entities;
 
     const entityIds = this.entityIds;
@@ -312,7 +378,7 @@ export default class Server {
     const numEntities = entityIds.length;
     let processors = null;
 
-    if(elapsedTime === null) {
+    if(step === null) {
       //initial entity initialisation
       processors = this._getEntityProcessors();
 
@@ -323,17 +389,19 @@ export default class Server {
       return;
     }
 
-    //TODO step shouldn't take use past the elapsed time e.g. elapsed time 21, step = 3 - 3rd step should be 1, not 10
-    for(let i = 0; i < elapsedTime; i += step) {
+    const advanceToTime = Math.floor(this.totalElapsedTime);
+
+    while(this.gameTime < advanceToTime) {
       //update game time
-      this.gameTime += step;
+      this.gameTime = Math.min(this.gameTime + step, advanceToTime);
+
       const gameTime = this.gameTime;
 
       let processors = this._getEntityProcessors();
 
       //for each entity
-      for(let j = 0; j < numEntities; ++j) {
-        let entityId = entityIds[j];
+      for(let i = 0; i < numEntities; ++i) {
+        let entityId = entityIds[i];
 
         if(processors(entities[entityId], entities)) {
           //this entity was mutated
@@ -395,7 +463,7 @@ export default class Server {
     this.clientLastUpdatedTime[clientId] = gameTime;
 
     //output state to client
-    return {entities: clientEntities, gameTime};
+    return {entities: clientEntities, gameTime, gameSpeed: this.gameSpeed, desiredGameSpeed: client.gameSpeed, isPaused: this.isPaused};
   }
 
   _newEntity(type, props) {

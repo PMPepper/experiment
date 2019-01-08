@@ -22,4 +22,13 @@
 
     @include blockInteraction($mouseBg: #F33, $mouseCol: #FFF);
   }
+
+  &.selected {
+    background: $grey40;
+  }
+}
+
+
+svg + svg {
+  margin-left: -8px;
 }

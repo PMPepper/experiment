@@ -26,10 +26,12 @@
 
 $columnSpace: $basePadding/2;
 $rowSpace: $basePadding/2;
+
 :global(.hspaceStart) {
   display: flex;
   flex-flow: row wrap;
-  margin: (-$rowSpace) 0 0 (-$columnSpace);
+  margin-top: (-$rowSpace);
+  margin-left: (-$columnSpace);
 
   > * {
     margin-top: $rowSpace;
@@ -44,7 +46,8 @@ $rowSpace: $basePadding/2;
 :global(.hspaceEnd) {
   display: flex;
   flex-flow: row wrap;
-  margin: (-$rowSpace) 0 0 (-$columnSpace);
+  margin-top: (-$rowSpace);
+  margin-left: (-$columnSpace);
   justify-content: flex-end;
 
   > * {
@@ -54,6 +57,27 @@ $rowSpace: $basePadding/2;
 
   :global(.rtl) & {
     flex-flow: row-reverse wrap;
+  }
+}
+
+:global(.vspaceStart) {
+  display: flex;
+  flex-flow: column nowrap;
+  margin-bottom: (-$rowSpace);
+
+  > * {
+    margin-bottom: $rowSpace;
+  }
+}
+
+:global(.vspaceEnd) {
+  display: flex;
+  flex-flow: column nowrap;
+  margin-bottom: (-$rowSpace);
+  justify-content: flex-end;
+
+  > * {
+    margin-bottom: $rowSpace;
   }
 }
 

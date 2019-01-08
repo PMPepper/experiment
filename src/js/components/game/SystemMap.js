@@ -98,18 +98,18 @@ class SystemMap extends React.Component {
       const scrollSpeed = ((isKeyDown(options.controls.fast) ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / state.zoom;
 
       //-scrolling
-      if(isKeyDown(options.controls.scrollRight) || (mouseClientX !== null && (options.mouseEdgeScrolling + mouseClientX >= windowSize.width))) {//right
+      if(isKeyDown(options.controls.scrollRight) || (!props.following && mouseClientX !== null && (options.mouseEdgeScrolling + mouseClientX >= windowSize.width))) {//right
         this.tx += scrollSpeed;
         hasScrolled = true;
-      } else if(isKeyDown(options.controls.scrollLeft) || (mouseClientX !== null && (mouseClientX < options.mouseEdgeScrolling))) {//left
+      } else if(isKeyDown(options.controls.scrollLeft) || (!props.following && mouseClientX !== null && (mouseClientX < options.mouseEdgeScrolling))) {//left
         this.tx -= scrollSpeed;
         hasScrolled = true;
       }
 
-      if(isKeyDown(options.controls.scrollDown) || (mouseClientY !== null && (options.mouseEdgeScrolling + mouseClientY >= windowSize.height))) {//down
+      if(isKeyDown(options.controls.scrollDown) || (!props.following && mouseClientY !== null && (options.mouseEdgeScrolling + mouseClientY >= windowSize.height))) {//down
         this.ty += scrollSpeed;
         hasScrolled = true;
-      } else if(isKeyDown(options.controls.scrollUp) || (mouseClientY !== null && (mouseClientY < options.mouseEdgeScrolling))) {//up
+      } else if(isKeyDown(options.controls.scrollUp) || (!props.following && mouseClientY !== null && (mouseClientY < options.mouseEdgeScrolling))) {//up
         this.ty -= scrollSpeed;
         hasScrolled = true;
       }

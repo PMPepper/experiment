@@ -44,7 +44,7 @@ polyfills.then(() => {
       ReactDOM.render(
         <Provider store={store}>
           <I18nProvider language="en-GB">
-            <Game />
+            <Game client={client} />
           </I18nProvider>
         </Provider>,
         document.getElementById('app')

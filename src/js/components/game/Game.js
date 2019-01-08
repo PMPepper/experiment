@@ -10,6 +10,8 @@ import Panel from '@/components/panel/Panel';
 import Button from '@/components/button/Button';
 import Window from '@/components/window/ConnectedWindow';
 import SortChildren from '@/components/sortChildren/SortChildren';
+import Time from '@/components/time/Time';
+import Icon from '@/components/icon/Icon';
 
 import FPSStats from '@/components/dev/FPSStats';
 //import Icon from '@/components/icon/Icon';
@@ -26,7 +28,7 @@ import {setFollowing as setSystemMapFollowing, setOptions as setSystemMapOptions
 
 function Game({
   coloniesWindow, fleetsWindow, researchWindow, shipDesignWindow,
-  game,
+  game, client,
   systemMap, setSystemMapFollowing, setSystemMapOptions,
   open, close
 }) {
@@ -43,7 +45,52 @@ function Game({
       </div>
     </div>
 
-    <div className={styles.controls}>{gameTime.toLocaleDateString(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+    <div className={styles.controls}>
+      <div className="vspaceStart">
+        <div className="hspaceStart">
+          <Button selected={!!game.isPaused} onClick={() => {client.setIsPaused(!game.isPaused)}}>
+            <span className="offscreen"><Trans id="toolbar.colonies">Toggle paused game</Trans></span>
+            <Icon icon="pause" />
+          </Button>
+
+          <Button selected={game.desiredGameSpeed === 1} onClick={() => {client.setDesiredSpeed(1)}}>
+            <span className="offscreen"><Trans id="toolbar.colonies">Play at real time</Trans></span>
+            <Icon icon="play" />
+          </Button>
+
+          <Button selected={game.desiredGameSpeed === 2} onClick={() => {client.setDesiredSpeed(2)}}>
+            <span className="offscreen"><Trans id="toolbar.colonies">Play at x60</Trans></span>
+            <Icon icon="play" />
+            <Icon icon="play" />
+          </Button>
+
+          <Button selected={game.desiredGameSpeed === 3} onClick={() => {client.setDesiredSpeed(3)}}>
+            <span className="offscreen"><Trans id="toolbar.colonies">Play at x3,600</Trans></span>
+            <Icon icon="play" />
+            <Icon icon="play" />
+            <Icon icon="play" />
+          </Button>
+
+          <Button selected={game.desiredGameSpeed === 4} onClick={() => {client.setDesiredSpeed(4)}}>
+            <span className="offscreen"><Trans id="toolbar.colonies">Play at x86,400</Trans></span>
+            <Icon icon="play" />
+            <Icon icon="play" />
+            <Icon icon="play" />
+            <Icon icon="play" />
+          </Button>
+
+          <Button selected={game.desiredGameSpeed === 5} onClick={() => {client.setDesiredSpeed(5)}}>
+            <span className="offscreen"><Trans id="toolbar.colonies">Play at x86,400</Trans></span>
+            <Icon icon="play" />
+            <Icon icon="play" />
+            <Icon icon="play" />
+            <Icon icon="play" />
+            <Icon icon="play" />
+          </Button>
+        </div>
+        <Time value={gameTime} format="datetime" />
+      </div>
+    </div>
 
     <div className={styles.selectSystem}>[TODO Sol]</div>
 
