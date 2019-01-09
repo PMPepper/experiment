@@ -92,7 +92,7 @@ function Game({
 
     <div className={styles.selectSystem}>
       <select>
-        <option id="1">Sol</option>
+        {game.knownSystems.map(knownSystem => (<option id={knownSystem.systemId} key={knownSystem.systemId}>{knownSystem.factionSystem.name}</option>))}
       </select>
     </div>
 

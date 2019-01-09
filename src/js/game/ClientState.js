@@ -1,8 +1,8 @@
 export default class ClientState {
 
-  constructor() {
-
-  }
+  ////////////////////
+  // cached getters //
+  ////////////////////
 
   get gameTimeDate() {
     if(!this._gameTimeDate) {
@@ -12,7 +12,35 @@ export default class ClientState {
     return this._gameTimeDate;
   }
 
+  get knownSystems() {
+    if(!this._knownSystems) {
+      const entityIds = this.entityIds;
+      const entities = this.entities;
+      const knownSystems = this._knownSystems = [];
+      let id = null;
+      let entity = null;
+
+      for(let i = 0; i < entityIds.length; i++) {
+        id = entityIds[i];
+        entity = entities[id];
+
+        if(entity.type === 'factionSystem') {
+          knownSystems.push(entity);
+        }
+      }
+    }
+
+    return this._knownSystems;
+  }
+
+
+  /////////////////////////////
+  // static creation methods //
+  /////////////////////////////
+
   static fromState(state) {
+    //TODO removed entities
+
     const clientState = new ClientState();
 
     clientState.entities = state.entities;
@@ -20,6 +48,8 @@ export default class ClientState {
     clientState.desiredGameSpeed = state.desiredGameSpeed;
     clientState.gameSpeed = state.gameSpeed;
     clientState.isPaused = state.isPaused;
+
+    clientState.entityIds = Object.keys(clientState.entities);
 
     return clientState;
   }
@@ -43,6 +73,8 @@ export default class ClientState {
     clientState.desiredGameSpeed = newData.desiredGameSpeed;
     clientState.gameSpeed = newData.gameSpeed;
     clientState.isPaused = newData.isPaused;
+
+    clientState.entityIds = Object.keys(clientState.entities);
 
     return clientState;
   }
