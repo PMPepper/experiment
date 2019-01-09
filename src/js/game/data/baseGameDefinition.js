@@ -5,6 +5,9 @@ const worldDefinition = {
   gameName: 'flobble',
   startDate: '2000-01-01T00:00:00',
   systems: systems,
+  species: {
+    Humans: {name: 'Humans'}
+  },
   factions: [{
     name: 'Humans',
     //key value pair, where key is 'id' for generation reference (shared between factions) and value is the system,
@@ -17,7 +20,13 @@ const worldDefinition = {
     startingColonies: [{
       system: 'Sol',//ID from systemsSystems object (the key)
       body: 'Earth',//body ID (what if random?)
-      population: 10000000000,
+      populations: [
+        {
+          species: 'Humans',
+          population: 1000000000,
+        }
+      ]
+
       //TODO
       //money, structures, minerals, fuel, technology, etc
     }]
@@ -39,7 +48,12 @@ const worldDefinition = {
     startingColonies: [{
       system: 'Sol',//ID from systemsSystems object (the key)
       body: 'Mars',//body ID (what if random?)
-      population: 10000000000,
+      populations: [
+        {
+          species: 'Humans',
+          population: 1000000000,
+        }
+      ]
       //TODO
       //money, structures, minerals, fuel, technology, etc
     }]

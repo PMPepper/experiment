@@ -23,9 +23,16 @@ import baseGameDefinition from '@/game/data/baseGameDefinition';//TEMP CODE
 //vars
 const title = 'React/Webpack testing';
 
-const store = createStore(root, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
-console.log(store);
-console.log(store.getState());
+
+var store;
+
+if(process.env.NODE_ENV !== 'production') {
+  store = createStore(root, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
+
+  window.store = store;
+} else {
+  store = createStore(root)
+}
 
 //REAL TEMP CODE!
 
@@ -40,6 +47,9 @@ polyfills.then(() => {
   //TEMP CODE
   const gameServer = GameEngine.startGame(baseGameDefinition, new Client('local', store, new LocalConnector())).then((client) => {
       console.log('[MAIN] render');
+
+      client.setIsPaused(false);
+      client.setDesiredSpeed(3);
 
       ReactDOM.render(
         <Provider store={store}>

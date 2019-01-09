@@ -350,7 +350,7 @@ export default class Server {
         break;
     }
 
-    this.newGameSpeed = newGameSpeed;
+    this.gameSpeed = newGameSpeed;
     this.isPaused = isPaused;
   }
 

@@ -3,6 +3,7 @@ import orbitPeriod from '@/helpers/physics/orbitPeriod';
 export default function createWorldFromDefinition(server, definition) {
   //internal lookup hashes
   const systemsByDefinitionId = {};//[systemDefinitionId] = system entity
+  const speciesByDefinitionId = {};//[systemDefinitionId] = system entity
   const systemBodiesBySystemDefinitionIdBySystemBodyDefinitionName = {};//[systemDefinitionId][systemBodyDefinitionName] = systemBody entity
   const factionsByDefinitionName = {};
 
@@ -58,9 +59,18 @@ export default function createWorldFromDefinition(server, definition) {
     system.systemBodyIds = bodies.map(body => body.id);
   });
 
+  //Create the species
+  Object.keys(definition.species).forEach(id => {
+    const speciesDefinition = definition.species[id];
+
+    const entity = server._newEntity('species', {species: speciesDefinition});
+
+    speciesByDefinitionId[id] = entity;
+  })
+
   //create the factions
   definition.factions.forEach(factionDefinition => {
-    const faction = server._newEntity('faction', {faction: {name: factionDefinition.name}});
+    const faction = server._newEntity('faction', {faction: {name: factionDefinition.name, colonyIds: []}});
 
     factionsByDefinitionName[factionDefinition.name] = faction;
 
@@ -109,7 +119,49 @@ export default function createWorldFromDefinition(server, definition) {
 
           break;
       }
-    })
+    });
+
+    //now add starting colonies
+    factionDefinition.startingColonies.forEach(startingColonyDefinition => {
+      /*
+      system: 'Sol',//ID from systemsSystems object (the key)
+      body: 'Mars',//body ID (what if random?)
+      populations: [
+        {
+          species: 'Humans',
+          population: 1000000000,
+        }
+      ]
+      */
+
+      const systemBody = systemBodiesBySystemDefinitionIdBySystemBodyDefinitionName[startingColonyDefinition.system][startingColonyDefinition.body];
+      const populationIds = startingColonyDefinition.populations.map(populationDefinition => {
+        const species = speciesByDefinitionId[populationDefinition.species];
+
+        const entity = server._newEntity('population', {
+          factionId: faction.id,
+          speciesId: species.id,
+          systemId: systemBody.systemId,
+          systemBodyId: systemBody.id,
+          population: {
+            quantity: populationDefinition.population
+          }
+        })
+
+        return entity.id;
+      });
+
+      //now create the colony itself
+      const colony = server._newEntity('colony', {
+        factionId: faction.id,
+        systemId: systemBody.systemId,
+        systemBodyId: systemBody.id,
+        populationIds: populationIds,
+      });
+
+      //and record as part of the faction
+      faction.faction.colonyIds.push(colony.id);
+    });
   })
 
   /*
