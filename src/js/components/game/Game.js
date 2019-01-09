@@ -35,7 +35,7 @@ function Game({
   const gameTime = new Date(game.gameTime * 1000);
 
   return <div className={styles.game}>
-    <SystemMap entities={game.entities} {...systemMap} setFollowing={setSystemMapFollowing} />
+    <SystemMap entities={game.entities} {...systemMap} systemId={1} setFollowing={setSystemMapFollowing} />
     <div className={styles.toolbar}>
       <div className="hspaceStart">
         <Button onClick={() => {open('coloniesWindow')}}><Trans id="toolbar.colonies">Colonies</Trans></Button>
@@ -92,7 +92,11 @@ function Game({
       </div>
     </div>
 
-    <div className={styles.selectSystem}>[TODO Sol]</div>
+    <div className={styles.selectSystem}>
+      <select>
+        <option id="1">Sol</option>
+      </select>
+    </div>
 
     <Panel title={<Trans id="optionsPanel.title">Options</Trans>} className={styles.options}>[TODO options panel]</Panel>
 

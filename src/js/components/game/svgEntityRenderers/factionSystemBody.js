@@ -8,7 +8,7 @@ export default function factionSystemBody(props) {
   const {entity, entities, zoom, styles, x, y, windowSize, options} = props;
   const systemBodyEntity = entities[entity.systemBodyId];
   const systemBody = systemBodyEntity.systemBody;
-  const systemBodyDisplayOptions = options[systemBody.type];
+  const systemBodyDisplayOptions = options.bodies[systemBody.type];
 
   const parent = systemBodyEntity.movement && systemBodyEntity.movement.orbitingId && entities[systemBodyEntity.movement.orbitingId];
 

@@ -1,10 +1,24 @@
 @import '../../../css/shared';
 
-$controlsWidth: 32rem - ($basePadding*2);
+$selectSystemsWidth: 32rem - ($basePadding*2);
+$controlsWidth: $selectSystemsWidth;
 $optionsWidth: $controlsWidth;
+
+$selectSystemsHeight: 4.4rem;
 
 .game {
   height: 100%;
+}
+
+.selectSystem {
+  @include panel;
+  padding: $basePadding/2;
+
+  position: fixed;
+  top: $basePadding;
+  left: $basePadding;
+  width: $selectSystemsWidth;
+  height: $selectSystemsHeight;
 }
 
 .toolbar {
@@ -13,8 +27,8 @@ $optionsWidth: $controlsWidth;
 
   position: fixed;
   top: $basePadding;
-  left: $basePadding;
-  max-width: calc(100vw - #{$controlsWidth + ($basePadding * 3)})
+  left: $selectSystemsWidth + $basePadding*2;
+  max-width: calc(100vw - #{$selectSystemsWidth + $controlsWidth + ($basePadding * 4)})
 }
 
 .controls {
@@ -27,18 +41,9 @@ $optionsWidth: $controlsWidth;
   width: $controlsWidth;
 }
 
-.selectSystem {
-  @include panel;
-  padding: $basePadding/2;
-
-  position: fixed;
-  top: 5rem + $basePadding;
-  left: $basePadding;
-}
-
 .options {
   position: fixed;
-  top: 10rem + $basePadding;
+  top: $selectSystemsHeight + $basePadding + $basePadding;
   left: $basePadding;
-  width: 32rem - ($basePadding*2);
+  width: $optionsWidth;
 }

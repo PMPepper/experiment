@@ -300,18 +300,27 @@ class SystemMap extends React.Component {
 
   render() {
     const props = this.props;
-    const {windowSize, entities, styles, cx, cy, options, renderComponent: RenderComponent} = props;
+    const {systemId, windowSize, entities, styles, cx, cy, options, renderComponent: RenderComponent} = props;
     let {x, y, zoom} = this.state;
 
     //center in window
     x -= (windowSize.width * cx) / zoom;
     y -= (windowSize.height * cy) / zoom;
 
+    const renderEntities = reduce(entities, (output, entity) => {
+      if(entity.render && entity.systemId === systemId) {
+        output.push(entity);
+      }
+
+      return output
+    }, [])
+
     return <RenderComponent
       x={x}
       y={y}
       zoom={zoom}
       entities={entities}
+      renderEntities={renderEntities}
       styles={styles}
       windowSize={windowSize}
       options={options.display}

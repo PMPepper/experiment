@@ -11,36 +11,40 @@ const reduxId = 'systemMap';
 
 const defaultSystemMapOptions = {
   display: {
-    asteroid: {
-      body: RenderFlags.ALL,
-      label: RenderFlags.ALL,
-      orbit: 0
-    },
-    moon: {
-      body: RenderFlags.ALL,
-      label: RenderFlags.ALL,
-      orbit: RenderFlags.ALL
-    },
-    planet: {
-      body: RenderFlags.ALL,
-      label: RenderFlags.ALL,
-      orbit: RenderFlags.ALL
-    },
-    dwarfPlanet: {
-      body: RenderFlags.ALL,
-      label: RenderFlags.ALL,
-      orbit: RenderFlags.ALL
-    },
-    gasGiant: {
-      body: RenderFlags.ALL,
-      label: RenderFlags.ALL,
-      orbit: RenderFlags.ALL
-    },
-    star: {
-      body: RenderFlags.ALL,
-      label: RenderFlags.ALL,
-      orbit: RenderFlags.ALL
-    },
+    highlightColonies: true,
+    highlightMinerals: true,
+    bodies: {
+      asteroid: {
+        body: RenderFlags.ALL,
+        label: RenderFlags.ALL,
+        orbit: 0
+      },
+      moon: {
+        body: RenderFlags.ALL,
+        label: RenderFlags.ALL,
+        orbit: RenderFlags.ALL
+      },
+      planet: {
+        body: RenderFlags.ALL,
+        label: RenderFlags.ALL,
+        orbit: RenderFlags.ALL
+      },
+      dwarfPlanet: {
+        body: RenderFlags.ALL,
+        label: RenderFlags.ALL,
+        orbit: RenderFlags.ALL
+      },
+      gasGiant: {
+        body: RenderFlags.ALL,
+        label: RenderFlags.ALL,
+        orbit: RenderFlags.ALL
+      },
+      star: {
+        body: RenderFlags.ALL,
+        label: RenderFlags.ALL,
+        orbit: RenderFlags.ALL
+      },
+    }
   },
   controls: {//16, 33, 34, 37, 38, 39, 40, 87, 68, 83, 65
     fast: 16,
