@@ -12,6 +12,7 @@ import Window from '@/components/window/ConnectedWindow';
 import SortChildren from '@/components/sortChildren/SortChildren';
 import Time from '@/components/time/Time';
 import Icon from '@/components/icon/Icon';
+import AddContextMenu from '@/components/contextMenu/AddContextMenu';
 
 import FPSStats from '@/components/dev/FPSStats';
 //import Icon from '@/components/icon/Icon';
@@ -35,7 +36,55 @@ function Game({
   open, close
 }) {
   return <div className={styles.game}>
-    <SystemMap clientState={clientState} {...systemMap} systemId={selectedSystemId} setFollowing={setSystemMapFollowing} />
+    <AddContextMenu getItems={(e) => {
+      if('entityId' in e.target.dataset) {
+        e.preventDefault();
+        const entityId = +e.target.dataset.entityId;
+        const entity = clientState.entities[entityId];
+        const factionId = clientState.factionId;
+        const items = [];
+
+        //alert(JSON.stringify(entity, null, 2));
+        if(entity.type === 'systemBody') {
+          if(items.length > 0) {
+            items.push('spacer');
+          }
+
+          const factionSystemBody = clientState.getFactionSystemBodyFromSystemBody(entity);
+          const colonies = clientState.getColoniesForSystemBody(entity);
+          //const factions = clientState.factions;
+
+          items.push({label: factionSystemBody.factionSystemBody.name, icon: <Icon icon="globe" />});
+          items.push({label: <Trans>Body info</Trans>, action: () => {alert('TODO')}})
+
+          if(entity.systemBody.type !== 'star') {
+            let hasOwnColony = false;
+
+            const coloniesItems = colonies.map(colony => {
+              if(colony.factionId === factionId) {
+                hasOwnColony = true;
+              }
+
+              return {label: clientState.entities[colony.factionId].faction.name, action: () => {alert('TODO')}}
+            });
+
+            if(!hasOwnColony) {
+              coloniesItems.unshift({label: <Trans>Create colony</Trans>, action: () => {
+                client.createColony(entity.id);
+              }})
+            }
+
+            items.push({label: <Trans>Colonies</Trans>, items: coloniesItems});
+          }
+        }
+
+        return items;
+      }
+
+      return false;
+    }}>
+      <SystemMap clientState={clientState} {...systemMap} systemId={selectedSystemId} setFollowing={setSystemMapFollowing} />
+    </AddContextMenu>
     <div className={styles.toolbar}>
       <div className="hspaceStart">
         <Button onClick={() => {open('coloniesWindow')}}><Trans id="toolbar.colonies">Colonies</Trans></Button>

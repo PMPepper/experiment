@@ -29,7 +29,7 @@ export default class Server {
   isPaused = false;
 
   factions;//e.g. The in-game factions Humans, martians (factions are also entities)
-  clients;//a client is a player connected to a faction by a connector method with a permissions e.g. Bob spectating Martians on connectionId 1
+  clients;//a client is a player connected to a faction by a connector method with a permissions e.g. Bob spectating Martians on clientId 1
 
   entities = null;
   entityId = null;//used to keep track of assigned entity IDs - increments after each entity is created
@@ -49,12 +49,12 @@ export default class Server {
   //////////////////////
 
   //-initialising server
-  message_createWorld(definition, connectionId) {
+  message_createWorld(definition, clientId) {
     if(this.phase !== INITIALISING) {
       throw new Error('Can only create world while Server is in "initialising" phase');
     }
 
-    //c/onsole.log('[Server] createWorld: ', definition, connectionId);
+    //c/onsole.log('[Server] createWorld: ', definition, clientId);
     this.totalElapsedTime = this.gameTime = Math.floor(new Date(definition.startDate).valueOf() / 1000);
 
     //initialise the world based on supplied definition
@@ -83,23 +83,23 @@ export default class Server {
     return Promise.resolve();
   }
 
-  message_connectClient({name}, connectionId) {
+  message_connectClient({name}, clientId) {
     if(this.phase !== CONNECTING) {
       throw new Error('Can only connect player while Server is in "connecting" phase');
     }
 
-    if(this.clients[connectionId]) {
+    if(this.clients[clientId]) {
       throw new Error('Each client can only connect once');
     }
 
     //check client name is valid
-    this._checkValidClientName(name, connectionId);
+    this._checkValidClientName(name, clientId);
 
-    //c/onsole.log('[Server] connectClient: ', name, connectionId);
+    //c/onsole.log('[Server] connectClient: ', name, clientId);
 
     //create a client
     //factions are the available factions (id: role hash), factionId is the actual faction they are connected as right now
-    this.clients[connectionId] = {name, id: connectionId, type: 'human', ready: false, factions: {}, factionId: null, gameTime: this.gameTime, gameSpeed: 1, isPaused: true};
+    this.clients[clientId] = {name, id: clientId, type: 'human', ready: false, factions: {}, factionId: null, gameTime: this.gameTime, gameSpeed: 1, isPaused: true};
 
     //Broadcast updated clients info
     this.connector.broadcastToClients('clientConnected', this.clients);
@@ -108,17 +108,17 @@ export default class Server {
     return Promise.resolve({entities: this.entities, factions: this.factions, clients: this.clients})
   }
 
-  message_setClientSettings({name, factions, factionId, ready}, connectionId) {
+  message_setClientSettings({name, factions, factionId, ready}, clientId) {
     if(this.phase !== CONNECTING) {
       throw new Error('Can only set connected player settings while Server is in "connecting" phase');
     }
 
-    this._checkValidClient(connectionId);
-    this._checkValidClientName(name, connectionId);
+    this._checkValidClient(clientId);
+    this._checkValidClientName(name, clientId);
 
     //TODO check that name is unique
 
-    const client = this.clients[connectionId];
+    const client = this.clients[clientId];
 
 
 
@@ -129,7 +129,7 @@ export default class Server {
       factions = map(this.factions, (faction) => (FactionClientTypes.SPECTATOR));
     } else {
       if(Object.keys(factions).some(factionId => {
-        return this._getClientsForFaction(factionId, [FactionClientTypes.OWNER]).some(clientId => (clientId !== connectionId));
+        return this._getClientsForFaction(factionId, [FactionClientTypes.OWNER]).some(thisClientId => (thisClientId !== clientId));
       })) {
         throw new Error(`Invalid client settings, faction(s) already owned by '${factionId}'`);
       }
@@ -143,12 +143,12 @@ export default class Server {
       }
     }
 
-    //c/onsole.log('[Server] setClientSettings: ', name, factions, factionId, ready, connectionId);
+    //c/onsole.log('[Server] setClientSettings: ', name, factions, factionId, ready, clientId);
 
     ready = !!ready;
 
     //update state
-    this.clients[connectionId] = {...client, name, factions, factionId, ready};
+    this.clients[clientId] = {...client, name, factions, factionId, ready};
 
     //broadcast updated state to all players
     this.connector.broadcastToClients('clientUpdated', this.clients);
@@ -157,14 +157,14 @@ export default class Server {
     return Promise.resolve(true);
   }
 
-  message_startGame(data, connectionId) {
+  message_startGame(data, clientId) {
     if(this.phase !== CONNECTING) {
       throw new Error('Can only start game while Server is in "connecting" phase');
     }
 
-    this._checkValidClient(connectionId);
+    this._checkValidClient(clientId);
 
-    const client = this.clients[connectionId];
+    const client = this.clients[clientId];
 
 
     //c/onsole.log('[Server] startGame');
@@ -232,52 +232,77 @@ export default class Server {
   }
 
   //-in game
-  message_getClientState(lastUpdateTime, connectionId) {
+  message_getClientState(lastUpdateTime, clientId) {
     if(this.phase !== RUNNING) {
       throw new Error('Can only get client state while server is in "running" phase');
     }
 
-    this._checkValidClient(connectionId);
+    this._checkValidClient(clientId);
 
-    return Promise.resolve(this._getClientState(connectionId, true))
+    return Promise.resolve(this._getClientState(clientId, true))
   }
 
-  message_setDesiredSpeed(newDesiredSpeed, connectionId) {
+  message_setDesiredSpeed(newDesiredSpeed, clientId) {
     if(this.phase !== RUNNING) {
       throw new Error('Can only set desired speed while server is in "running" phase');
     }
 
-    this._checkValidClient(connectionId);
+    this._checkValidClient(clientId);
 
-    this.clients[connectionId].gameSpeed = Math.max(1, Math.min(5, newDesiredSpeed|0))
+    this.clients[clientId].gameSpeed = Math.max(1, Math.min(5, newDesiredSpeed|0))
   }
 
-  message_setIsPaused(newIsPaused, connectionId) {
+  message_setIsPaused(newIsPaused, clientId) {
     if(this.phase !== RUNNING) {
       throw new Error('Can only set is paused while server is in "running" phase');
     }
 
-    this._checkValidClient(connectionId);
+    this._checkValidClient(clientId);
 
-    this.clients[connectionId].isPaused = !!newIsPaused;
+    this.clients[clientId].isPaused = !!newIsPaused;
+  }
+
+  message_createColony(systemBodyId, clientId) {
+    if(this.phase !== RUNNING) {
+      throw new Error('Can only set is paused while server is in "running" phase');
+    }
+
+    this._checkValidClient(clientId);
+
+    const systemBody = this.entities[systemBodyId];
+    const client = this.clients[clientId];
+    const factionId = client.factionId;
+    const faction = this.entities[factionId];
+
+    //TODO validate (cannot create colony if you already have one, must be a system body, etc)
+    const colony = this._newEntity('colony', {
+      factionId,
+      systemId: systemBody.systemId,
+      systemBodyId: systemBody.id,
+      populationIds: [],
+    });
+
+    //update faction
+    faction.faction.colonyIds.push(colony.id);
+    this.entitiesLastUpdated[factionId] = this.gameTime + 1;//mark faction as updated
   }
 
 
   //-validation methods
-  _checkValidClientName(name, connectionId) {
+  _checkValidClientName(name, clientId) {
     if(!name) {
       throw new Error('Client required a name');
     }
 
     Object.values(this.clients).some(client => {
-      if(client.id !== connectionId && client.name === name) {
+      if(client.id !== clientId && client.name === name) {
         throw new Error('Client name already in use by another client');
       }
     });
   }
 
-  _checkValidClient(connectionId) {
-    if(!this.clients[connectionId]) {
+  _checkValidClient(clientId) {
+    if(!this.clients[clientId]) {
       throw new Error('Unknown client');
     }
   }
@@ -293,14 +318,14 @@ export default class Server {
   // public methods //
   ////////////////////
 
-  onMessage(type, data, connectionId) {
+  onMessage(type, data, clientId) {
     const name = `message_${type}`;
 
     if(this[name]) {
-      return this[name](data, connectionId);
+      return this[name](data, clientId);
     }
 
-    console.log('Unknown message from client: ', type, data, connectionId);
+    console.log('Unknown message from client: ', type, data, clientId);
   }
 
   getEntityById(id) {
@@ -451,7 +476,7 @@ export default class Server {
       let entity = entities[entityId];
       let entityLastUpdatedTime = entitiesLastUpdated[entityId];
 
-      if(full || (entityLastUpdatedTime > clientLastUpdated) || entityLastUpdatedTime === null) {
+      if(full || (entityLastUpdatedTime > clientLastUpdated)) {
         //Filter to just entities that do not have a factionId AND entities that have the clients faction id
         if(!entity.factionId || entity.factionId === factionId) {
           clientEntities[entity.id] = entity;
@@ -475,7 +500,7 @@ export default class Server {
 
     this.entities[newEntity.id] = newEntity;
     this.entityIds.push(newEntity.id);
-    this.entitiesLastUpdated[newEntity.id] = this.gameTime - 1;//never updated
+    this.entitiesLastUpdated[newEntity.id] = this.gameTime + 1;
 
     return newEntity;
   }

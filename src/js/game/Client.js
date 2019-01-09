@@ -44,6 +44,7 @@ export default class Client {
     return this.connector.sendMessageToServer('startGame', null)
   }
 
+  //in game messages
   setDesiredSpeed(speed) {
     //c/onsole.log('[CLIENT] setDesiredSpeed: ', speed);
 
@@ -52,6 +53,10 @@ export default class Client {
 
   setIsPaused(isPaused) {
     return this.connector.sendMessageToServer('setIsPaused', isPaused)
+  }
+
+  createColony(bodyId) {
+    return this.connector.sendMessageToServer('createColony', bodyId)
   }
 
   ///////////////////////////////////////

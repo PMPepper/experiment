@@ -107,6 +107,7 @@ export default function factionSystemBody(props) {
       cx={bodyProps.cx}
       cy={bodyProps.cy}
       r={bodyProps.r + 3}
+      opacity={bodyProps.opacity}
       key="colony"
       data-entity-id={entity.systemBodyId}
     />,

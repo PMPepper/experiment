@@ -12,6 +12,27 @@ export default class ClientState {
     return this._gameTimeDate;
   }
 
+  get factions() {
+    if(!this._factions) {
+      const entityIds = this.entityIds;
+      const entities = this.entities;
+      const factions = this._factions = [];
+      let id = null;
+      let entity = null;
+
+      for(let i = 0; i < entityIds.length; i++) {
+        id = entityIds[i];
+        entity = entities[id];
+
+        if(entity.type === 'faction') {
+          factions.push(entity);
+        }
+      }
+    }
+
+    return this._factions;
+  }
+
   get knownSystems() {
     if(!this._knownSystems) {
       const entityIds = this.entityIds;
@@ -64,8 +85,7 @@ export default class ClientState {
     const entities = this.entities;
     const factionId = this.factionId;
     const colonies = {};
-    let id = null;
-    let entity = null;
+    let id, entity;
 
     for(let i = 0; i < entityIds.length; i++) {
       id = entityIds[i];
@@ -73,6 +93,49 @@ export default class ClientState {
 
       if(entity.type === 'colony' && entity.systemId === systemId && entity.factionId === factionId) {
         colonies[entity.systemBodyId] = entity;
+      }
+    }
+
+    return colonies;
+  }
+
+  getFactionSystemBodyFromSystemBody(systemBody) {
+    systemBody = systemBody.id || systemBody;//convert to id, if needed
+
+    const entityIds = this.entityIds;
+    const entities = this.entities;
+    const factionId = this.factionId;
+    let id, entity;
+
+    //TODO could use another cached getter, e.g. getFactionSystemBodies to thin down list..?
+    for(let i = 0; i < entityIds.length; i++) {
+      id = entityIds[i];
+      entity = entities[id];
+
+      if(entity.type === 'factionSystemBody' && entity.factionId === factionId && entity.systemBodyId === systemBody) {
+        return entity;
+      }
+    }
+
+    return null;
+  }
+
+  getColoniesForSystemBody(systemBody) {
+    systemBody = systemBody.id || systemBody;//convert to id, if needed
+
+    const entityIds = this.entityIds;
+    const entities = this.entities;
+    const factionId = this.factionId;
+    const colonies = [];
+    let id, entity;
+
+    //TODO could use another cached getter, e.g. getFactionSystemBodies to thin down list..?
+    for(let i = 0; i < entityIds.length; i++) {
+      id = entityIds[i];
+      entity = entities[id];
+
+      if(entity.type === 'colony' && entity.systemBodyId === systemBody) {
+        colonies.push(entity);
       }
     }
 

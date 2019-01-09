@@ -62,6 +62,7 @@ class SystemMap extends React.Component {
       onMouseLeave: this._onMouseLeave,
       onClick: this._onClick,
       onWheel: this._onWheel,
+      onContextMenu: props.onContextMenu,
     };
 
     props.setActiveKeys(flatten(Object.values(props.options.controls)));
