@@ -32,8 +32,6 @@ function Game({
   systemMap, setSystemMapFollowing, setSystemMapOptions,
   open, close
 }) {
-  const gameTime = new Date(game.gameTime * 1000);
-
   return <div className={styles.game}>
     <SystemMap entities={game.entities} {...systemMap} systemId={1} setFollowing={setSystemMapFollowing} />
     <div className={styles.toolbar}>
@@ -88,7 +86,7 @@ function Game({
             <Icon icon="play" />
           </Button>
         </div>
-        <Time value={gameTime} format="datetime" />
+        <Time value={game.gameTimeDate} format="datetime" />
       </div>
     </div>
 

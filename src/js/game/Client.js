@@ -11,6 +11,10 @@ export default class Client {
     this.connector.setClient(this);
   }
 
+  ////////////////////////////////////
+  // Client -> server comms methods //
+  ////////////////////////////////////
+
   //contact the server and create a new game with this definition
   //server must be in initialising state
   createWorld(definition) {
@@ -47,7 +51,9 @@ export default class Client {
     return this.connector.sendMessageToServer('setIsPaused', isPaused)
   }
 
-  //message handlers
+  ///////////////////////////////////////
+  // Server -> Client message handlers //
+  ///////////////////////////////////////
   message_startingGame(gameState) {
     this.gameState = gameState;
 
@@ -60,7 +66,13 @@ export default class Client {
     this.store.dispatch(updateGameState(gameState))
   }
 
+  //
 
+
+
+  ////////////////////////////
+  // Internal comms methods //
+  ////////////////////////////
   onMessageFromServer(messageType, data) {
     //c/onsole.log('[CLIENT] on message from server: ', messageType, data);
 
