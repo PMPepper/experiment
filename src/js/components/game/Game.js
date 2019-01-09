@@ -24,16 +24,18 @@ import cloneOmittingProps from '@/helpers/react/clone-omitting-props';
 //reducers
 import {open, close} from '@/redux/HORs/isOpen';
 import {setFollowing as setSystemMapFollowing, setOptions as setSystemMapOptions} from '@/redux/reducers/systemMap';
+import {setSelectedSystemId} from '@/redux/reducers/selectedSystemId';
 
 
 function Game({
   coloniesWindow, fleetsWindow, researchWindow, shipDesignWindow,
   game, client,
   systemMap, setSystemMapFollowing, setSystemMapOptions,
+  selectedSystemId, setSelectedSystemId,
   open, close
 }) {
   return <div className={styles.game}>
-    <SystemMap entities={game.entities} {...systemMap} systemId={1} setFollowing={setSystemMapFollowing} />
+    <SystemMap entities={game.entities} {...systemMap} systemId={selectedSystemId} setFollowing={setSystemMapFollowing} />
     <div className={styles.toolbar}>
       <div className="hspaceStart">
         <Button onClick={() => {open('coloniesWindow')}}><Trans id="toolbar.colonies">Colonies</Trans></Button>
@@ -91,8 +93,8 @@ function Game({
     </div>
 
     <div className={styles.selectSystem}>
-      <select>
-        {game.knownSystems.map(knownSystem => (<option id={knownSystem.systemId} key={knownSystem.systemId}>{knownSystem.factionSystem.name}</option>))}
+      <select value={selectedSystemId} onChange={(e) => {setSelectedSystemId(+e.target.value)}}>
+        {game.knownSystems.map(knownSystem => (<option value={knownSystem.systemId} key={knownSystem.systemId}>{knownSystem.factionSystem.name}</option>))}
       </select>
     </div>
 
@@ -118,11 +120,13 @@ export default compose(
       game: state.game,
 
       systemMap: state.systemMap,
+      selectedSystemId: state.selectedSystemId,
     }
   }, {
     open,
     close,
     setSystemMapFollowing,
     setSystemMapOptions,
+    setSelectedSystemId,
   })
 )(Game);

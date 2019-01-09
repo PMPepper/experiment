@@ -1,4 +1,7 @@
 import {setGameState, updateGameState} from '@/redux/reducers/game';
+import {setSelectedSystemId} from '@/redux/reducers/selectedSystemId';
+
+import find from '@/helpers/object/find';
 
 
 export default class Client {
@@ -57,6 +60,7 @@ export default class Client {
   message_startingGame(gameState) {
     this.gameState = gameState;
 
+    this.store.dispatch(setSelectedSystemId(+find(gameState.entities, entity => (entity.type === 'factionSystem')).systemId));//TODO base on starting systems
     this.store.dispatch(setGameState(gameState))
   }
 
