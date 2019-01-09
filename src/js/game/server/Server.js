@@ -190,7 +190,7 @@ export default class Server {
           }
 
           const now = Date.now();
-          const elapsedTime = (now - this._lastTime)/1000;
+          const elapsedTime = Math.min(0.5, (now - this._lastTime)/1000);//limit max elapsed time to prevent issues with the game when it does not have focus
 
           this._onTick(elapsedTime);
 
@@ -463,7 +463,7 @@ export default class Server {
     this.clientLastUpdatedTime[clientId] = gameTime;
 
     //output state to client
-    return {entities: clientEntities, gameTime, gameSpeed: this.gameSpeed, desiredGameSpeed: client.gameSpeed, isPaused: this.isPaused};
+    return {entities: clientEntities, gameTime, gameSpeed: this.gameSpeed, desiredGameSpeed: client.gameSpeed, isPaused: this.isPaused, factionId: client.factionId};
   }
 
   _newEntity(type, props) {

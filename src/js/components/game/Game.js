@@ -29,13 +29,13 @@ import {setSelectedSystemId} from '@/redux/reducers/selectedSystemId';
 
 function Game({
   coloniesWindow, fleetsWindow, researchWindow, shipDesignWindow,
-  game, client,
+  clientState, client,
   systemMap, setSystemMapFollowing, setSystemMapOptions,
   selectedSystemId, setSelectedSystemId,
   open, close
 }) {
   return <div className={styles.game}>
-    <SystemMap entities={game.entities} {...systemMap} systemId={selectedSystemId} setFollowing={setSystemMapFollowing} />
+    <SystemMap clientState={clientState} {...systemMap} systemId={selectedSystemId} setFollowing={setSystemMapFollowing} />
     <div className={styles.toolbar}>
       <div className="hspaceStart">
         <Button onClick={() => {open('coloniesWindow')}}><Trans id="toolbar.colonies">Colonies</Trans></Button>
@@ -48,30 +48,30 @@ function Game({
     <div className={styles.controls}>
       <div className="vspaceStart">
         <div className="hspaceStart">
-          <Button selected={!!game.isPaused} onClick={() => {client.setIsPaused(!game.isPaused)}}>
+          <Button selected={!!clientState.isPaused} onClick={() => {client.setIsPaused(!clientState.isPaused)}}>
             <span className="offscreen"><Trans id="toolbar.colonies">Toggle paused game</Trans></span>
             <Icon icon="pause" />
           </Button>
 
-          <Button selected={game.desiredGameSpeed === 1} onClick={() => {client.setDesiredSpeed(1)}}>
+          <Button selected={clientState.desiredGameSpeed === 1} onClick={() => {client.setDesiredSpeed(1)}}>
             <span className="offscreen"><Trans id="toolbar.colonies">Play at real time</Trans></span>
             <Icon icon="play" />
           </Button>
 
-          <Button selected={game.desiredGameSpeed === 2} onClick={() => {client.setDesiredSpeed(2)}}>
+          <Button selected={clientState.desiredGameSpeed === 2} onClick={() => {client.setDesiredSpeed(2)}}>
             <span className="offscreen"><Trans id="toolbar.colonies">Play at x60</Trans></span>
             <Icon icon="play" />
             <Icon icon="play" />
           </Button>
 
-          <Button selected={game.desiredGameSpeed === 3} onClick={() => {client.setDesiredSpeed(3)}}>
+          <Button selected={clientState.desiredGameSpeed === 3} onClick={() => {client.setDesiredSpeed(3)}}>
             <span className="offscreen"><Trans id="toolbar.colonies">Play at x3,600</Trans></span>
             <Icon icon="play" />
             <Icon icon="play" />
             <Icon icon="play" />
           </Button>
 
-          <Button selected={game.desiredGameSpeed === 4} onClick={() => {client.setDesiredSpeed(4)}}>
+          <Button selected={clientState.desiredGameSpeed === 4} onClick={() => {client.setDesiredSpeed(4)}}>
             <span className="offscreen"><Trans id="toolbar.colonies">Play at x86,400</Trans></span>
             <Icon icon="play" />
             <Icon icon="play" />
@@ -79,7 +79,7 @@ function Game({
             <Icon icon="play" />
           </Button>
 
-          <Button selected={game.desiredGameSpeed === 5} onClick={() => {client.setDesiredSpeed(5)}}>
+          <Button selected={clientState.desiredGameSpeed === 5} onClick={() => {client.setDesiredSpeed(5)}}>
             <span className="offscreen"><Trans id="toolbar.colonies">Play at x86,400</Trans></span>
             <Icon icon="play" />
             <Icon icon="play" />
@@ -88,13 +88,13 @@ function Game({
             <Icon icon="play" />
           </Button>
         </div>
-        <Time value={game.gameTimeDate} format="datetime" />
+        <Time value={clientState.gameTimeDate} format="datetime" />
       </div>
     </div>
 
     <div className={styles.selectSystem}>
       <select value={selectedSystemId} onChange={(e) => {setSelectedSystemId(+e.target.value)}}>
-        {game.knownSystems.map(knownSystem => (<option value={knownSystem.systemId} key={knownSystem.systemId}>{knownSystem.factionSystem.name}</option>))}
+        {clientState.knownSystems.map(knownSystem => (<option value={knownSystem.systemId} key={knownSystem.systemId}>{knownSystem.factionSystem.name}</option>))}
       </select>
     </div>
 
@@ -117,7 +117,7 @@ export default compose(
       fleetsWindow: state.fleetsWindow,
       researchWindow: state.researchWindow,
       shipDesignWindow: state.shipDesignWindow,
-      game: state.game,
+      clientState: state.game,
 
       systemMap: state.systemMap,
       selectedSystemId: state.selectedSystemId,

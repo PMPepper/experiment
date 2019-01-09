@@ -69,7 +69,7 @@ class SystemMap extends React.Component {
 
   _onFrameUpdate = (elapsedTime) => {
     const {props, state, mouseClientX, mouseClientY, isMouseDragging} = this;
-    const {isKeyDown, options, windowSize} = props;
+    const {isKeyDown, options, windowSize, clientState} = props;
 
     const newState = {x: state.x, y: state.y, zoom: state.zoom};
     let hasScrolled = false;//has moved camera left/right/up/down, doesn't care about zooming < used to determine if we should stop following
@@ -122,7 +122,7 @@ class SystemMap extends React.Component {
           this.lastFollowing = null;
           this.followingTime = 0;
         } else {
-          const followEntity = props.entities[props.following];
+          const followEntity = clientState.entities[props.following];
 
           //This is an entity that has a position, so can be followed...
           if(followEntity.position) {
@@ -300,27 +300,20 @@ class SystemMap extends React.Component {
 
   render() {
     const props = this.props;
-    const {systemId, windowSize, entities, styles, cx, cy, options, renderComponent: RenderComponent} = props;
+    const {systemId, windowSize, clientState, styles, cx, cy, options, renderComponent: RenderComponent} = props;
     let {x, y, zoom} = this.state;
 
     //center in window
     x -= (windowSize.width * cx) / zoom;
     y -= (windowSize.height * cy) / zoom;
 
-    const renderEntities = reduce(entities, (output, entity) => {
-      if(entity.render && entity.systemId === systemId) {
-        output.push(entity);
-      }
-
-      return output
-    }, [])
-
     return <RenderComponent
       x={x}
       y={y}
       zoom={zoom}
-      entities={entities}
-      renderEntities={renderEntities}
+      entities={clientState.entities}
+      renderEntities={clientState.getRenderableEntities(systemId)}
+      colonies={clientState.getColoniesBySystemBody(systemId)}
       styles={styles}
       windowSize={windowSize}
       options={options.display}

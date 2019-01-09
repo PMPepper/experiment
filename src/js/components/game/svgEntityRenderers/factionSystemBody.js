@@ -5,7 +5,7 @@ import * as RenderFlags from '../renderFlags';
 
 //The component
 export default function factionSystemBody(props) {
-  const {entity, entities, zoom, styles, x, y, windowSize, options} = props;
+  const {entity, entities, colonies, zoom, styles, x, y, windowSize, options} = props;
   const systemBodyEntity = entities[entity.systemBodyId];
   const systemBody = systemBodyEntity.systemBody;
   const systemBodyDisplayOptions = options.bodies[systemBody.type];
@@ -13,7 +13,7 @@ export default function factionSystemBody(props) {
   const parent = systemBodyEntity.movement && systemBodyEntity.movement.orbitingId && entities[systemBodyEntity.movement.orbitingId];
 
   const hasMinerals = false;
-  const hasColony = false;
+  const hasColony = !!colonies[systemBodyEntity.id];
 
   const baseRadius = zoom * systemBody.radius;
   const bodyProps = {
@@ -100,6 +100,14 @@ export default function factionSystemBody(props) {
     displayBody && <circle
       {...bodyProps}
       key="body"
+      data-entity-id={entity.systemBodyId}
+    />,
+    displayBody && hasColony && options.highlightColonies && <circle
+      className={`${styles.colonyHighlight} ${styles[systemBody.type]}`}
+      cx={bodyProps.cx}
+      cy={bodyProps.cy}
+      r={bodyProps.r + 3}
+      key="colony"
       data-entity-id={entity.systemBodyId}
     />,
     displayLabel && <text

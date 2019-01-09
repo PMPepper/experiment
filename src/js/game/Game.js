@@ -9,7 +9,7 @@ export function startGame(gameDefinition, client) {
 
       return client.connect()
         .then((initialGameState) => {
-          console.log('[Game] client connected');
+          console.log('[Game] client connected');//TODO this is a mess - factionId, etc should be in ClientState object
 
           const factionId = +Object.keys(initialGameState.factions).shift();
 
@@ -25,19 +25,4 @@ export function startGame(gameDefinition, client) {
             })
         })
     })
-  //TODO use game definition to configure server
-  //const server = new Server();
-
-  //server.message_createWorld(gameDefinition);
-  //console.log(server);
-  //return server
-
-  //return Promise.resolve({});
 }
-
-
-//Server.debug();
-
-//console.log(Server.getCachedEntities('factionSystems', faction1.id))
-//console.log(Server.getCachedEntities('factionSystemBodies', faction1.id))
-//console.log(Server.getCachedEntities('factionSystemBodiesGrouped', faction1.id))
