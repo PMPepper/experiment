@@ -37,7 +37,7 @@ export default class DataTable extends React.Component {
   getExpandRowColumn = memoize(getExpandRowColumn)
 
   getColumns = memoize((columns, expandRowColumn) => {
-    console.log('[DT]: getColumns');
+    //c/onsole.log('[DT]: getColumns');
 
     if(expandRowColumn) {
       columns = [...columns, expandRowColumn]
@@ -48,7 +48,7 @@ export default class DataTable extends React.Component {
 
   getSortRowsFunc = memoize(
     (columns, sortColumnName, sortColumnDesc, defaultSortColumns = null) => {
-      console.log('[DT]: getSortRowsFunc');
+      //c/onsole.log('[DT]: getSortRowsFunc');
 
       defaultSortColumns = defaultSortColumns || [];
 
@@ -74,7 +74,7 @@ export default class DataTable extends React.Component {
 
   sortRows = memoize(
     (rows, sortRowsFunc) => {
-      console.log('[DT]: sortRows');
+      //c/onsole.log('[DT]: sortRows');
 
       if(sortRowsFunc) {
         //need to duplication rows so that memoize detects that something has changed
@@ -88,7 +88,7 @@ export default class DataTable extends React.Component {
   );
 
   paginateRows = memoize((sortedRows, itemsPerPage, page) => {
-    console.log('[DT]: paginateRows');
+    //c/onsole.log('[DT]: paginateRows');
 
     if(itemsPerPage > 0) {
       return sortedRows.slice((page - 1) * itemsPerPage, page * itemsPerPage);

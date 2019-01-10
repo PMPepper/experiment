@@ -6,6 +6,8 @@ import {Trans} from "@lingui/macro"
 import styles from './styles.scss';
 import SystemMap from './SystemMap';
 
+import WindowColonies from './WindowColonies';
+
 import Panel from '@/components/panel/Panel';
 import Button from '@/components/button/Button';
 import Window from '@/components/window/ConnectedWindow';
@@ -150,7 +152,9 @@ function Game({
     <Panel title={<Trans id="optionsPanel.title">Options</Trans>} className={styles.options}>[TODO options panel]</Panel>
 
     <SortChildren sort={(a, b) => (a.props.lastInteracted - b.props.lastInteracted)} mapChild={(child) => (cloneOmittingProps(child, 'lastInteracted'))}>
-      <Window lastInteracted={coloniesWindow.lastInteracted} reduxPath="coloniesWindow" title={<Trans id="coloniesWindow.title">Colonies</Trans>}>TODO colonies window!</Window>
+      <Window lastInteracted={coloniesWindow.lastInteracted} reduxPath="coloniesWindow" title={<Trans id="coloniesWindow.title">Colonies</Trans>}>
+        <WindowColonies />
+      </Window>
       <Window lastInteracted={fleetsWindow.lastInteracted} reduxPath="fleetsWindow" title={<Trans id="fleetsWindow.title">Fleets</Trans>}>TODO fleets window!</Window>
       <Window lastInteracted={researchWindow.lastInteracted} reduxPath="researchWindow" title={<Trans id="researchWindow.title">Research</Trans>}>TODO research window!</Window>
       <Window lastInteracted={shipDesignWindow.lastInteracted} reduxPath="shipDesignWindow" title={<Trans id="shipDesignWindow.title">Ship design</Trans>}>TODO ship design window!</Window>

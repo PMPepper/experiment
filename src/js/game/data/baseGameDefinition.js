@@ -6,7 +6,7 @@ const worldDefinition = {
   startDate: '2000-01-01T00:00:00',
   systems: systems,
   species: {
-    Humans: {name: 'Humans'}
+    Humans: {name: 'Humans', growthRate: 1.05}
   },
   factions: [{
     name: 'Humans',

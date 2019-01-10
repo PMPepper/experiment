@@ -7,6 +7,7 @@ import createWorldFromDefinition from './createWorldFromDefinition';
 import * as FactionClientTypes from '../FactionClientTypes';
 
 import movementFactory from './entityProcessorFactories/movement';
+import populationFactory from './entityProcessorFactories/population';
 
 
 //Server phases
@@ -36,7 +37,7 @@ export default class Server {
   entityIds = null;
   entitiesLastUpdated = null;
 
-  entityProcessorFactories = [movementFactory];
+  entityProcessorFactories = [movementFactory, populationFactory];
 
   clientLastUpdatedTime = null
 
@@ -417,12 +418,14 @@ export default class Server {
     const advanceToTime = Math.floor(this.totalElapsedTime);
 
     while(this.gameTime < advanceToTime) {
+      let lastGameTime = this.gameTime;
+
       //update game time
       this.gameTime = Math.min(this.gameTime + step, advanceToTime);
 
       const gameTime = this.gameTime;
 
-      let processors = this._getEntityProcessors();
+      let processors = this._getEntityProcessors(lastGameTime, gameTime);
 
       //for each entity
       for(let i = 0; i < numEntities; ++i) {
@@ -436,11 +439,10 @@ export default class Server {
     }
   }
 
-  _getEntityProcessors() {
-    const gameTime = this.gameTime;
+  _getEntityProcessors(lastGameTime, gameTime) {
 
     //create entity processors
-    const entityProcessors = this.entityProcessorFactories.map(factory => (factory(gameTime)));
+    const entityProcessors = this.entityProcessorFactories.map(factory => (factory(lastGameTime, gameTime))).filter(processor => (!!processor));
 
     //create composed function for processing all entities
     //called for each entity - any processor the mutates the entity must return true

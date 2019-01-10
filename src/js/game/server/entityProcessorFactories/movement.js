@@ -1,4 +1,4 @@
-export default function movementFactory(time, entity, entities) {
+export default function movementFactory(lastTime, time) {
   const updatedEntities = {};
 
   function regularOrbitPositionAtTime(entity, entities) {
