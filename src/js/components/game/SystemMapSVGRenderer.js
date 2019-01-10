@@ -4,12 +4,14 @@ import * as EntityRenderers from './svgEntityRenderers';
 
 //Helpers
 import reduce from '@/helpers/object/reduce';
+import formatDistanceSI from '@/helpers/string/format-distance-si';
 
 
 //The component
 export default function SystemMapSVGRenderer(props) {
   const {windowSize, entities, renderEntities, colonies, styles, x, y, zoom, options, elementProps} = props;
 
+  const scaleLength = 288;
 
 
   return <div
@@ -22,6 +24,12 @@ export default function SystemMapSVGRenderer(props) {
 
           return Renderer && <Renderer windowSize={windowSize} x={x} y={y} zoom={zoom} entity={entity} entities={entities} colonies={colonies} key={entity.id} options={options} styles={styles} />;
         })}
+        <g transform={`translate(16, ${windowSize.height - 16})`}>
+          <text x="5.5" y="-5.5" fill="#FFF">{formatDistanceSI(scaleLength / zoom, 1)}</text>
+          <line x1="0.5" y1="0.5" x2="0.5" y2="-4.5" stroke="#FFF" />
+          <line x1="0.5" y1="0.5" x2={scaleLength + 0.5} y2="0.5" stroke="#FFF" />
+          <line x1={scaleLength + 0.5} y1="0.5" x2={scaleLength + 0.5} y2="-4.5" stroke="#FFF" />
+        </g>
       </svg>
     </div>
 }
