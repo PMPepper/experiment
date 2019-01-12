@@ -1,6 +1,10 @@
 import orbitPeriod from '@/helpers/physics/orbitPeriod';
+import defaultGameDefinition from '../data/defaultGameDefinition';
 
 export default function createWorldFromDefinition(server, definition) {
+  //merge in the default game definition
+  definition = {...defaultGameDefinition, ...definition};
+
   //internal lookup hashes
   const systemsByDefinitionId = {};//[systemDefinitionId] = system entity
   const speciesByDefinitionId = {};//[systemDefinitionId] = system entity

@@ -406,7 +406,7 @@ export default class Server {
 
     if(step === null) {
       //initial entity initialisation
-      processors = this._getEntityProcessors();
+      processors = this._getEntityProcessors(this.gameTime, this.gameTime);
 
       for(let j = 0; j < numEntities; ++j) {
         processors(entities[entityIds[j]], entities);

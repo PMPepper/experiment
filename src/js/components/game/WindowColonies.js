@@ -49,8 +49,6 @@ class WindowColonies extends React.Component {
 
 
 
-
-
 export default compose(
   connect(state => {
     return {
