@@ -4,9 +4,14 @@ import {compose} from 'recompose';
 import {connect} from 'react-redux';
 import {Trans} from "@lingui/macro";
 
-import DataTable from '@/components/datatable/LocalStateDataTable';
+import Tree from '@/components/tree/Tree';
+
+import ColonyInfo from './ColonyInfo';
 
 import map from '@/helpers/object/map';
+
+
+import {setTab, setIsNodeOpen, setNodeSelected} from '@/redux/reducers/coloniesWindow';
 
 
 class WindowColonies extends React.Component {
@@ -26,7 +31,7 @@ class WindowColonies extends React.Component {
   })
 
   render () {
-    const {coloniesWindow, clientState, selectedSystemId} = this.props;
+    const {coloniesWindow, clientState, selectedSystemId, setTab, setIsNodeOpen, setNodeSelected} = this.props;
 
     // factionId: 182
     // id: 364
@@ -35,14 +40,11 @@ class WindowColonies extends React.Component {
     // systemId: 1
     // type: "colony"
 
+    clientState.coloniesBySystemBySystemBody
+
     return <div>
-      <DataTable
-        columns={[
-          {label: <Trans>Name</Trans>, name: 'name', sort: true},
-          {label: <Trans>Population</Trans>, name: 'totalPopulation', sort: true, valueType: 'number'}
-        ]}
-        rows={this.systemColonies(selectedSystemId, clientState)}
-      />
+      <Tree id="colonies" {...coloniesWindow.tree} setIsNodeOpen={setIsNodeOpen} setNodeSelected={setNodeSelected} />
+      <ColonyInfo coloniesWindow={coloniesWindow} clientState={clientState} selectedSystemId={selectedSystemId} setTab={setTab} />
     </div>;
   }
 }
@@ -57,6 +59,8 @@ export default compose(
       selectedSystemId: state.selectedSystemId,
     }
   }, {
-
+    setTab,
+    setIsNodeOpen,
+    setNodeSelected
   })
 )(WindowColonies);

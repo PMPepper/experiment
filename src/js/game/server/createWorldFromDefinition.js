@@ -21,7 +21,7 @@ export default function createWorldFromDefinition(server, definition) {
   const systemBodiesBySystemDefinitionIdBySystemBodyDefinitionName = {};//[systemDefinitionId][systemBodyDefinitionName] = systemBody entity
   const factionsByDefinitionName = {};
 
-  //create the system bodies
+  //create the systems
   Object.keys(definition.systems).forEach(systemDefinitionId => {
     const systemDefinition = definition.systems[systemDefinitionId];
 
@@ -33,6 +33,8 @@ export default function createWorldFromDefinition(server, definition) {
     systemBodiesBySystemDefinitionIdBySystemBodyDefinitionName[systemDefinitionId] = {};
 
     const systemBodiesBySystemBodyDefinitionName = systemBodiesBySystemDefinitionIdBySystemBodyDefinitionName[systemDefinitionId];
+
+    let systemBodyPosition = [1];
 
     //now create the bodies
     const bodies = systemDefinition.bodies.map(bodyDefinition => {
@@ -59,10 +61,22 @@ export default function createWorldFromDefinition(server, definition) {
           axialTilt: bodyDefinition.axialTilt,
           tidalLock: !!bodyDefinition.tidalLock,
           albedo: bodyDefinition.albedo || 0,
-          luminosity: bodyDefinition.luminosity || 0
+          luminosity: bodyDefinition.luminosity || 0,
+          children: [],
+          position: null,
         },
         availableMinerals: generateAvailableMinerals(bodyDefinition, definition)
       });
+
+      if(orbitingId) {
+        const orbitingEntity = server.entities[orbitingId];
+
+        orbitingEntity.systemBody.children.push(body.id);
+
+        body.systemBody.position = [...orbitingEntity.systemBody.position, orbitingEntity.systemBody.children.length];
+      } else {
+        body.systemBody.position = [];
+      }
 
       //record in lookup hash (used later for factions)
       systemBodiesBySystemBodyDefinitionName[bodyDefinition.name] = body;

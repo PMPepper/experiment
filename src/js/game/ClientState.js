@@ -54,6 +54,35 @@ export default class ClientState {
     return this._knownSystems;
   }
 
+  get coloniesBySystemBySystemBody() {
+    if(!this._coloniesBySystemBySystemBody) {
+      const entityIds = this.entityIds;
+      const entities = this.entities;
+      const factionId = this.factionId;
+      const coloniesBySystemBySystemBody = this._coloniesBySystemBySystemBody = {};
+      const knownSystems = this.knownSystem;
+
+      let id = null;
+      let entity = null;
+
+
+      for(let i = 0; i < entityIds.length; i++) {
+        id = entityIds[i];
+        entity = entities[id];
+
+        if(entity.type === 'colony' && entity.factionId === factionId) {
+          if(!coloniesBySystemBySystemBody[entity.systemId]) {
+            coloniesBySystemBySystemBody[entity.systemId] = {};
+          }
+
+          coloniesBySystemBySystemBody[entity.systemId][entity.systemBodyId] = entity;
+        }
+      }
+    }
+
+    return this._coloniesBySystemBySystemBody;
+  }
+
   ////////////////////////
   // Non-cached getters //
   ////////////////////////
@@ -78,7 +107,6 @@ export default class ClientState {
 
     return renderableEntities;
   }
-
 
   getColoniesBySystemBody(systemId) {
     const entityIds = this.entityIds;
