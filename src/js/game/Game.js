@@ -9,9 +9,10 @@ export function startGame(gameDefinition, client) {
 
       return client.connect()
         .then((initialGameState) => {
-          console.log('[Game] client connected');//TODO this is a mess - factionId, etc should be in ClientState object
+          console.log('[Game] client connected');
 
-          const factionId = +Object.keys(initialGameState.factions).shift();
+          //TODO need a UI to select if multiple faction Ids
+          const factionId = client.allFactionIds[0];
 
           return client.setClientSettings({[factionId]: 1}, factionId, true)
             .then(() => {
@@ -19,6 +20,9 @@ export function startGame(gameDefinition, client) {
 
               return client.startGame().then(() => {
                 console.log('[Game] server started');
+
+                client.setIsPaused(false);
+                client.setDesiredSpeed(4);
 
                 return client;
               });

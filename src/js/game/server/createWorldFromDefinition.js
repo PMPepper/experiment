@@ -1,9 +1,19 @@
-import orbitPeriod from '@/helpers/physics/orbitPeriod';
+import orbitPeriod from '@/helpers/physics/orbit-period';
+import map from '@/helpers/object/map';
+import find from '@/helpers/object/find';
+import roundTo from '@/helpers/math/round-to';
 import defaultGameDefinition from '../data/defaultGameDefinition';
 
 export default function createWorldFromDefinition(server, definition) {
   //merge in the default game definition
   definition = {...defaultGameDefinition, ...definition};
+
+  //Basic props
+  server.minerals = {...definition.minerals};
+  server.structures = JSON.parse(JSON.stringify(definition.structures));
+  server.researchAreas = {...definition.researchAreas};
+  server.research = JSON.parse(JSON.stringify(definition.research));
+  server.systemBodyTypeMineralAbundance = JSON.parse(JSON.stringify(definition.systemBodyTypeMineralAbundance));
 
   //internal lookup hashes
   const systemsByDefinitionId = {};//[systemDefinitionId] = system entity
@@ -50,7 +60,8 @@ export default function createWorldFromDefinition(server, definition) {
           tidalLock: !!bodyDefinition.tidalLock,
           albedo: bodyDefinition.albedo || 0,
           luminosity: bodyDefinition.luminosity || 0
-        }
+        },
+        availableMinerals: generateAvailableMinerals(bodyDefinition, definition)
       });
 
       //record in lookup hash (used later for factions)
@@ -67,7 +78,7 @@ export default function createWorldFromDefinition(server, definition) {
   Object.keys(definition.species).forEach(id => {
     const speciesDefinition = definition.species[id];
 
-    const entity = server._newEntity('species', {species: speciesDefinition});
+    const entity = server._newEntity('species', {species: {...definition.baseSpecies, ...speciesDefinition}});
 
     speciesByDefinitionId[id] = entity;
   })
@@ -113,7 +124,8 @@ export default function createWorldFromDefinition(server, definition) {
               systemBodyId: systemBodiesBySystemBodyDefinitionName[bodyDefinition.name].id,
               factionSystemId: factionSystem.id,
               factionSystemBody: {
-                name: factionStartingSystemDefinition.bodyNamesMap && factionStartingSystemDefinition.bodyNamesMap[bodyDefinition.name] || bodyDefinition.name
+                name: factionStartingSystemDefinition.bodyNamesMap && factionStartingSystemDefinition.bodyNamesMap[bodyDefinition.name] || bodyDefinition.name,
+                isSurveyed: false,
               }
             });
           })
@@ -165,6 +177,17 @@ export default function createWorldFromDefinition(server, definition) {
 
       //and record as part of the faction
       faction.faction.colonyIds.push(colony.id);
+
+      //mark system body as surveyed
+      if(startingColonyDefinition.isSurveyed) {
+        const factionSystemBody = find(server.entities, (entity, id) => {
+          return entity.type === 'factionSystemBody' && entity.factionId === faction.id && systemBody.id === systemBody.id;
+        });
+
+        if(factionSystemBody) {
+          factionSystemBody.factionSystemBody.isSurveyed = true;
+        }
+      }
     });
   })
 
@@ -192,4 +215,30 @@ export default function createWorldFromDefinition(server, definition) {
   //TODO clients
   //const client1 = server._newEntity('client', {playerId: player1.id, factionId: faction1.id});
 
+}
+
+function generateAvailableMinerals(bodyDefinition, definition) {
+  if(bodyDefinition.type === 'star') {
+    return null;
+  }
+
+  const isStartingWorld = false;//TODO detect starting worlds
+
+  if(isStartingWorld) {
+    //TODO implement starting world minerals
+    return null;
+  } else {
+    return map(definition.minerals, (value, id) => {
+      //TODO do all this better..
+      const abundance = definition.systemBodyTypeMineralAbundance[bodyDefinition.type][id];
+
+      const quantity = Math.floor(Math.random() * abundance * Math.pow(bodyDefinition.mass, 1/5));
+      const access = Math.ceil(Math.random() * 10) / 10//TODO smaller bodies tend towards higher access
+
+      return quantity === 0 || access === 0 ?
+        {quantity: 0, access: 0}
+        :
+        {quantity, access};
+    });
+  }
 }

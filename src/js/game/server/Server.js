@@ -31,6 +31,11 @@ export default class Server {
 
   factions;//e.g. The in-game factions Humans, martians (factions are also entities)
   clients;//a client is a player connected to a faction by a connector method with a permissions e.g. Bob spectating Martians on clientId 1
+  minerals;
+  structures;
+  research;
+  researchAreas;
+  systemBodyTypeMineralAbundance;
 
   entities = null;
   entityId = null;//used to keep track of assigned entity IDs - increments after each entity is created
@@ -70,8 +75,6 @@ export default class Server {
 
     //c/onsole.log('[Server] created world: ', this.entities);
 
-
-
     this._advanceTime(null);
 
     //Now waiting for players to connect
@@ -106,7 +109,15 @@ export default class Server {
     this.connector.broadcastToClients('clientConnected', this.clients);
 
     //return game details to newly connected client
-    return Promise.resolve({entities: this.entities, factions: this.factions, clients: this.clients})
+    return Promise.resolve({
+      //entities: this.entities,
+      factions: this.factions,
+      clients: this.clients,
+      minerals: this.minerals,
+      structures: this.structures,
+      research: this.research,
+      researchAreas: this.researchAreas,
+    })
   }
 
   message_setClientSettings({name, factions, factionId, ready}, clientId) {
@@ -179,9 +190,6 @@ export default class Server {
       });
 
       this._lastTime = Date.now();
-
-      console.log(global);
-
 
       if(global && global.requestAnimationFrame) {
         const play = () => {

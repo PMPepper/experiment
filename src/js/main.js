@@ -48,8 +48,8 @@ polyfills.then(() => {
   const gameServer = GameEngine.startGame(baseGameDefinition, new Client('local', store, new LocalConnector())).then((client) => {
       console.log('[MAIN] render');
 
-      client.setIsPaused(false);
-      client.setDesiredSpeed(3);
+
+
 
       ReactDOM.render(
         <Provider store={store}>

@@ -18,6 +18,8 @@ const worldDefinition = {
       }
     },
     startingColonies: [{
+      isStartingWorld: true,
+      isSurveyed: true,
       system: 'Sol',//ID from systemsSystems object (the key)
       body: 'Earth',//body ID (what if random?)
       populations: [
@@ -46,6 +48,8 @@ const worldDefinition = {
       }
     },
     startingColonies: [{
+      isStartingWorld: true,
+      isSurveyed: true,
       system: 'Sol',//ID from systemsSystems object (the key)
       body: 'Mars',//body ID (what if random?)
       populations: [

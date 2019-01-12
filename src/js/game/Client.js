@@ -14,6 +14,15 @@ export default class Client {
     this.connector.setClient(this);
   }
 
+  /////////////////////
+  // Getters/setters //
+  /////////////////////
+
+  get allFactionIds() {
+    return Object.keys(this.initialGameState.factions).map(id => (+id));
+  }
+
+
   ////////////////////////////////////
   // Client -> server comms methods //
   ////////////////////////////////////
@@ -29,7 +38,11 @@ export default class Client {
   connect() {
     //c/onsole.log('[CLIENT] connect');
 
-    return this.connector.sendMessageToServer('connectClient', {name: this.name})
+    return this.connector.sendMessageToServer('connectClient', {name: this.name}).then(initialGameState => {
+      this.initialGameState = initialGameState;
+
+      return true;
+    })
   }
 
   setClientSettings(factions, factionId, ready) {
@@ -64,7 +77,7 @@ export default class Client {
   ///////////////////////////////////////
   message_startingGame(gameState) {
     this.gameState = gameState;
-
+console.log(gameState);
     this.store.dispatch(setSelectedSystemId(+find(gameState.entities, entity => (entity.type === 'factionSystem')).systemId));//TODO base on starting systems
     this.store.dispatch(setGameState(gameState))
   }
