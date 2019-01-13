@@ -127,8 +127,29 @@ export default class ClientState {
     return colonies;
   }
 
+  getFactionSystemFromSystem(system) {
+    system = +(system.id || system);//convert to id, if needed
+
+    const entityIds = this.entityIds;
+    const entities = this.entities;
+    const factionId = this.factionId;
+    let id, entity;
+
+    //TODO could use another cached getter, e.g. getFactionSystemBodies to thin down list..?
+    for(let i = 0; i < entityIds.length; i++) {
+      id = entityIds[i];
+      entity = entities[id];
+
+      if(entity.type === 'factionSystem' && entity.factionId === factionId && entity.systemId === system) {
+        return entity;
+      }
+    }
+
+    return null;
+  }
+
   getFactionSystemBodyFromSystemBody(systemBody) {
-    systemBody = systemBody.id || systemBody;//convert to id, if needed
+    systemBody = +(systemBody.id || systemBody);//convert to id, if needed
 
     const entityIds = this.entityIds;
     const entities = this.entities;
@@ -149,7 +170,7 @@ export default class ClientState {
   }
 
   getColoniesForSystemBody(systemBody) {
-    systemBody = systemBody.id || systemBody;//convert to id, if needed
+    systemBody = +(systemBody.id || systemBody);//convert to id, if needed
 
     const entityIds = this.entityIds;
     const entities = this.entities;

@@ -15,6 +15,18 @@ const worldDefinition = {
     startingSystems: {
       Sol: {
         type: 'known',
+      },
+      Sol2: {
+        type: 'known',
+        name: 'Bumhole'
+      },
+      Sol3: {
+        type: 'known',
+        name: 'AAAA'
+      },
+      Sol4: {
+        type: 'known',
+        name: 'Wibble'
       }
     },
     startingColonies: [{
@@ -26,6 +38,51 @@ const worldDefinition = {
         {
           species: 'Humans',
           population: 1000000000,
+        }
+      ]
+
+      //TODO
+      //money, structures, minerals, fuel, technology, etc
+    },
+    {
+      isStartingWorld: true,
+      isSurveyed: true,
+      system: 'Sol',//ID from systemsSystems object (the key)
+      body: 'Luna',//body ID (what if random?)
+      populations: [
+        {
+          species: 'Humans',
+          population: 10000000,
+        }
+      ]
+
+      //TODO
+      //money, structures, minerals, fuel, technology, etc
+    },
+    {
+      isStartingWorld: true,
+      isSurveyed: true,
+      system: 'Sol2',//ID from systemsSystems object (the key)
+      body: 'Mars',//body ID (what if random?)
+      populations: [
+        {
+          species: 'Humans',
+          population: 50000000,
+        }
+      ]
+
+      //TODO
+      //money, structures, minerals, fuel, technology, etc
+    },
+    {
+      isStartingWorld: true,
+      isSurveyed: true,
+      system: 'Sol3',//ID from systemsSystems object (the key)
+      body: 'Luna',//body ID (what if random?)
+      populations: [
+        {
+          species: 'Humans',
+          population: 20000000,
         }
       ]
 

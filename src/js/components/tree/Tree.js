@@ -10,40 +10,6 @@ import css from '@/helpers/css/class-list-to-string';
 
 
 export default function Tree({id, styles, nodes, selectedNode, isNodeOpen, setIsNodeOpen, setNodeSelected, getRef = null, ...props}) {
-  nodes = [
-    {id: 'populatedSystems', label: 'Populated systems', icon: null, onClick: null, children: [
-      {id: '1', label: 'Sol', icon: null, onClick: null, children: [
-        {id: '4', label: 'Earth', icon: null, onClick: null},
-      ]},
-    ]},
-    {id: 'automatedMiningColonies', label: 'Automated mining colonies', icon: null, onClick: null},
-    {id: 'civilianMiningColonies', label: 'Civilian mining colonies', icon: null, onClick: null},
-    {id: 'listeningPosts', label: 'Listening posts', icon: null, onClick: null},
-    {id: 'archeologicalDigs', label: 'Archeological digs', icon: null, onClick: null},
-    {id: 'terraformingSites', label: 'Terraforming sites', icon: null, onClick: null},
-    {id: 'otherColonies', label: 'Other colonies sites', icon: null, onClick: null, children: [
-      {id: '1', label: 'Sol', icon: null, onClick: null, children: [
-        {id: '2', label: 'Mercury', icon: null, onClick: null},
-      ]},
-    ]},
-
-    {id: 'foo', label: 'Foo', icon: null, onClick: null, children: [
-      {id: 'bar', label: 'Bar', icon: null, onClick: null, children: [
-        {id: 'x', label: 'x', icon: null, onClick: null},
-        {id: 'y', label: 'y', icon: null, onClick: null, children: [
-          {id: 'a', label: 'a', icon: null, onClick: null},
-          {id: 'b', label: 'b', icon: null, onClick: null},
-          {id: 'c', label: 'c', icon: null, onClick: null},
-        ]},
-        {id: 'z', label: 'z', icon: null, onClick: null, children: [
-          {id: 'a', label: 'a', icon: null, onClick: null},
-          {id: 'b', label: 'b', icon: null, onClick: null},
-          {id: 'c', label: 'c', icon: null, onClick: null},
-        ]},
-      ]}
-    ]}
-  ];
-
   return <div {...combineProps({role: 'tree', className: css(styles.tree)}, props)} id={id} ref={getRef}>
     <TreeNodes styles={styles} nodes={nodes} level={1} parentId={id} isNodeOpen={isNodeOpen} setIsNodeOpen={setIsNodeOpen} selectedNode={selectedNode} setNodeSelected={setNodeSelected} isOpen={true} />
   </div>
