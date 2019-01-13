@@ -1,0 +1,16 @@
+@import '../../../css/shared';
+
+
+
+.layout {
+
+}
+
+.row {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.cell {
+  flex: auto 0 0;
+}

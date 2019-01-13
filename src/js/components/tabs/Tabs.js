@@ -141,7 +141,7 @@ class Tabs extends React.Component {
               inert={isSelected ? null: 'inert'}
               ref={(ref) => {this._registerPanel(ref, index)}}
             >
-              {cloneOmittingProps(child, 'tab-title')}
+              {cloneOmittingProps(child, ['tab-title'])}
             </div>
           );
 

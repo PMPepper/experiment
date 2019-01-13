@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {Trans} from "@lingui/macro";
 
 import Tree from '@/components/tree/Tree';
+import Layout, {Row, Cell} from '@/components/layout/Layout';
 
 import ColonyInfo from './ColonyInfo';
 
@@ -42,10 +43,16 @@ class WindowColonies extends React.Component {
 
     clientState.coloniesBySystemBySystemBody
 
-    return <div>
-      <Tree id="colonies" {...coloniesWindow.tree} setIsNodeOpen={setIsNodeOpen} setNodeSelected={setNodeSelected} />
-      <ColonyInfo coloniesWindow={coloniesWindow} clientState={clientState} selectedSystemId={selectedSystemId} setTab={setTab} />
-    </div>;
+    return <Layout>
+      <Row>
+        <Cell large={3} medium={1}>
+          <Tree id="colonies" {...coloniesWindow.tree} setIsNodeOpen={setIsNodeOpen} setNodeSelected={setNodeSelected} />
+        </Cell>
+        <Cell large={9} medium={2}>
+          <ColonyInfo coloniesWindow={coloniesWindow} clientState={clientState} selectedSystemId={selectedSystemId} setTab={setTab} />
+        </Cell>
+      </Row>
+    </Layout>;
   }
 }
 
