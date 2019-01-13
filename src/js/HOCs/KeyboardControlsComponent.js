@@ -39,10 +39,6 @@ export default function({
         return <PresentationalComponent {...mapProps(this.props, this.componentProps)} />
       }
 
-      componentWillUnmount() {
-        this._endDragging();
-      }
-
       //public methods
       isKeyDown = (key) => {
         if(!key) {

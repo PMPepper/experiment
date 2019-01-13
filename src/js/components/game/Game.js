@@ -28,6 +28,7 @@ import cloneOmittingProps from '@/helpers/react/clone-omitting-props';
 import {open, close} from '@/redux/HORs/isOpen';
 import {setFollowing as setSystemMapFollowing, setOptions as setSystemMapOptions} from '@/redux/reducers/systemMap';
 import {setSelectedSystemId} from '@/redux/reducers/selectedSystemId';
+import {setSelectedColonyId} from '@/redux/reducers/coloniesWindow';
 
 
 function Game({
@@ -35,10 +36,11 @@ function Game({
   clientState, client,
   systemMap, setSystemMapFollowing, setSystemMapOptions,
   selectedSystemId, setSelectedSystemId,
+  setSelectedColonyId,
   open, close
 }) {
   return <div className={styles.game}>
-    <AddContextMenu getItems={(e) => {
+    <AddContextMenu key={selectedSystemId} getItems={(e) => {
       if('entityId' in e.target.dataset) {
         e.preventDefault();
         const entityId = +e.target.dataset.entityId;
@@ -67,7 +69,14 @@ function Game({
                 hasOwnColony = true;
               }
 
-              return {label: clientState.entities[colony.factionId].faction.name, action: () => {alert('TODO')}}
+              return {
+                label: clientState.entities[colony.factionId].faction.name,
+                action: colony.factionId === factionId ? () => {
+                  setSelectedColonyId(colony.id);//and select this colony
+                  setSystemMapFollowing(colony.systemBodyId);
+                  open('coloniesWindow');//open up colonies window
+                } : null
+              }
             });
 
             if(!hasOwnColony) {
@@ -181,5 +190,6 @@ export default compose(
     setSystemMapFollowing,
     setSystemMapOptions,
     setSelectedSystemId,
+    setSelectedColonyId,
   })
 )(Game);

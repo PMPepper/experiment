@@ -10,76 +10,84 @@ import Layout, {Row, Cell} from '@/components/layout/Layout';
 import ColonyInfo from './ColonyInfo';
 
 import map from '@/helpers/object/map';
+import modify from '@/helpers/object/modify';
 import mapToSortedArray from '@/helpers/object/map-to-sorted-array';
 
-import {setTab, setIsNodeOpen, setNodeSelected} from '@/redux/reducers/coloniesWindow';
+import {setTab, setSelectedColonyId} from '@/redux/reducers/coloniesWindow';
+import {setSelectedSystemId} from '@/redux/reducers/selectedSystemId';
+import {setFollowing as setSystemMapFollowing} from '@/redux/reducers/systemMap';
+
+const coloniesTreeId = 'colonies';
 
 
 class WindowColonies extends React.Component {
+  constructor(props) {
+    super(props);
 
-  systemColonies = memoize((selectedSystemId, clientState) => {
-    const allColonies = clientState.getColoniesBySystemBody(selectedSystemId);
-
-    return map(allColonies, (colony) => {
-      const factionSystemBody = clientState.getFactionSystemBodyFromSystemBody(colony.systemBodyId);
-      const totalPopulation = colony.populationIds.reduce((total, id) => (total + clientState.entities[id].population.quantity), 0) | 0;
-
-      return {
-        name: factionSystemBody.factionSystemBody.name,
-        totalPopulation: totalPopulation,
+    this.state = props.coloniesWindow.selectedColonyId ?
+      {
+        isNodeOpen: {
+          [this.selectedColonySystemNodeId]: true
+        },
+        selectedNode: this.selectedColonyNodeId
       }
-    });
-  })
+      :
+      {//no colony selected at time of opening
+        isNodeOpen: {},
+        selectedNode: null
+      };
+  }
+
+  setIsNodeOpen = (node, isOpen) => {
+    console.log('setIsNodeOpen: ', node, isOpen);
+
+    this.setState({isNodeOpen: modify(this.state.isNodeOpen, node, !!isOpen)})
+  }
+
+  setNodeSelected = (node) => {
+    console.log('setNodeSelected: ', node);
+  }
+
+  get selectedColonyNodeId() {
+    const colonyId = +this.props.coloniesWindow.selectedColonyId;
+    const clientState = this.props.clientState;
+    const colony = clientState.entities[colonyId];
+    const systemBody = clientState.entities[colony.systemBodyId];
+    //coloniesTreeId
+    return `colonies/${systemBody.systemId}/${systemBody.id}`;
+  }
+
+  get selectedColonySystemNodeId() {
+    const colonyId = +this.props.coloniesWindow.selectedColonyId;
+    const clientState = this.props.clientState;
+    const colony = clientState.entities[colonyId];
+    const systemBody = clientState.entities[colony.systemBodyId];
+    //coloniesTreeId
+    return `colonies/${systemBody.systemId}`;
+  }
+
+
+  /////////////////////////////
+  // React lifecycle methods //
+  /////////////////////////////
+
+  componentDidUpdate(oldProps) {
+    if(this.props.coloniesWindow.selectedColonyId !== oldProps.coloniesWindow.selectedColonyId) {
+
+      if(this.props.coloniesWindow.selectedColonyId) {
+        //selected colony has changed, set this node as selected and make sure all parents are open
+        this.setState({selectedNode: this.selectedColonyNodeId, isNodeOpen: modify(this.state.isNodeOpen, this.selectedColonySystemNodeId, true)})
+      } else {
+        //no colony selected - clear selected
+        this.setState({selectedNode: null})
+      }
+    }
+  }
 
   render () {
-    const {coloniesWindow, clientState, selectedSystemId, setTab, setIsNodeOpen, setNodeSelected} = this.props;
-
-    // factionId: 182
-    // id: 364
-    // populationIds: [363]
-    // systemBodyId: 5
-    // systemId: 1
-    // type: "colony"
-
-    //clientState.coloniesBySystemBySystemBody
-
-    /*
-    nodes = [
-      {id: 'populatedSystems', label: 'Populated systems', icon: null, onClick: null, children: [
-        {id: '1', label: 'Sol', icon: null, onClick: null, children: [
-          {id: '4', label: 'Earth', icon: null, onClick: null},
-        ]},
-      ]},
-      {id: 'automatedMiningColonies', label: 'Automated mining colonies', icon: null, onClick: null},
-      {id: 'civilianMiningColonies', label: 'Civilian mining colonies', icon: null, onClick: null},
-      {id: 'listeningPosts', label: 'Listening posts', icon: null, onClick: null},
-      {id: 'archeologicalDigs', label: 'Archeological digs', icon: null, onClick: null},
-      {id: 'terraformingSites', label: 'Terraforming sites', icon: null, onClick: null},
-      {id: 'otherColonies', label: 'Other colonies sites', icon: null, onClick: null, children: [
-        {id: '1', label: 'Sol', icon: null, onClick: null, children: [
-          {id: '2', label: 'Mercury', icon: null, onClick: null},
-        ]},
-      ]},
-
-      {id: 'foo', label: 'Foo', icon: null, onClick: null, children: [
-        {id: 'bar', label: 'Bar', icon: null, onClick: null, children: [
-          {id: 'x', label: 'x', icon: null, onClick: null},
-          {id: 'y', label: 'y', icon: null, onClick: null, children: [
-            {id: 'a', label: 'a', icon: null, onClick: null},
-            {id: 'b', label: 'b', icon: null, onClick: null},
-            {id: 'c', label: 'c', icon: null, onClick: null},
-          ]},
-          {id: 'z', label: 'z', icon: null, onClick: null, children: [
-            {id: 'a', label: 'a', icon: null, onClick: null},
-            {id: 'b', label: 'b', icon: null, onClick: null},
-            {id: 'c', label: 'c', icon: null, onClick: null},
-          ]},
-        ]}
-      ]}
-    ];
-    */
-
-    //
+    const {props, state, setIsNodeOpen, setNodeSelected} = this;
+    const {selectedNode, isNodeOpen} = state;
+    const {coloniesWindow, clientState, selectedSystemId, setSelectedSystemId, setSelectedColonyId, setTab, setSystemMapFollowing} = props;
 
     const colonyTreeNodes = mapToSortedArray(
       clientState.coloniesBySystemBySystemBody,
@@ -89,12 +97,21 @@ class WindowColonies extends React.Component {
         return {
           id: systemId,
           label: factionSystem.factionSystem.name,
+          onClick: () => {setSelectedSystemId(systemId)},
           children: mapToSortedArray(
             coloniesBySystemBodyId,
             (colony, systemBodyId) => {
               const factionSystemBody = clientState.getFactionSystemBodyFromSystemBody(systemBodyId);
 
-              return {id: systemBodyId, label: factionSystemBody.factionSystemBody.name};
+              return {
+                id: systemBodyId,
+                label: factionSystemBody.factionSystemBody.name,
+                onClick: () => {
+                  setSelectedSystemId(systemId);
+                  setSystemMapFollowing(systemBodyId);
+                  setSelectedColonyId(colony.id);
+                },
+              };
             },
             (a, b) => {
               return a.label < b.label ? -1 : (a.label > b.label ? 1 : 0);
@@ -109,11 +126,14 @@ class WindowColonies extends React.Component {
       true
     );
 
+    //Not at all sure abou this..?
+    //const selectedNode = coloniesWindow.selectedColonyId ? `colonies/${selectedSystemId}/${clientState.entities[coloniesWindow.selectedColonyId].systemBodyId}` : `colonies/${selectedSystemId}`;
+
 
     return <Layout>
       <Row>
         <Cell large={3} medium={1}>
-          <Tree nodes={colonyTreeNodes} id="colonies" {...coloniesWindow.tree} setIsNodeOpen={setIsNodeOpen} setNodeSelected={setNodeSelected} />
+          <Tree nodes={colonyTreeNodes} id={coloniesTreeId} isNodeOpen={isNodeOpen} setIsNodeOpen={setIsNodeOpen} selectedNode={selectedNode} setIsNodeOpen={setIsNodeOpen} />
         </Cell>
         <Cell large={9} medium={2}>
           <ColonyInfo coloniesWindow={coloniesWindow} clientState={clientState} selectedSystemId={selectedSystemId} setTab={setTab} />
@@ -134,7 +154,8 @@ export default compose(
     }
   }, {
     setTab,
-    setIsNodeOpen,
-    setNodeSelected
+    setSelectedSystemId,
+    setSystemMapFollowing,
+    setSelectedColonyId,
   })
 )(WindowColonies);

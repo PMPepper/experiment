@@ -1,12 +1,12 @@
 import assignValueReducer, {assignValue} from '@/redux/HORs/assignValue';
 
-const reduxId = 'selectedSystemId';
+export const SET_SELECTED_SYSTEM_ID = 'SET_SELECTED_SYSTEM_ID';
 
 
-export default assignValueReducer(reduxId, 0)
+export default assignValueReducer(SET_SELECTED_SYSTEM_ID, 0)
 
 
 //action creators
 export function setSelectedSystemId(selectedSystemId) {
-  return assignValue(reduxId, selectedSystemId);
+  return assignValue(SET_SELECTED_SYSTEM_ID, +selectedSystemId);
 }

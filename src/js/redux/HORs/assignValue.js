@@ -1,19 +1,20 @@
-export default function(actionName, defaultState = null) {
+export default function(actionName, defaultState = null, additional = null) {
   return function assignVale(state = defaultState, action) {
-    if(action.type === ASSIGN && action.name === actionName) {
+    if(action.type === actionName) {
       return action.value
+    }
+
+    if(additional && additional[action.type]) {
+      return additional[action.type](state, action);
     }
 
     return state;
   }
 }
 
-export const ASSIGN = 'assignValue.assign';
-
 export function assignValue(name, value) {
   return {
-    type: ASSIGN,
-    name,
+    type: name,
     value
   };
 }

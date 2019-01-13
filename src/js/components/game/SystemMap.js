@@ -30,7 +30,7 @@ const zoomEaseThreshold = 0.0001;
 
 //time (in seconds) over which easing gets ramped from base to 1 when following a position
 //this is to catch up with fast objects
-const followExtraEaseTime = 3;
+const followExtraEaseTime = 0.5;
 
 
 class SystemMap extends React.Component {

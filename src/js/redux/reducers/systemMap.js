@@ -2,6 +2,7 @@ import {combineReducers} from 'redux';
 //import * as reducers from './systemMap';
 
 import assignValueReducer, {assignValue} from '@/redux/HORs/assignValue';
+import {SET_SELECTED_SYSTEM_ID} from './selectedSystemId';
 import * as RenderFlags from '@/components/game/renderFlags';
 
 
@@ -62,14 +63,14 @@ const defaultSystemMapOptions = {
 //The reducer
 export default combineReducers({
   //...reducers,
-  following: assignValueReducer(`${reduxId}.following`),
+  following: assignValueReducer(`${reduxId}.following`, null, {[SET_SELECTED_SYSTEM_ID]: () => (null)}),
   options: assignValueReducer(`${reduxId}.options`, defaultSystemMapOptions),
 });
 
 
 //action creators
 export function setFollowing(following) {
-  return assignValue(`${reduxId}.following`, following);
+  return assignValue(`${reduxId}.following`, +following);
 }
 
 export function setOptions(options) {
