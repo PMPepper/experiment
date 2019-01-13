@@ -1,14 +1,64 @@
 @import '../../../css/shared';
 
-.tree {
+$treeFontCol: $fontCol;
+$treeFontSize: $fontSize;
+$treeIconWidth: $basePadding;
 
+.tree {
+  margin-left: -$treeIconWidth;
 }
 
 .treeNodes {
+  flex: 100% 1 1;
   overflow: hidden;
   will-change: height;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0 $treeIconWidth;
 }
 
 .treeNode {
+  display: flex;
+  flex-flow: row wrap;
+}
 
+.treeNodeIcon {
+  flex: $treeIconWidth 0 0;
+  visibility: hidden;
+  border: 0;
+  background: 0;
+  padding: 0;
+  cursor: pointer;
+  font-size: $treeFontSize;
+  color: $grey50;
+
+  @include textInteraction($mouseCol: $fontCol);
+
+  &.open {
+    color: $treeFontCol;
+
+    @include textInteraction($mouseCol: $grey50);
+  }
+
+  &.hasChildren {
+    visibility: visible;
+  }
+}
+
+.treeNodeLabel {
+  flex: auto 1 1;
+  border: 0;
+  background: 0;
+  padding: $basePadding/8 $basePadding/2;
+  cursor: pointer;
+  font-size: $treeFontSize;
+  color: $treeFontCol;
+
+  composes: alignStart from "../../../css/generic.scss";
+
+  @include blockInteraction($mouseBg: $grey30);
+
+  &.selected {
+    font-weight: bold;
+  }
 }
