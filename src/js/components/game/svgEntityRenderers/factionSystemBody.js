@@ -1,6 +1,7 @@
 import React from 'react';
 
 import * as RenderFlags from '../renderFlags';
+import {outOfBoundsVCull, outOfBoundsHCull, startFadeRadius, fullyFadeRadius, startFadeOrbitRadius, fullyFadeOrbitRadius} from '../GameConsts';
 
 
 //The component
@@ -135,14 +136,7 @@ const systemBodyTypeMinRadius = {
   asteroid: 2,
 };
 
-const outOfBoundsVCull = 75;
-const outOfBoundsHCull = 25;
 
-const startFadeRadius = 0.0002;
-const fullyFadeRadius = 0.00005;
-
-const startFadeOrbitRadius = 10;
-const fullyFadeOrbitRadius = 5;
 
 const startFadeLargeOrbit = 12500;
 const fullyFadeLargeOrbit = 25000;

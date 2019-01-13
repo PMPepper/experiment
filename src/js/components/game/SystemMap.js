@@ -3,6 +3,7 @@ import {compose} from 'recompose';
 
 import defaultStyles from './systemMap.scss';
 import SystemMapSVGRenderer from './SystemMapSVGRenderer';
+import {startFadeRadius, fullyFadeRadius, startFadeOrbitRadius, fullyFadeOrbitRadius} from './GameConsts';
 
 import WindowSizeComponent from '@/HOCs/WindowSizeComponent';
 import KeyboardControlsComponent from '@/HOCs/KeyboardControlsComponent';
@@ -329,6 +330,10 @@ class SystemMap extends React.Component {
     if(props.setActiveKeys !== prevProps.setActiveKeys || props.options !== prevProps.options) {
       props.setActiveKeys(flatten(Object.keys(props.options.controls)));
     }
+
+    if(props.following && props.following !== prevProps.following) {
+      this.tzoom = Math.max(this.tzoom, getSystemBodyVisibleMaxZoom(props.clientState.entities[props.following]));
+    }
   }
 
   componentWillUnmount() {
@@ -355,6 +360,29 @@ export default compose(
   KeyboardControlsComponent()
 )(SystemMap);
 
+
+
+//startFadeRadius, fullyFadeRadius, startFadeOrbitRadius, fullyFadeOrbitRadius
+
+//TODO only works with circular orbits (all I have right now)
+export function getSystemBodyVisibleMaxZoom(systemBodyEntity) {
+  const parent = systemBodyEntity.movement && systemBodyEntity.movement.orbitingId;
+  const systemBodyRadius = systemBodyEntity.systemBody.radius;
+
+  //opacity = (systemBodyRadius - fullyFadeRadius) / (startFadeRadius - fullyFadeRadius);
+  const radiusMaxZoom = startFadeRadius / systemBodyRadius;
+
+  //if you're orbiting something, check the max zoom before this starts to fade
+  if(parent) {
+    const orbitRadius = systemBodyEntity.movement.radius;
+
+    const orbitRadiusMaxZoom = (startFadeOrbitRadius / orbitRadius) * 1.2;
+
+    return Math.max(orbitRadiusMaxZoom, radiusMaxZoom);
+  }
+
+  return radiusMaxZoom;
+}
 
 
 
