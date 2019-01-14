@@ -77,9 +77,9 @@ export default class Client {
   ///////////////////////////////////////
   message_startingGame(gameState) {
     this.gameState = gameState;
-console.log(gameState);
+
     this.store.dispatch(setSelectedSystemId(+find(gameState.entities, entity => (entity.type === 'factionSystem')).systemId));//TODO base on starting systems
-    this.store.dispatch(setGameState(gameState))
+    this.store.dispatch(setGameState(gameState, this.initialGameState))
   }
 
   message_updatingGame(gameState) {

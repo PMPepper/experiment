@@ -13,21 +13,21 @@ export default function Row(props) {
 
   const metaTypes = getMetaTypes();
   const isEven = rowIndex % 2 === 1;
-  const isSelected = !!selectedRows[row.id];
+  const isSelected = selectedRows && !!selectedRows[row.id];
 
   rowProps = combineProps(
     rowProps,
     clickTogglesSelectedRows && {
       className: styles.selectable,
-      onClick: () => {setRowSelected(row.id, !selectedRows[row.id])},
-      onKeyDown: (e) => {
+      onClick: setRowSelected ? () => {setRowSelected(row.id, !selectedRows[row.id])} : null,
+      onKeyDown: setRowSelected ? (e) => {
         if(e.which === 13 || e.which === 32) {
           e.preventDefault();
           e.stopPropagation();
 
           setRowSelected(row.id, !selectedRows[row.id])
         }
-      }
+      } : null
     }
   );
 

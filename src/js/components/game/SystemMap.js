@@ -1,3 +1,5 @@
+//TODO set limits on zoom/scroll
+
 import React from 'react';
 import {compose} from 'recompose';
 
@@ -331,6 +333,7 @@ class SystemMap extends React.Component {
       props.setActiveKeys(flatten(Object.keys(props.options.controls)));
     }
 
+    //if following a new system body, set appropriate zoom level
     if(props.following && props.following !== prevProps.following) {
       this.tzoom = Math.max(this.tzoom, getSystemBodyVisibleMaxZoom(props.clientState.entities[props.following]));
     }
@@ -360,9 +363,6 @@ export default compose(
   KeyboardControlsComponent()
 )(SystemMap);
 
-
-
-//startFadeRadius, fullyFadeRadius, startFadeOrbitRadius, fullyFadeOrbitRadius
 
 //TODO only works with circular orbits (all I have right now)
 export function getSystemBodyVisibleMaxZoom(systemBodyEntity) {

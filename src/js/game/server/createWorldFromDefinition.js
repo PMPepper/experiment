@@ -195,7 +195,7 @@ export default function createWorldFromDefinition(server, definition) {
       //mark system body as surveyed
       if(startingColonyDefinition.isSurveyed) {
         const factionSystemBody = find(server.entities, (entity, id) => {
-          return entity.type === 'factionSystemBody' && entity.factionId === faction.id && systemBody.id === systemBody.id;
+          return entity.type === 'factionSystemBody' && entity.factionId === faction.id && entity.systemBodyId === systemBody.id;
         });
 
         if(factionSystemBody) {

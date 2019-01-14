@@ -16,7 +16,7 @@ export default combineReducers({
   position: position(reduxId),
   size: size(reduxId),
   lastInteracted: lastInteracted(reduxId, [OPEN, MOVE_TO, MOVE_BY, RESIZE_TO, RESIZE_BY]),
-  //tab: assignValueFactory(`${reduxId}.tab`, 0),
+  tab: assignValueFactory(`${reduxId}.tab`, 0),
   selectedColonyId: assignValueFactory(`${reduxId}.colony`, 0),
   //tree: tree(reduxId)
 });
