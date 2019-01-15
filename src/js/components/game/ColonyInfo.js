@@ -9,6 +9,7 @@ import ColonyMineralsTable from './tables/ColonyMinerals';
 
 //Components
 import Tabs from '@/components/tabs/Tabs';
+import ReduxDataTableState from '@/components/datatable/ReduxDataTableState';
 
 //Helpers
 import map from '@/helpers/object/map';
@@ -55,7 +56,7 @@ export default class ColonyInfo extends React.Component {
         <div key="mining" tab-title={<Trans>Mining</Trans>}>
           Mining!
           {isMineralsSurveyed ?
-            <ColonyMineralsTable rows={mineralsRows} />
+            <ReduxDataTableState path="coloniesWindow.mineralsTable"><ColonyMineralsTable rows={mineralsRows} /></ReduxDataTableState>
             :
             <span><Trans>System body not surveyed</Trans></span>
           }
