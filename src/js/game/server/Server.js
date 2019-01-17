@@ -7,7 +7,8 @@ import createWorldFromDefinition from './createWorldFromDefinition';
 import * as FactionClientTypes from '../FactionClientTypes';
 
 import movementFactory from './entityProcessorFactories/movement';
-import populationFactory from './entityProcessorFactories/population';
+//import populationFactory from './entityProcessorFactories/population';
+import colonyFactory from './entityProcessorFactories/colony';
 
 
 //Server phases
@@ -43,7 +44,7 @@ export default class Server {
   entityIds = null;
   entitiesLastUpdated = null;
 
-  entityProcessorFactories = [movementFactory, populationFactory];
+  entityProcessorFactories = [movementFactory, colonyFactory];
 
   clientLastUpdatedTime = null
 
@@ -418,7 +419,7 @@ export default class Server {
 
     if(step === null) {
       //initial entity initialisation
-      processors = this._getEntityProcessors(this.gameTime, this.gameTime);
+      processors = this._getEntityProcessors(this.gameTime, this.gameTime, true);
 
       for(let j = 0; j < numEntities; ++j) {
         processors(entities[entityIds[j]], entities);

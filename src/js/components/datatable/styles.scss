@@ -61,7 +61,7 @@ $expandArrowHoverCol: $grey40;
 }
 
 .th {
-  font-size: 1.65rem;
+  font-size: 1.4rem;
   vertical-align: middle;
   padding: 0;
   border-left: 0.1rem solid $tableBorderCol;
@@ -79,7 +79,7 @@ $expandArrowHoverCol: $grey40;
 //-non-sorting column header styles
 .columnLabel {
   display: block;
-  padding: $tableBasePadding/2 $arrowWidth + ($tableBasePadding*0.75);
+  padding: $tableBasePadding/4 $arrowWidth + ($tableBasePadding*0.75);
   white-space: inherit;
   text-align: inherit;
   font-weight: bold;
@@ -90,7 +90,7 @@ $expandArrowHoverCol: $grey40;
   composes: columnLabel;
 
   background: transparent;
-  padding: $tableBasePadding/2;
+  padding: $tableBasePadding/4 $tableBasePadding/2;
   border: 0;
   margin: 0;
   width: 100%;
@@ -156,12 +156,12 @@ $expandArrowHoverCol: $grey40;
 
 //-Cell styles
 .td {
-  font-size: 1.55rem;
+  font-size: 1.4rem;
   line-height: 1.0;
   border-left: 0.1rem solid $tableBorderCol;
   border-top: 0.1rem solid $tableBorderCol;
   vertical-align: top;
-  padding: $tableBasePadding / 2;
+  padding: $tableBasePadding/4 $tableBasePadding/2;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;

@@ -41,7 +41,6 @@ export default compose(
             left: `${positionedCoords.x}px`,
             top: `${positionedCoords.y}px`,
             maxHeight: 'calc(100% - 2rem)',
-            //overflow: 'auto'
           },
           position: positionedCoords,
           setPositionedItemSize

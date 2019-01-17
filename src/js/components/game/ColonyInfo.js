@@ -11,6 +11,7 @@ import ColonyMineralsTable from './tables/ColonyMinerals';
 import Tabs from '@/components/tabs/Tabs';
 import Tab from '@/components/tabs/Tab';
 import ReduxDataTableState from '@/components/datatable/ReduxDataTableState';
+import FormatNumber from '@/components/formatNumber/FormatNumber';
 
 //Helpers
 import map from '@/helpers/object/map';
@@ -84,7 +85,7 @@ export default class ColonyInfo extends React.Component {
       <h2>{factionSystemBody.factionSystemBody.name}</h2>
       <Tabs selectedTabIndex={coloniesWindow.tab} setSelectedTabIndex={setTab}>
         <Tab key="summary" tab-title={<Trans>Summary</Trans>}>
-          Summary!
+          Total population: <FormatNumber value={colony.colony.totalPopulation} />
         </Tab>
         <Tab key="industry" tab-title={<Trans>Industry</Trans>}>
           Industry!
