@@ -3,6 +3,9 @@
 
 .panel {
   @include panel;
+
+  display: flex;
+  flex-flow: column nowrap;
 }
 
 .header {
@@ -32,6 +35,7 @@
 
 .body {
   padding: $basePadding/2;
+  overflow: auto;
 }
 
 .footer {
