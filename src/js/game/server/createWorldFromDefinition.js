@@ -123,7 +123,7 @@ export default function createWorldFromDefinition(server, definition) {
         if(!definition.technology[technologyId]) {
           throw new Error(`Unknown technology '${technologyId}'`);
         }
-        
+
         faction.faction.technology[technologyId] = true;
       })
     })
@@ -183,10 +183,17 @@ export default function createWorldFromDefinition(server, definition) {
           species: 'Humans',
           population: 1000000000,
         }
-      ]
+      ],
+      structures: {
+        "1": 200,
+        "2": 100,
+        "5": 10
+      },
       */
 
       const systemBody = systemBodiesBySystemDefinitionIdBySystemBodyDefinitionName[startingColonyDefinition.system][startingColonyDefinition.body];
+
+      //Create the populations
       const populationIds = startingColonyDefinition.populations.map(populationDefinition => {
         const species = speciesByDefinitionId[populationDefinition.species];
 
@@ -208,7 +215,10 @@ export default function createWorldFromDefinition(server, definition) {
         factionId: faction.id,
         systemId: systemBody.systemId,
         systemBodyId: systemBody.id,
-        populationIds: populationIds,
+        colony: {
+          populationIds: populationIds,
+          structures: {...startingColonyDefinition.structures}
+        }
       });
 
       //and record as part of the faction

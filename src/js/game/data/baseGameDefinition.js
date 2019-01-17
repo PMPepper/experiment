@@ -6,7 +6,7 @@ const worldDefinition = {
   startDate: '2000-01-01T00:00:00',
   systems: systems,
   species: {
-    Humans: {name: 'Humans', growthRate: 1.05}
+    Humans: {name: 'Humans', growthRate: 1.05, miningRate: 1, researchRate: 1, constructionRate: 1}
   },
   factions: [{
     name: 'Humans',
@@ -40,10 +40,15 @@ const worldDefinition = {
           species: 'Humans',
           population: 1000000000,
         }
-      ]
+      ],
+      structures: {
+        "1": 200,
+        "2": 100,
+        "5": 10
+      },
 
       //TODO
-      //money, structures, minerals, fuel, technology, etc
+      //money, minerals, fuel, etc
     },
     {
       isStartingWorld: true,
@@ -55,10 +60,15 @@ const worldDefinition = {
           species: 'Humans',
           population: 10000000,
         }
-      ]
+      ],
+      structures: {
+        "1": 20,
+        "2": 5,
+        "5": 0
+      },
 
       //TODO
-      //money, structures, minerals, fuel, technology, etc
+      //money, minerals, fuel, etc
     },
     {
       isStartingWorld: true,
@@ -70,10 +80,15 @@ const worldDefinition = {
           species: 'Humans',
           population: 50000000,
         }
-      ]
+      ],
+      structures: {
+        "1": 125,
+        "2": 45,
+        "5": 3
+      },
 
       //TODO
-      //money, structures, minerals, fuel, technology, etc
+      //money, minerals, fuel, etc
     },
     {
       isStartingWorld: true,
@@ -85,10 +100,15 @@ const worldDefinition = {
           species: 'Humans',
           population: 20000000,
         }
-      ]
+      ],
+      structures: {
+        "1": 102,
+        "2": 40,
+        "5": 2
+      },
 
       //TODO
-      //money, structures, minerals, fuel, technology, etc
+      //money, minerals, fuel, etc
     }]
   },
   {
@@ -116,9 +136,14 @@ const worldDefinition = {
           species: 'Humans',
           population: 1000000000,
         }
-      ]
+      ],
+      structures: {
+        "1": 225,
+        "2": 175,
+        "5": 13
+      },
       //TODO
-      //money, structures, minerals, fuel, technology, etc
+      //money, minerals, fuel, etc
     }]
   }],
 

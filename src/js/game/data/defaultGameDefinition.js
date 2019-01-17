@@ -117,7 +117,7 @@ export default {
       workers: 50000,
       bp: 100,
       minerals: {},
-      properties: {
+      capabilities: {
         construction: 1
       },
       upgrade: [3],
@@ -129,7 +129,7 @@ export default {
       workers: 50000,
       bp: 100,
       minerals: {},
-      properties: {
+      capabilities: {
         mining: 1
       },
       upgrade: [4],
@@ -145,7 +145,7 @@ export default {
         "3": 30,
         "2": 30,
       },
-      properties: {
+      capabilities: {
         construction: 10
       },
       requireTechnologyIds: ['pe'],
@@ -159,7 +159,7 @@ export default {
         "4": 60,
         "1": 30,
       },
-      properties: {
+      capabilities: {
         mining: 10
       },
       requireTechnologyIds: ['pe'],
@@ -170,7 +170,7 @@ export default {
       workers: 1000000,
       bp: 2000,
       minerals: {},
-      properties: {
+      capabilities: {
         research: 1
       },
       upgrade: [6],
@@ -185,7 +185,7 @@ export default {
         "4": 1200,
         "9": 1200,
       },
-      properties: {
+      capabilities: {
         research: 10
       },
       requireTechnologyIds: ['pe'],

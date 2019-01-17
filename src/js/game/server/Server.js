@@ -290,7 +290,9 @@ export default class Server {
       factionId,
       systemId: systemBody.systemId,
       systemBodyId: systemBody.id,
-      populationIds: [],
+      colony: {
+        populationIds: [],
+      }
     });
 
     //update faction
