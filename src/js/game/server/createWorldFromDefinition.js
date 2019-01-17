@@ -128,6 +128,8 @@ export default function createWorldFromDefinition(server, definition) {
       })
     })
 
+    const factionSystemBodyBySystemBodyId = {};
+
     //Now link factions to systems
     Object.keys(factionDefinition.startingSystems).forEach(systemDefinitionId => {
       const systemDefinition = definition.systems[systemDefinitionId];
@@ -153,7 +155,7 @@ export default function createWorldFromDefinition(server, definition) {
 
           //Now repeat for the system bodies
           const factionSystemBodies = systemDefinition.bodies.map(bodyDefinition => {
-            return server._newEntity('factionSystemBody', {
+            const factionSystemBody = server._newEntity('factionSystemBody', {
               render: {type: 'factionSystemBody'},
               systemId: system.id,
               factionId: faction.id,
@@ -164,6 +166,10 @@ export default function createWorldFromDefinition(server, definition) {
                 isSurveyed: false,
               }
             });
+
+            factionSystemBodyBySystemBodyId[factionSystemBody.systemBodyId] = factionSystemBody;
+
+            return factionSystemBody;
           })
 
           //record ID's of factionSystemBodies in factionSystem
@@ -200,8 +206,9 @@ export default function createWorldFromDefinition(server, definition) {
         const entity = server._newEntity('population', {
           factionId: faction.id,
           speciesId: species.id,
-          systemId: systemBody.systemId,
-          systemBodyId: systemBody.id,
+          //systemId: systemBody.systemId,
+          //systemBodyId: systemBody.id,
+
           population: {
             quantity: populationDefinition.population
           }
@@ -215,10 +222,12 @@ export default function createWorldFromDefinition(server, definition) {
         factionId: faction.id,
         systemId: systemBody.systemId,
         systemBodyId: systemBody.id,
+        factionSystemBodyId: factionSystemBodyBySystemBodyId[systemBody.id].id,
         colony: {
           populationIds: populationIds,
-          structures: {...startingColonyDefinition.structures}
-        }
+          structures: {...startingColonyDefinition.structures},
+        },
+        minerals: map(definition.minerals, () => (0))
       });
 
       //and record as part of the faction

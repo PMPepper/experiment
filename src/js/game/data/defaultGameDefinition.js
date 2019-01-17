@@ -6,8 +6,8 @@ export default {
     production: 1,
     research: 1,
     mining: 1,
-    support: 1,//multiplier on how many individuals are needed for support jobs in a colony (e.g. agriculture, bureaucracy etc)
-    staffMultiplier: 1,//how many individuals are needed to operate something, e.g. if a factory needs a base of 1000 workers, and this value is 2, then you'll need 2000 workers to operate the factory
+    support: 0.2,//base fraction of how many individuals are needed for support jobs in a colony (e.g. agriculture, bureaucracy etc)
+    workerMultiplier: 1,//how many individuals are needed to operate something, e.g. if a factory needs a base of 1000 workers, and this value is 2, then you'll need 500 workers to operate the factory
     crewMultiplier: 1,//As above, but for crewing ships
   },
   minerals: {

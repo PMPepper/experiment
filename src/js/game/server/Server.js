@@ -39,6 +39,8 @@ export default class Server {
   technology;
   systemBodyTypeMineralAbundance;
 
+  gameConfig;
+
   entities = null;
   entityId = null;//used to keep track of assigned entity IDs - increments after each entity is created
   entityIds = null;
@@ -74,6 +76,14 @@ export default class Server {
     this.clientLastUpdatedTime = {};
     this.entitiesLastUpdated = {};
     createWorldFromDefinition(this, definition);
+
+    this.gameConfig = {
+      minerals: this.minerals,
+      structures: this.structures,
+      researchAreas: this.researchAreas,
+      research: this.research,
+      technology: this.technology,
+    };
 
     //c/onsole.log('[Server] created world: ', this.entities);
 
@@ -463,7 +473,7 @@ export default class Server {
       let entityWasMutated = false;
 
       for(let i = 0, l = entityProcessors.length; i < l;++i) {
-        entityWasMutated = entityProcessors[i](entity, entities) || entityWasMutated;
+        entityWasMutated = entityProcessors[i](entity, entities, this.gameConfig) || entityWasMutated;
       }
 
       return entityWasMutated;
