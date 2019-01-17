@@ -35,6 +35,7 @@ export default class Server {
   structures;
   research;
   researchAreas;
+  technology;
   systemBodyTypeMineralAbundance;
 
   entities = null;
@@ -117,6 +118,7 @@ export default class Server {
       structures: this.structures,
       research: this.research,
       researchAreas: this.researchAreas,
+      technology: this.technology,
     })
   }
 

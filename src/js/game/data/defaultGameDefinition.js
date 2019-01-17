@@ -121,6 +121,7 @@ export default {
         construction: 1
       },
       upgrade: [3],
+      requireTechnologyIds: [],
     },
     "2": {
       name: 'Conventional mine',
@@ -132,6 +133,7 @@ export default {
         mining: 1
       },
       upgrade: [4],
+      requireTechnologyIds: [],
     },
     "3": {
       name: 'PE Industry',
@@ -145,7 +147,8 @@ export default {
       },
       properties: {
         construction: 10
-      }
+      },
+      requireTechnologyIds: ['pe'],
     },
     "4": {
       name: 'PE mine',
@@ -158,7 +161,8 @@ export default {
       },
       properties: {
         mining: 10
-      }
+      },
+      requireTechnologyIds: ['pe'],
     },
     "5": {
       name: 'Conventional research facility',
@@ -170,6 +174,7 @@ export default {
         research: 1
       },
       upgrade: [6],
+      requireTechnologyIds: [],
     },
     "6": {
       name: 'PE research facility',
@@ -182,7 +187,8 @@ export default {
       },
       properties: {
         research: 10
-      }
+      },
+      requireTechnologyIds: ['pe'],
     },
   },
   researchAreas: {
@@ -197,17 +203,32 @@ export default {
     "9": "Sensors and fire control",
   },
   research: {
-    "1": {
+    "pe": {
       name: 'Post-Einstein technology',
       description: "Unlock the potential of Post-Einsteinium (PE) physics to create technology vastly superior to anything previously thought possible.",
       cost: 5000,
-      area: 2
+      area: 2,
+      requireResearchIds: [],
+      unlockTechnologyIds: ['pe']
     },
     "e1": {
       name: "PE Drive",
       description: "Utilise PE physics to create a fundamentally new form of propulsion and gain access to the far reaches of our solar system",
       cost: 500,
-      area: 8
+      area: 8,
+      requireResearchIds: ['pe'],
+      unlockTechnologyIds: ['e1', 'fe1']
     }
   },
+  technology: {
+    "pe": {
+      name: 'Post-Einstein technology'
+    },
+    "e1": {
+      name: 'PE Drive'
+    },
+    "fe1": {
+      name: 'Fuel efficiency 1'
+    }
+  }
 };

@@ -13,6 +13,7 @@ export default function createWorldFromDefinition(server, definition) {
   server.structures = JSON.parse(JSON.stringify(definition.structures));
   server.researchAreas = {...definition.researchAreas};
   server.research = JSON.parse(JSON.stringify(definition.research));
+  server.technology = JSON.parse(JSON.stringify(definition.technology));
   server.systemBodyTypeMineralAbundance = JSON.parse(JSON.stringify(definition.systemBodyTypeMineralAbundance));
 
   //internal lookup hashes
@@ -99,12 +100,33 @@ export default function createWorldFromDefinition(server, definition) {
 
   //create the factions
   definition.factions.forEach(factionDefinition => {
-    const faction = server._newEntity('faction', {faction: {name: factionDefinition.name, colonyIds: []}});
+    const faction = server._newEntity('faction', {faction: {
+      name: factionDefinition.name,
+      colonyIds: [],
+      research: {},
+      technology: {}
+    }});
 
     factionsByDefinitionName[factionDefinition.name] = faction;
 
     //record factions separately (in addition to being an entity)
     server.factions[faction.id] = faction;
+
+    //assign initial research and technology
+    factionDefinition.startingResearch.forEach(researchId => {
+      const research = definition.research[researchId];
+
+      faction.faction.research[researchId] = true;//mark this technology as unlocked
+
+      //now mark technologies as unlocked
+      research.unlockTechnologyIds.forEach(technologyId => {
+        if(!definition.technology[technologyId]) {
+          throw new Error(`Unknown technology '${technologyId}'`);
+        }
+        
+        faction.faction.technology[technologyId] = true;
+      })
+    })
 
     //Now link factions to systems
     Object.keys(factionDefinition.startingSystems).forEach(systemDefinitionId => {

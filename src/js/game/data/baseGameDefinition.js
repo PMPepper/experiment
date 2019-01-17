@@ -10,6 +10,7 @@ const worldDefinition = {
   },
   factions: [{
     name: 'Humans',
+    startingResearch: [],
     //key value pair, where key is 'id' for generation reference (shared between factions) and value is the system,
     //currently only known systems supported
     startingSystems: {
@@ -92,6 +93,7 @@ const worldDefinition = {
   },
   {
     name: 'Martians',
+    startingResearch: [],
     //key value pair, where key is 'id' for generation reference (shared between factions) and value is the system,
     //currently only known systems supported
     startingSystems: {
