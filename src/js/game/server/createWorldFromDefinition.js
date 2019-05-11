@@ -226,8 +226,8 @@ export default function createWorldFromDefinition(server, definition) {
         colony: {
           populationIds: populationIds,
           structures: {...startingColonyDefinition.structures},
+          minerals: map(definition.minerals, () => (0))
         },
-        minerals: map(definition.minerals, () => (0))
       });
 
       //and record as part of the faction

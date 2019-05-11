@@ -303,6 +303,7 @@ export default class Server {
       systemBodyId: systemBody.id,
       colony: {
         populationIds: [],
+        minerals: map(this.gameConfig.minerals, () => (0))//default to zero minerals
       }
     });
 
@@ -449,14 +450,22 @@ export default class Server {
       const gameTime = this.gameTime;
 
       let processors = this._getEntityProcessors(lastGameTime, gameTime);
+      let result;
 
       //for each entity
       for(let i = 0; i < numEntities; ++i) {
         let entityId = entityIds[i];
+        result = processors(entities[entityId], entities);
 
-        if(processors(entities[entityId], entities)) {
+        if(result) {
           //this entity was mutated
           entitiesLastUpdated[entityId] = gameTime;
+
+          if(result instanceof Array) {
+            result.forEach(id => {
+              entitiesLastUpdated[id] = gameTime;
+            });
+          }
         }
       }
     }
@@ -526,6 +535,33 @@ export default class Server {
     this.entities[newEntity.id] = newEntity;
     this.entityIds.push(newEntity.id);
     this.entitiesLastUpdated[newEntity.id] = this.gameTime + 1;
+
+    //automatically add ref to this entity in linked entities
+    //-props to check for links
+    const idProps = ['factionId', 'speciesId', 'systemBodyId', 'systemId', 'speciesId', 'factionSystemId', 'factionSystemBodyId'];
+
+    for(let i = 0; i < idProps.length; i++) {
+      const prop = idProps[i];
+
+      if(prop in props) {
+        const linkedEntityId = props[prop];
+        const linkedEntity = this.entities[linkedEntityId];
+
+        if(linkedEntity) {
+          const linkedIdsProp = type+'Ids';
+
+          //if cross reference doesn't exist, add it
+          if(!linkedEntity[linkedIdsProp]) {
+            linkedEntity[linkedIdsProp] = [];
+          }
+
+          //record ref to this entity...
+          linkedEntity[linkedIdsProp].push(newEntity.id);
+          //...and update last updated time
+          this.entitiesLastUpdated[linkedEntity.id] = this.gameTime + 1;
+        }
+      }
+    }
 
     return newEntity;
   }

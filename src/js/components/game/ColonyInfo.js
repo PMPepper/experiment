@@ -33,6 +33,7 @@ export default class ColonyInfo extends React.Component {
     const systemBody = clientState.entities[colony.systemBodyId]
     const factionSystemBody = clientState.getFactionSystemBodyFromSystemBody(systemBody);
     const structureDefinitions = clientState.initialGameState.structures;
+
     const isMineralsSurveyed = factionSystemBody.factionSystemBody.isSurveyed;
 
 
@@ -49,7 +50,7 @@ export default class ColonyInfo extends React.Component {
         access: systemBodyMinerals.access,
         production: annualProduction,
         depletion: roundToDigits(systemBodyMinerals.quantity / annualProduction, 3),
-        stockpile: Math.floor(colony.minerals[mineralId]),
+        stockpile: Math.floor(colony.colony.minerals[mineralId]),
       };
     }) : null;
 

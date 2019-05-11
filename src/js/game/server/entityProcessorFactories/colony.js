@@ -14,6 +14,7 @@ export default function colonyFactory(lastTime, time, init) {
 
         const systemBody = entities[colony.systemBodyId];
         const factionSystemBody = entities[colony.factionSystemBodyId];
+        const additionalModifiedEntityIDs = [];
 
         //for each population
         for(i = 0, l = colony.colony.populationIds.length; i < l; ++i) {
@@ -96,18 +97,18 @@ export default function colonyFactory(lastTime, time, init) {
               dailyProduction = systemBodyMinerals.quantity
             }
 
-            colony.minerals[mineralId] = colony.minerals[mineralId] + dailyProduction;
+            colony.colony.minerals[mineralId] = colony.colony.minerals[mineralId] + dailyProduction;
 
-            //TODO modified a different entity????
-            //TODO needs to be done in a different processor
             systemBody.availableMinerals[mineralId].quantity -= dailyProduction;
+
+            additionalModifiedEntityIDs.push(systemBody.id);
           })
 
           colony.colony.miningProduction = miningProduction;
         }
 
 
-        return true;
+        return additionalModifiedEntityIDs;
       }
 
       return false;
