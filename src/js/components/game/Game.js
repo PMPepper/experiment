@@ -32,7 +32,7 @@ import {setSelectedColonyId} from '@/redux/reducers/coloniesWindow';
 
 
 function Game({
-  coloniesWindow, fleetsWindow, researchWindow, shipDesignWindow,
+  coloniesWindow, fleetsWindow, shipDesignWindow,
   clientState, client,
   systemMap, setSystemMapFollowing, setSystemMapOptions,
   selectedSystemId, setSelectedSystemId,
@@ -99,7 +99,6 @@ function Game({
     <div className={styles.toolbar}>
       <div className="hspaceStart">
         <Button onClick={() => {open('coloniesWindow')}}><Trans id="toolbar.colonies">Colonies</Trans></Button>
-        <Button onClick={() => {open('researchWindow')}}><Trans id="toolbar.research">Research</Trans></Button>
         <Button onClick={() => {open('fleetsWindow')}}><Trans id="toolbar.fleets">Fleets</Trans></Button>
         <Button onClick={() => {open('shipDesignWindow')}}><Trans id="toolbar.shipDesign">Ship design</Trans></Button>
       </div>
@@ -165,7 +164,6 @@ function Game({
         <WindowColonies />
       </Window>
       <Window lastInteracted={fleetsWindow.lastInteracted} reduxPath="fleetsWindow" title={<Trans id="fleetsWindow.title">Fleets</Trans>}>TODO fleets window!</Window>
-      <Window lastInteracted={researchWindow.lastInteracted} reduxPath="researchWindow" title={<Trans id="researchWindow.title">Research</Trans>}>TODO research window!</Window>
       <Window lastInteracted={shipDesignWindow.lastInteracted} reduxPath="shipDesignWindow" title={<Trans id="shipDesignWindow.title">Ship design</Trans>}>TODO ship design window!</Window>
     </SortChildren>
     <FPSStats isActive={true} />
@@ -177,7 +175,6 @@ export default compose(
     return {
       coloniesWindow: state.coloniesWindow,
       fleetsWindow: state.fleetsWindow,
-      researchWindow: state.researchWindow,
       shipDesignWindow: state.shipDesignWindow,
       clientState: state.game,
 

@@ -136,7 +136,7 @@ class WindowColonies extends React.Component {
           <Tree nodes={colonyTreeNodes} id={coloniesTreeId} isNodeOpen={isNodeOpen} setIsNodeOpen={setIsNodeOpen} selectedNode={selectedNode} setIsNodeOpen={setIsNodeOpen} />
         </Cell>
         <Cell large={10} medium={2}>
-          <ColonyInfo coloniesWindow={coloniesWindow} clientState={clientState} selectedSystemId={selectedSystemId} setTab={setTab} />
+          <ColonyInfo coloniesWindow={coloniesWindow} clientState={clientState} selectedSystemId={selectedSystemId} colonyId={coloniesWindow.selectedColonyId} setTab={setTab} />
         </Cell>
       </Row>
     </Layout>;

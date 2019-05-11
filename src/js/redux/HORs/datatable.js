@@ -49,30 +49,39 @@ export default function(id) {
         case SET_ROWS_EXPANDED:
           return {
             ...state,
-            expandedRows: {
-              ...state.expandedRows,
-              ...action.rows
-            }
+            expandedRows: action.replace ? 
+              {...action.rows}
+              :
+              {
+                ...state.expandedRows,
+                ...action.rows
+              }
           };
         case SET_ROW_SELECTED:
           return modify(state, ['selectedRows', action.row], action.isSelected);
         case SET_ROWS_SELECTED:
           return  {
             ...state,
-            selectedRows: {
-              ...state.selectedRows,
-              ...action.rows
-            }
+            selectedRows: action.replace ?
+              {...action.rows}
+              :
+              {
+                ...state.selectedRows,
+                ...action.rows
+              }
           };
         case SET_ROW_DISABLED:
           return modify(state, ['disabledRows', action.row], action.isDisabled);
         case SET_ROWS_DISABLED:
           return  {
             ...state,
-            disabledRows: {
-              ...state.disabledRows,
-              ...action.rows
-            }
+            disabledRows: action.replace ?
+              {...action.rows}
+              :
+              {
+                ...state.disabledRows,
+                ...action.rows
+              }
           };
         case RESET:
           return DEFAULT_STATE;
@@ -93,12 +102,12 @@ export function getActionCreators(id) {
   return {
     setSortColumn: (columnName, desc) => (setSortColumn(id, columnName, desc)),
     setPage: (page) => (setPage(id, page)),
-    setRowExpanded: (row, isExpanded) => (setSortColumn(id, row, isExpanded)),
-    setRowsExpanded: (rows) => (setSortColumn(id, rows)),
-    setRowSelected: (row, isSelected) => (setSortColumn(id, row, isSelected)),
-    setRowsSelected: (rows) => (setSortColumn(id, rows)),
-    setRowDisabled: (row, isDisabled) => (setSortColumn(id, row, isDisabled)),
-    setRowsDisabled: (rows) => (setSortColumn(id, rows)),
+    setRowExpanded: (row, isExpanded) => (setRowExpanded(id, row, isExpanded)),
+    setRowsExpanded: (rows, replace) => (setRowsExpanded(id, rows, replace)),
+    setRowSelected: (row, isSelected) => (setRowSelected(id, row, isSelected)),
+    setRowsSelected: (rows, replace) => (setRowsSelected(id, rows, replace)),
+    setRowDisabled: (row, isDisabled) => (setRowDisabled(id, row, isDisabled)),
+    setRowsDisabled: (rows, replace) => (setRowsDisabled(id, rows, replace)),
     reset: () => (reset(id)),
   }
 }
@@ -129,11 +138,12 @@ export function setRowExpanded(id, row, isExpanded) {
   };
 }
 
-export function setRowsExpanded(id, rows) {
+export function setRowsExpanded(id, rows, replace = false) {
   return {
     id,
     type: SET_ROWS_EXPANDED,
-    rows: map(rows, val => (!!val))
+    rows: map(rows, val => (!!val)),
+    replace
   };
 }
 
@@ -146,11 +156,12 @@ export function setRowSelected(id, row, isSelected) {
   };
 }
 
-export function setRowsSelected(id, rows) {
+export function setRowsSelected(id, rows, replace = false) {
   return {
     id,
     type: SET_ROWS_SELECTED,
-    rows: map(rows, val => (!!val))
+    rows: map(rows, val => (!!val)),
+    replace
   };
 }
 
@@ -163,11 +174,12 @@ export function setRowDisabled(id, row, isDisabled) {
   };
 }
 
-export function setRowsDisabled(id, rows) {
+export function setRowsDisabled(id, rows, replace = false) {
   return {
     id,
     type: SET_ROWS_DISABLED,
-    rows: map(rows, val => (!!val))
+    rows: map(rows, val => (!!val)),
+    replace
   };
 }
 

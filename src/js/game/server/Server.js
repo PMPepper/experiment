@@ -536,6 +536,12 @@ export default class Server {
     this.entityIds.push(newEntity.id);
     this.entitiesLastUpdated[newEntity.id] = this.gameTime + 1;
 
+    //colony specific stuff
+    if(type === 'colony') {
+      newEntity.colony.researchInProgress = {};
+      newEntity.colony.buildQueue = [];
+    }
+
     //automatically add ref to this entity in linked entities
     //-props to check for links
     const idProps = ['factionId', 'speciesId', 'systemBodyId', 'systemId', 'speciesId', 'factionSystemId', 'factionSystemBodyId'];

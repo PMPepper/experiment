@@ -8,7 +8,7 @@ import combineProps from '@/helpers/react/combine-props';
 export default function Row(props) {
   let {
     row, rowIndex, columns, styles, stacked, sortColumnName, sortColumnDesc, setSortColumn, rowProps,
-    clickTogglesSelectedRows, selectedRows, setRowSelected,
+    clickTogglesSelectedRows, clickToSelectRow, selectedRows, setRowSelected, setRowsSelected,
   } = props;
 
   const metaTypes = getMetaTypes();
@@ -26,6 +26,18 @@ export default function Row(props) {
           e.stopPropagation();
 
           setRowSelected(row.id, !selectedRows[row.id])
+        }
+      } : null
+    },
+    clickToSelectRow && {
+      className: styles.selectable,
+      onClick: setRowsSelected ? () => {setRowsSelected({[row.id]: true}, true)} : null,
+      onKeyDown: setRowsSelected ? (e) => {
+        if(e.which === 13 || e.which === 32) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          setRowsSelected({[row.id]: true}, true)
         }
       } : null
     }

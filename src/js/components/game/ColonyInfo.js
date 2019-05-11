@@ -13,6 +13,8 @@ import Tab from '@/components/tabs/Tab';
 import ReduxDataTableState from '@/components/datatable/ReduxDataTableState';
 import FormatNumber from '@/components/formatNumber/FormatNumber';
 
+import WindowResearch from './WindowResearch';
+
 //Helpers
 import map from '@/helpers/object/map';
 import mapToSortedArray from '@/helpers/object/map-to-sorted-array';
@@ -24,7 +26,7 @@ export default class ColonyInfo extends React.Component {
   render () {
     const {coloniesWindow, clientState, selectedSystemId, selectedColonyId, setTab} = this.props;
 
-    const colony = clientState.entities[coloniesWindow.selectedColonyId];
+    const colony = clientState.entities[this.props.colonyId];
 
     if(!colony) {
       return null;//No colony selected
@@ -80,6 +82,9 @@ export default class ColonyInfo extends React.Component {
             :
             <span><Trans>System body not surveyed</Trans></span>
           }
+        </Tab>
+        <Tab key="research" tab-title={<Trans>Research</Trans>}>
+          <WindowResearch colonyId={this.props.colonyId} />
         </Tab>
       </Tabs>
     </div>

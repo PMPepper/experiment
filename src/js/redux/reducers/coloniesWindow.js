@@ -12,6 +12,7 @@ import lastInteracted from '@/redux/HORs/lastInteracted';
 import assignValueFactory, {assignValue} from '@/redux/HORs/assignValue';
 
 const {reducer: mineralsTableReducer, ...mineralsTableActions} = datatable(`${reduxId}.mineralsTable`);
+const {reducer: availableResearchTableReducer, ...availableResearchTableActions} = datatable(`${reduxId}.availableResearchTable`);
 
 export default combineReducers({
   //...reducers,
@@ -20,9 +21,14 @@ export default combineReducers({
   size: size(reduxId),
   lastInteracted: lastInteracted(reduxId, [OPEN, MOVE_TO, MOVE_BY, RESIZE_TO, RESIZE_BY]),
   tab: assignValueFactory(`${reduxId}.tab`, 0),
-  selectedColonyId: assignValueFactory(`${reduxId}.colony`, 0),
+  selectedColonyId: assignValueFactory(`${reduxId}.colony`, ''),
 
+  //minerals
   mineralsTable: mineralsTableReducer,
+
+  //research
+  researchSelectedArea: assignValueFactory(`${reduxId}.research.selectedArea`, 0),
+  availableResearchTable: availableResearchTableReducer,
 });
 
 
@@ -32,6 +38,10 @@ export function setTab(tab) {
 
 export function setSelectedColonyId(colonyId) {
   return assignValue(`${reduxId}.colony`, +colonyId);
+}
+
+export function setResearchSelectedArea(selectedArea) {
+  return assignValue(`${reduxId}.research.selectedArea`, selectedArea);
 }
 
 //TODO do I need this?

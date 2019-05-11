@@ -211,6 +211,22 @@ export default {
       requireResearchIds: [],
       unlockTechnologyIds: ['pe']
     },
+    "test1": {
+      name: 'Test 1',
+      description: "A test technology.",
+      cost: 5000,
+      area: 2,
+      requireResearchIds: [],
+      unlockTechnologyIds: []
+    },
+    "test2": {
+      name: 'Test 2',
+      description: "Another test technology.",
+      cost: 5000,
+      area: 2,
+      requireResearchIds: [],
+      unlockTechnologyIds: []
+    },
     "e1": {
       name: "PE Drive",
       description: "Utilise PE physics to create a fundamentally new form of propulsion and gain access to the far reaches of our solar system",
