@@ -1,5 +1,7 @@
 import forEach from '@/helpers/object/forEach';
 
+import getTechnologyModifiers from '@/helpers/app/getTechnologyModifiers';
+
 const DAY_ANNUAL_FRACTION = 1/365.25
 
 export default function colonyFactory(lastTime, time, init) {
@@ -12,6 +14,8 @@ export default function colonyFactory(lastTime, time, init) {
       if(colony.type === 'colony') {
         let i, l, totalPopulation = 0, totalEffectiveWorkers = 0, totalSupportWorkers = 0;
 
+        const faction = entities[colony.factionId];
+        const technologyModifiers = getTechnologyModifiers(faction.faction.technology)
         const systemBody = entities[colony.systemBodyId];
         const factionSystemBody = entities[colony.factionSystemBodyId];
         const additionalModifiedEntityIDs = [];
@@ -80,18 +84,18 @@ export default function colonyFactory(lastTime, time, init) {
         colony.colony.totalStructureCapabilities = totalStructureCapabilities;
         colony.colony.structuresWithCapability = structuresWithCapability;
 
-        const labourEfficiency = Math.min(1, Math.floor(totalEffectiveWorkers) / totalRequiredWorkforce);
+        const labourEfficiency = Math.min(1, Math.floor(totalEffectiveWorkers) / totalRequiredWorkforce); //TODO add happiness modifiers here
 
         //mining
         if(totalStructureCapabilities.mining && factionSystemBody.factionSystemBody.isSurveyed) {
           //can mine
           //-how much you can mine per year
-          //-TODO automated mines not effected by labour shortage
-          const miningProduction = totalStructureCapabilities.mining * labourEfficiency * 1;//TODO include species mining rate here + any other adjustments (morale etc)
+          //TODO species modifier - which species? Multiple per colony... Assign species to task? One species per colony?
+          const miningProduction = calculateProduction('mining', colony.colony.structures, labourEfficiency, technologyModifiers.miningMod, gameConfig);//totalStructureCapabilities.mining * labourEfficiency * technologyModifiers.miningMod * 1;//TODO include species mining rate here + any other adjustments (morale etc)
 
           forEach(gameConfig.minerals, (mineralName, mineralId) => {
             const systemBodyMinerals = systemBody.availableMinerals[mineralId];
-            let dailyProduction = miningProduction * systemBodyMinerals.access * DAY_ANNUAL_FRACTION;
+            let dailyProduction = miningProduction.total * systemBodyMinerals.access * DAY_ANNUAL_FRACTION;
 
             if(dailyProduction > systemBodyMinerals.quantity) {
               dailyProduction = systemBodyMinerals.quantity
@@ -107,6 +111,12 @@ export default function colonyFactory(lastTime, time, init) {
           colony.colony.miningProduction = miningProduction;
         }
 
+        //Research
+
+        //TODO species modifier - which species? Multiple per colony... Assign species to task? One species per colony? 
+        const researchProduction = calculateProduction('research', colony.colony.structures, labourEfficiency, technologyModifiers.researchMod, gameConfig);
+
+        colony.colony.researchProduction = researchProduction;
 
         return additionalModifiedEntityIDs;
       }
@@ -116,4 +126,25 @@ export default function colonyFactory(lastTime, time, init) {
   }
 
   return null
+}
+
+function calculateProduction(type, structures, labourEfficiency, totalModifier, gameConfig) {
+  let production = 0;
+  let units = 0;
+
+  forEach(structures, (quantity, structureId) => {
+    const structureDefinition = gameConfig.structures[structureId];
+
+    if(structureDefinition.capabilities[type]) {
+      production += quantity * structureDefinition.capabilities[type] * (structureDefinition.workers > 0 ? labourEfficiency : 1) * totalModifier;
+      units += quantity;
+    }
+  });
+
+  return {
+    total: production,
+    units,
+    perMannedUnit: totalModifier * labourEfficiency,
+    perAutomatedUnit: totalModifier
+  };
 }

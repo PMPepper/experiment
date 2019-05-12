@@ -9,6 +9,8 @@ import {I18n} from "@lingui/react";
 import Layout, {Row, Cell} from '@/components/layout/Layout';
 import ReduxDataTableState from '@/components/datatable/ReduxDataTableState';
 import AvailableResearchProjects from '@/components/game/tables/AvailableResearchProjects';
+import Modal from '@/components/modal/Modal';
+import AddResearchModal from '@/components/game/AddResearchModal';
 
 //Helpers
 import filter from '@/helpers/object/filter';
@@ -19,6 +21,10 @@ import {setResearchSelectedArea} from '@/redux/reducers/coloniesWindow';
 
 //The component
 class WindowResearch extends React.Component {
+
+  state = {
+    isAddResearchProjectOpen: false
+  };
 
 
   render () {
@@ -32,6 +38,7 @@ class WindowResearch extends React.Component {
       const selectedResearchProject = initialGameState.research[selectedResearchProjectId] && initialGameState.research[selectedResearchProjectId].area == coloniesWindow.researchSelectedArea ? initialGameState.research[selectedResearchProjectId] : null;
 
       return <div className="vspaceStart">
+        <div><Trans>Total research facilities: {colony.colony.researchProduction.units}</Trans></div>
         <div>TODO in progress research projects</div>
         <div>
           <h4>Available research projects</h4>
@@ -56,7 +63,15 @@ class WindowResearch extends React.Component {
                 </ReduxDataTableState>
               </Cell>
               <Cell large={1} medium={1}>
-                {selectedResearchProject ? selectedResearchProject.description : <Trans>Select a research project</Trans>}
+                {selectedResearchProject ?
+                  <div>
+                    <p>{selectedResearchProject.description}</p>
+
+                    <button type="button" onClick={() => {this.setState({isAddResearchProjectOpen: true})}}><Trans>Create research project</Trans></button>
+                  </div>
+                  :
+                  <Trans>Select a research project</Trans>
+                }
               </Cell>
             </Row>
           </Layout>
@@ -77,6 +92,13 @@ class WindowResearch extends React.Component {
             </ul>
           </div>
         })*/}
+        <Modal
+          title={<Trans>Create research project</Trans>}
+          isOpen={this.state.isAddResearchProjectOpen}
+          onRequestClose={() => {this.setState({isAddResearchProjectOpen: false})}}
+        >
+          {selectedResearchProject && <AddResearchModal key={selectedResearchProject.id} researchProject={selectedResearchProject} faction={this.faction} colony={this.colony} gameConfig={this.props.clientState.initialGameState} />}
+        </Modal>
       </div>;
     }}</I18n>
   }

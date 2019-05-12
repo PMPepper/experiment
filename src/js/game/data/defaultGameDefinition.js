@@ -171,7 +171,7 @@ export default {
       bp: 2000,
       minerals: {},
       capabilities: {
-        research: 1
+        research: 10
       },
       upgrade: [6],
       requireTechnologyIds: [],
@@ -186,7 +186,7 @@ export default {
         "9": 1200,
       },
       capabilities: {
-        research: 10
+        research: 100
       },
       requireTechnologyIds: ['pe'],
     },
@@ -203,6 +203,126 @@ export default {
     "9": "Sensors and fire control",
   },
   research: {
+    "m1": {
+      name: "Mining rate 1",
+      description: "Increase mining production by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: [],
+      unlockTechnologyIds: ['m1']
+    },
+    "m2": {
+      name: "Mining rate 2",
+      description: "Increase mining production by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: ['m1'],
+      unlockTechnologyIds: ['m2']
+    },
+    "m3": {
+      name: "Mining rate 3",
+      description: "Increase mining production by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: ['m2'],
+      unlockTechnologyIds: ['m3']
+    },
+    "m4": {
+      name: "Mining rate 4",
+      description: "Increase mining production by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: ['m3'],
+      unlockTechnologyIds: ['m4']
+    },
+    "m5": {
+      name: "Mining rate 5",
+      description: "Increase mining production by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: ['m4'],
+      unlockTechnologyIds: ['m5']
+    },
+    "c1": {
+      name: "Construction rate 1",
+      description: "Increase construction rate by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: [],
+      unlockTechnologyIds: ['c1']
+    },
+    "c2": {
+      name: "Construction rate 2",
+      description: "Increase construction rate by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: ['c1'],
+      unlockTechnologyIds: ['c2']
+    },
+    "c3": {
+      name: "Construction rate 3",
+      description: "Increase construction rate by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: ['c2'],
+      unlockTechnologyIds: ['c3']
+    },
+    "c4": {
+      name: "Construction rate 4",
+      description: "Increase construction rate by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: ['c3'],
+      unlockTechnologyIds: ['c4']
+    },
+    "c5": {
+      name: "Construction rate 5",
+      description: "Increase construction rate by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: ['c4'],
+      unlockTechnologyIds: ['c5']
+    },
+    "r1": {
+      name: "Research rate 1",
+      description: "Increase research speed by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: [],
+      unlockTechnologyIds: ['r1']
+    },
+    "r2": {
+      name: "Research rate 2",
+      description: "Increase research speed by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: ['r1'],
+      unlockTechnologyIds: ['r2']
+    },
+    "r3": {
+      name: "Research rate 3",
+      description: "Increase research speed by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: ['r2'],
+      unlockTechnologyIds: ['r3']
+    },
+    "r4": {
+      name: "Research rate 4",
+      description: "Increase research speed by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: ['r3'],
+      unlockTechnologyIds: ['r4']
+    },
+    "r5": {
+      name: "Research rate 5",
+      description: "Increase research speed by 20%",
+      cost: 100,
+      area: 2,
+      requireResearchIds: ['r4'],
+      unlockTechnologyIds: ['r5']
+    },
     "pe": {
       name: 'Post-Einstein technology',
       description: "Unlock the potential of Post-Einsteinium (PE) physics to create technology vastly superior to anything previously thought possible.",
@@ -245,6 +365,67 @@ export default {
     },
     "fe1": {
       name: 'Fuel efficiency 1'
-    }
+    },
+
+    "m1": {
+      name: "Mining rate 1",
+      miningMod: 0.2,
+    },
+    "m2": {
+      name: "Mining rate 2",
+      miningMod: 0.2,
+    },
+    "m3": {
+      name: "Mining rate 3",
+      miningMod: 0.2,
+    },
+    "m4": {
+      name: "Mining rate 4",
+      miningMod: 0.2,
+    },
+    "m5": {
+      name: "Mining rate 5",
+      miningMod: 0.2,
+    },
+    "c1": {
+      name: "Construction rate 1",
+      constructionMod: 0.2,
+    },
+    "c2": {
+      name: "Construction rate 2",
+      constructionMod: 0.2,
+    },
+    "c3": {
+      name: "Construction rate 3",
+      constructionMod: 0.2,
+    },
+    "c4": {
+      name: "Construction rate 4",
+      constructionMod: 0.2,
+    },
+    "c5": {
+      name: "Construction rate 5",
+      constructionMod: 0.2,
+    },
+    "r1": {
+      name: "Research rate 1",
+      researchMod: 0.2,
+    },
+    "r2": {
+      name: "Research rate 2",
+      researchMod: 0.2,
+    },
+    "r3": {
+      name: "Research rate 3",
+      researchMod: 0.2,
+    },
+    "r4": {
+      name: "Research rate 4",
+      researchMod: 0.2,
+    },
+    "r5": {
+      name: "Research rate 5",
+      researchMod: 0.2,
+    },
   }
 };

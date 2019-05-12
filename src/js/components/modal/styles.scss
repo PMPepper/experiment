@@ -1,0 +1,170 @@
+@import '../../../css/shared';
+
+
+.modal {
+  $transitionTime: 0.3s;
+  position: absolute;
+  z-index: 100;//$modalZIndex;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.content {
+  //position
+  position: absolute;
+  z-index: 2;
+  top: 6rem;
+  left: $basePadding;
+  right: $basePadding;
+
+  //size
+  max-width: 80rem;
+  width: calc(100% - #{$basePadding * 2});//needed to fix IE bug
+  min-width: 32rem - ($basePadding*2);
+
+  max-height: calc(100vh - 12rem);
+
+  //box model
+  margin: 0 auto;
+  border: 0.1rem solid #000;
+  border-bottom: 0;
+
+  //layout/styling
+  background-color: #FFF;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0.5rem 0 0 #000;
+
+  :global(.isIE) & {
+    height: 100%;
+  }
+
+  // @include upToBreakpoint('phablet') {
+  //   top: $basePadding;
+  //   left: $basePadding;
+  //   right: $basePadding;
+  // }
+
+  //modes
+  &.mode-error{
+    box-shadow: 0 0.5rem 0 0 $cError;
+  }
+
+  &.mode-warning{
+    //box-shadow: 0 0.5rem 0 0 $pallet28;
+  }
+
+  &.mode-info {
+    //box-shadow: 0 0.5rem 0 0 $pallet10;
+  }
+
+  &.mode-success {
+    box-shadow: 0 0.5rem 0 0 $cSuccess;
+  }
+
+  //sizes
+  &.size-thin {
+    max-width: 42rem;
+  }
+
+  &.size-lessThin {
+    max-width: 52rem;
+  }
+
+  &.size-wide {
+    max-width: 130rem;
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  flex: 0 0 auto;
+  padding: $basePadding*0.5 $basePadding*2 $basePadding*0.5 $basePadding*0.5;
+  font-size: 2.1rem;
+  font-weight: bold;
+  line-height: 1;
+  position: relative;
+  //background: $pallet25;
+  //border-bottom: 0.1rem solid $pallet24;
+}
+
+.title {
+  display: inline;
+}
+
+.icon {
+  margin-right: $basePadding/2;
+}
+
+.body {
+  $padding: ($basePadding / 2);
+  flex: 1 1 auto;
+  padding: $padding $padding 0;
+  font-size: 2rem;
+  overflow: auto;
+  position: relative;//fix issue with selecting checkboxes causing incorrect page scrolling in chrome
+
+  &:after {//needed to fix bug with scrolling in firefox
+    content: "";
+    height: $padding;
+    display: block;
+    visibility: hidden;
+  }
+
+  &.bg-dark {
+    //background: $pallet22;
+  }
+}
+
+.closeBtn {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  top: 0.6rem;
+  right: 0.7rem;
+  vertical-align: top;
+  line-height: 0.9;
+  padding: 0;
+  border: none;
+  margin: 0;
+  background: transparent;
+  font-size: 2.5rem;
+  //color: $pallet4;
+
+  @include textInteraction($mouseCol: $grey50);
+
+  > * {
+    pointer-events: none;
+  }
+}
+
+.overlay {
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.panel {
+  background: $grey100;
+  flex-grow: 1;
+
+  //
+  padding: $basePadding/2;
+  //margin-bottom: $basePadding/4;
+
+}
+
+.noPad {
+  padding: 0;
+}

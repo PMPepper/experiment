@@ -44,7 +44,7 @@ export default class ColonyInfo extends React.Component {
 
     const mineralsRows = isMineralsSurveyed ? map(clientState.initialGameState.minerals, (mineral, mineralId) => {
       const systemBodyMinerals = systemBody.availableMinerals[mineralId];
-      const annualProduction = miningProduction * systemBodyMinerals.access;
+      const annualProduction = miningProduction.total * systemBodyMinerals.access;
 
       return {
         mineral,
