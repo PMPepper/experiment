@@ -64,6 +64,7 @@
     "color-space": "^1.16.0",
     "memoize-one": "^5.0.0",
     "modern-normalize": "^0.5.0",
+    "pixi-filters": "^3.0.2",
     "pixi.js": "^5.0.3",
     "range-inclusive": "^1.0.2",
     "react-redux": "^6.0.0",

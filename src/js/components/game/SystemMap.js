@@ -66,7 +66,11 @@ class SystemMap extends React.Component {
       onMouseLeave: this._onMouseLeave,
       onClick: this._onClick,
       onWheel: this._onWheel,
-      onContextMenu: props.onContextMenu,
+      onContextMenu: (e) => {
+        const worldPos = this.screenToWorld(e.clientX, e.clientY);
+
+        props.onContextMenu(e, worldPos, this.state.zoom, this._renderableEntities);
+      }
     };
 
     props.setActiveKeys(flatten(Object.values(props.options.controls)));
@@ -257,7 +261,7 @@ class SystemMap extends React.Component {
 
   _onClick = (e) => {
     const target = e.target;
-
+    //TODO this needs re-writing...
     if('entityId' in target.dataset) {
       const entityId = +target.dataset.entityId;
 
@@ -312,12 +316,14 @@ class SystemMap extends React.Component {
     x -= (windowSize.width * cx) / zoom;
     y -= (windowSize.height * cy) / zoom;
 
+    const renderableEntities = this._renderableEntities = clientState.getRenderableEntities(systemId);
+
     return <RenderComponent
       x={x}
       y={y}
       zoom={zoom}
       entities={clientState.entities}
-      renderEntities={clientState.getRenderableEntities(systemId)}
+      renderEntities={renderableEntities}
       colonies={clientState.getColoniesBySystemBody(systemId)}
       styles={styles}
       windowSize={windowSize}

@@ -66,7 +66,9 @@ export default class SystemMapPixiRenderer extends React.Component {
     this._renderProps = {
       app,
       background,
-      graphics
+      graphics,
+      children: {},
+      usedChildren: {}
     };
 
     // Listen for animate update
@@ -95,6 +97,28 @@ export default class SystemMapPixiRenderer extends React.Component {
 
         renderer && renderer(this._renderProps, windowSize, x, y, zoom, entity, entities, colonies, options, this._systemBodyStyles);
       });
+
+      //tidy up unused children
+      const {children, usedChildren} = this._renderProps;
+      const stage = this._app.stage;
+
+      for(let keys = Object.keys(children), l = keys.length, i = 0; i < l; i++) {
+        const key = keys[i];
+
+        if(!usedChildren[key]) {
+          //this child is no longer used, so remove and destroy it
+          const child = children[key];
+
+          stage.removeChild(child);
+          child.destroy();
+
+          delete children[key];
+        } else {
+          delete usedChildren[key];//empty usedChildren as we go
+        }
+      }
+
+      //TODO render scale
     }
 
     return <div
@@ -136,8 +160,6 @@ function getSystemBodyStyles(styles) {
   const systemBodyLabelStyle = getStyleBySelector(`.${styles.systemBodyLabel}`);
   const colonyHighlightStyle = getStyleBySelector(`.${styles.colonyHighlight}`);
 
-  console.log(systemBodyLabelStyle);
-
   //Parse stylesheet to get body styles
   const systemBodyStyles = map(systemBodyTypeMinRadius, (radius, systemBodyType) => {
     //
@@ -159,7 +181,7 @@ function getSystemBodyStyles(styles) {
         strokeWidth: parseFloatOr(getProp('strokeWidth', orbitTypeStyle, orbitStyle)),
         strokeOpacity: parseFloatOr(getProp('strokeOpacity', orbitTypeStyle, orbitStyle), 1),
       },
-      label: {
+      label: getTextStyle({
         // fontFamily: 'Arial',
         // fontSize: 36,
         // fontStyle: 'italic',
@@ -177,7 +199,8 @@ function getSystemBodyStyles(styles) {
         fill: colorParseOrNull(getProp('fill', systemBodyLabelTypeStyle, systemBodyLabelStyle)),
         fontSize: getProp('fontSize', systemBodyLabelTypeStyle, systemBodyLabelStyle),
         fontFamily: getProp('fontFamily', systemBodyLabelTypeStyle, systemBodyLabelStyle),
-        fontWeight: getProp('fontWeight', systemBodyLabelTypeStyle, systemBodyLabelStyle),
+        fontStyle: getProp('fontStyle', systemBodyLabelTypeStyle, systemBodyLabelStyle),
+        fontVariant: getProp('fontVariant', systemBodyLabelTypeStyle, systemBodyLabelStyle),
         fontWeight: getProp('fontWeight', systemBodyLabelTypeStyle, systemBodyLabelStyle),
 
         stroke: colorParseOrNull(getProp('stroke', systemBodyLabelTypeStyle, systemBodyLabelStyle)),
@@ -185,7 +208,7 @@ function getSystemBodyStyles(styles) {
         strokeOpacity: parseFloatOr(getProp('strokeOpacity', systemBodyLabelTypeStyle, systemBodyLabelStyle), 1),
 
         //TODO dropshadow
-      },
+      }),
       highlight: {
         fill: colorParseOrNull(getProp('fill', colonyHighlightTypeStyle, colonyHighlightStyle)),
         stroke: colorParseOrNull(getProp('stroke', colonyHighlightTypeStyle, colonyHighlightStyle)),
@@ -196,6 +219,24 @@ function getSystemBodyStyles(styles) {
   });
 
   return systemBodyStyles;
+}
+
+function getTextStyle(styles) {
+  return new PIXI.TextStyle({
+    fontFamily: styles.fontFamily,
+    fontSize: styles.fontSize,
+    fontStyle: styles.fontStyle,
+    fontVariant: styles.fontVariant,
+    fontWeight: styles.fontWeight,
+    fill: intToRGB(styles.fill[0]),
+
+    //hard coded, because I can't be bothered to work out how to conver css drop shadows into pixi.js
+    dropShadow: false,
+
+    stroke: '#000000',
+    strokeThickness: 2,
+
+  });
 }
 
 function parseFloatOr(float, or = null) {
@@ -227,6 +268,10 @@ function colorParseOrNull(color) {
 
 function rgbToInt(values) {
   return (values[0] << 16) + (values[1] << 8) + (values[2]);
+}
+
+function intToRGB(color) {
+  return "#"+((color)>>>0).toString(16).slice(-6);
 }
 
 function getProp(prop, ...args) {

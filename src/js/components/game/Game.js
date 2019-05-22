@@ -39,16 +39,40 @@ function Game({
   setSelectedColonyId,
   open, close
 }) {
+  const entities = clientState.entities;
+  const entityIds = clientState.entityIds;
+
   return <div className={styles.game}>
-    <AddContextMenu key={selectedSystemId} getItems={(e) => {
-      if('entityId' in e.target.dataset) {
+    <AddContextMenu key={selectedSystemId} getItems={(e, systemPosition, zoom, renderableEntities) => {
+
+      //Not happy with any of this... need to re-think context menu
+      let closestEntity = null;
+      let closestDistance = Number.POSITIVE_INFINITY;
+
+      for(let i = 0; i < entityIds.length; i++) {
+        const entity = entities[entityIds[i]];
+
+        if(entity.position) {
+          let dx = systemPosition.x - entity.position.x;
+          let dy = systemPosition.y - entity.position.y;
+          let comparisonDistance = (dx * dx) + (dy * dy);//No need to sqrt if just comparing
+
+          if(comparisonDistance < closestDistance) {
+            closestDistance = comparisonDistance;
+            closestEntity = entity;
+          }
+        }
+      }
+
+      const thresholdDistance = Math.pow(10 / zoom, 2)
+
+      if(closestDistance < thresholdDistance) {
         e.preventDefault();
-        const entityId = +e.target.dataset.entityId;
-        const entity = clientState.entities[entityId];
+        const entityId = closestEntity.id//+e.target.dataset.entityId;
+        const entity = entities[entityId];
         const factionId = clientState.factionId;
         const items = [];
 
-        //alert(JSON.stringify(entity, null, 2));
         if(entity.type === 'systemBody') {
           if(items.length > 0) {
             items.push('spacer');
@@ -70,7 +94,7 @@ function Game({
               }
 
               return {
-                label: clientState.entities[colony.factionId].faction.name,
+                label: entities[colony.factionId].faction.name,
                 action: colony.factionId === factionId ? () => {
                   setSelectedColonyId(colony.id);//and select this colony
                   setSystemMapFollowing(colony.systemBodyId);

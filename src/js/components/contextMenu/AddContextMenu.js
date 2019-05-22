@@ -28,14 +28,14 @@ export default class AddContextMenu extends React.Component {
     }
   }
 
-  _onContextMenu = (e) => {
+  _onContextMenu = (e, ...args) => {
     this._child && this._child.props.onContextMenu && this._child.props.onContextMenu(e);
 
     if(this.state.isOpen) {
       return;
     }
 
-    const items = this.props.getItems ? this.props.getItems(e) : null;
+    const items = this.props.getItems ? this.props.getItems(e, ...args) : null;
 
     if(items && items.length > 0) {
       this.setState({
