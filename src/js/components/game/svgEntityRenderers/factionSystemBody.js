@@ -1,7 +1,11 @@
 import React from 'react';
 
 import * as RenderFlags from '../renderFlags';
-import {outOfBoundsVCull, outOfBoundsHCull, startFadeRadius, fullyFadeRadius, startFadeOrbitRadius, fullyFadeOrbitRadius} from '../GameConsts';
+import {
+  outOfBoundsVCull, outOfBoundsHCull, startFadeRadius, fullyFadeRadius,
+  startFadeOrbitRadius, fullyFadeOrbitRadius, startFadeLargeOrbit,
+  fullyFadeLargeOrbit, systemBodyTypeMinRadius
+} from '../GameConsts';
 
 
 //The component
@@ -20,7 +24,7 @@ export default function factionSystemBody(props) {
   const bodyProps = {
     cx: (systemBodyEntity.position.x - x) * zoom,
     cy: (systemBodyEntity.position.y - y) * zoom,
-    className: `systemBody ${styles[systemBody.type]}`,
+    className: `${styles.systemBody} ${styles[systemBody.type]}`,
     r: Math.max(systemBodyTypeMinRadius[systemBody.type], baseRadius),
     opacity: 1
   };
@@ -125,18 +129,3 @@ export default function factionSystemBody(props) {
 
   return null;
 }
-
-//consts
-const systemBodyTypeMinRadius = {
-  star: 7,
-  gasGiant: 6,
-  planet: 5,
-  dwarfPlanet: 4,
-  moon: 4,
-  asteroid: 2,
-};
-
-
-
-const startFadeLargeOrbit = 12500;
-const fullyFadeLargeOrbit = 25000;

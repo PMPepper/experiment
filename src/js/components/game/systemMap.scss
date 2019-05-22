@@ -8,8 +8,9 @@
   display: block;
   width: 100%;
   height: 100%;
-  background: transparent url(../../../assets/images/bg.png) repeat;
+  //background: transparent url(../../../assets/images/bg.png) repeat;
   outline: 0!important;
+  overflow: hidden;
 
   &:focus {
     outline: 0!important;
@@ -17,7 +18,7 @@
 }
 
 //svg styles
-:global(.systemBody) {
+.systemBody {
   &.star {
     fill: #FDFF00;
   }

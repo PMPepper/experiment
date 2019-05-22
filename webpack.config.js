@@ -35,7 +35,12 @@ module.exports = {
       {
         test: /\.scss$/,
         use: [
-          'style-loader', // creates style nodes from JS strings
+          {
+            loader: 'style-loader',
+            options: {
+              singleton: true
+            }
+          }, // creates style nodes from JS strings
           { // translates CSS into CommonJS
             loader: 'css-loader',
             options: {

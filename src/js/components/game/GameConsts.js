@@ -7,3 +7,18 @@ export const fullyFadeRadius = 0.00005;
 
 export const startFadeOrbitRadius = 10;
 export const fullyFadeOrbitRadius = 5;
+
+
+export const systemBodyTypeMinRadius = {
+  star: 7,
+  gasGiant: 6,
+  planet: 5,
+  dwarfPlanet: 4,
+  moon: 4,
+  asteroid: 2,
+};
+
+
+
+export const startFadeLargeOrbit = 12500;
+export const fullyFadeLargeOrbit = 25000;

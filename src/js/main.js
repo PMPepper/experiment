@@ -48,9 +48,6 @@ polyfills.then(() => {
   const gameServer = GameEngine.startGame(baseGameDefinition, new Client('local', store, new LocalConnector())).then((client) => {
       console.log('[MAIN] render');
 
-
-
-
       ReactDOM.render(
         <Provider store={store}>
           <I18nProvider language="en-GB">

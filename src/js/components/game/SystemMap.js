@@ -5,6 +5,7 @@ import {compose} from 'recompose';
 
 import defaultStyles from './systemMap.scss';
 import SystemMapSVGRenderer from './SystemMapSVGRenderer';
+import SystemMapPixiRenderer from './SystemMapPixiRenderer';
 import {startFadeRadius, fullyFadeRadius, startFadeOrbitRadius, fullyFadeOrbitRadius} from './GameConsts';
 
 import WindowSizeComponent from '@/HOCs/WindowSizeComponent';
@@ -353,7 +354,8 @@ class SystemMap extends React.Component {
     y: 0,
     cx: 0.5,
     cy: 0.5,
-    renderComponent: SystemMapSVGRenderer
+    renderComponent: SystemMapPixiRenderer,
+    //renderComponent: SystemMapSVGRenderer,
   };
 }
 
