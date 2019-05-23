@@ -117,7 +117,7 @@ export default function factionSystemBodyRenderer(renderProps, windowSize, x, y,
 
      if(!text) {
        text = children[labelName] = new PIXI.Text(entity.factionSystemBody.name, style.label);
-       text.resolution = 4;
+       //text.resolution = 5;
        text.anchor.set(0.5, 0);
 
        stage.addChild(text);

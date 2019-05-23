@@ -40,6 +40,8 @@ export default class SystemMapPixiRenderer extends React.Component {
         antialias: true,
     });
 
+    PIXI.settings.RESOLUTION = window.devicePixelRatio;
+
     ref.appendChild(app.view);
 
     // Load the bunny texture
@@ -71,6 +73,26 @@ export default class SystemMapPixiRenderer extends React.Component {
       usedChildren: {}
     };
 
+    const scaleText = this._scaleText = new PIXI.Text('xxx', {
+      fill: '#FFFFFF',
+      fontSize: 16,
+      fontFamily: 'Arial',
+      //fontStyle: getProp('fontStyle', systemBodyLabelTypeStyle, systemBodyLabelStyle),
+      //fontVariant: getProp('fontVariant', systemBodyLabelTypeStyle, systemBodyLabelStyle),
+      //fontWeight: getProp('fontWeight', systemBodyLabelTypeStyle, systemBodyLabelStyle),
+
+      stroke: '#000000',
+      strokeWidth: 2,
+      strokeOpacity: 1,
+    });
+
+    scaleText.anchor.set(0, 1);
+    //scaleText.resolution = 4;
+    scaleText.position.x = 16 + 3;
+    scaleText.position.y = app.renderer.height - 16;
+
+    app.stage.addChild(scaleText);
+
     // Listen for animate update
     // app.ticker.add(function(delta) {
     //   //Called each tick of the renderer
@@ -90,7 +112,9 @@ export default class SystemMapPixiRenderer extends React.Component {
       this._background.width = window.innerWidth;
       this._background.height = window.innerHeight;
 
-      this._graphics.clear();
+      const graphics = this._graphics
+
+      graphics.clear();
 
       renderEntities.forEach(entity => {
         const renderer = EntityRenderers[entity.render.type];
@@ -119,6 +143,38 @@ export default class SystemMapPixiRenderer extends React.Component {
       }
 
       //TODO render scale
+      // <g transform={`translate(16, ${windowSize.height - 16})`}>
+      //   <text x="5.5" y="-5.5" fill="#FFF">{formatDistanceSI(scaleLength / zoom, 1, 3)}</text>
+      //   <line x1="0.5" y1="0.5" x2="0.5" y2="-4.5" stroke="#FFF" />
+      //   <line x1="0.5" y1="0.5" x2={scaleLength + 0.5} y2="0.5" stroke="#FFF" />
+      //   <line x1={scaleLength + 0.5} y1="0.5" x2={scaleLength + 0.5} y2="-4.5" stroke="#FFF" />
+      // </g>
+
+      const scaleLength = 288;
+      const scalePadding = 16;
+      const markLength = 4;
+
+      const leftX = scalePadding + 0.5;
+      const bottomY = windowSize.height - scalePadding + 0.5;
+
+      const rightX = leftX + scaleLength;
+      const topY = bottomY - markLength;
+
+      graphics.lineStyle(1, 0xFFFFFF, 1);
+      graphics.moveTo(leftX, bottomY);
+      graphics.lineTo(rightX, bottomY);
+
+      graphics.moveTo(leftX, bottomY);
+      graphics.lineTo(leftX, topY);
+
+      graphics.moveTo(rightX, bottomY);
+      graphics.lineTo(rightX, topY);
+
+      const scaleText = this._scaleText;
+
+      scaleText.position.y = window.innerHeight - 16;
+
+      scaleText.text = formatDistanceSI(scaleLength / zoom, 1, 3);
     }
 
     return <div
