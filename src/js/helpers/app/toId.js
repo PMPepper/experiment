@@ -1,5 +1,5 @@
 export default function toId(val) {
-  if(typeof(val) === 'obj') {
+  if(typeof(val) === 'object') {
     return val.id
   }
 

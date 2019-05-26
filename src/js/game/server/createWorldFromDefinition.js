@@ -218,20 +218,7 @@ export default function createWorldFromDefinition(server, definition) {
       });
 
       //now create the colony itself
-      const colony = server._newEntity('colony', {
-        factionId: faction.id,
-        systemId: systemBody.systemId,
-        systemBodyId: systemBody.id,
-        factionSystemBodyId: factionSystemBodyBySystemBodyId[systemBody.id].id,
-        colony: {
-          populationIds: populationIds,
-          structures: {...startingColonyDefinition.structures},
-          minerals: map(definition.minerals, () => (0))
-        },
-      });
-
-      //and record as part of the faction
-      faction.faction.colonyIds.push(colony.id);
+      const colony = server.createColony(systemBody.id, faction.id, map(definition.minerals, () => (0)), {...startingColonyDefinition.structures}, populationIds);
 
       //mark system body as surveyed
       if(startingColonyDefinition.isSurveyed) {

@@ -1,6 +1,7 @@
 import resolvePath from '@/helpers/object/resolve-path';
 import map from '@/helpers/object/map';
 import isEmpty from '@/helpers/object/isEmpty';
+import getFactionSystemBodyFromFactionAndSystemBody from '@/helpers/app/getFactionSystemBodyFromFactionAndSystemBody';
 
 import createWorldFromDefinition from './createWorldFromDefinition';
 //import * as entityCacheTypes from './entityCacheTypes';
@@ -291,27 +292,7 @@ export default class Server {
 
     this._checkValidClient(clientId);
 
-    const systemBody = this.entities[systemBodyId];
-    const client = this.clients[clientId];
-    const factionId = client.factionId;
-    const faction = this.entities[factionId];
-
-    //TODO validate (cannot create colony if you already have one, must be a system body, etc)
-    //TODO make a createColony function, rather than creating the entity directly (do for all entities)
-    const colony = this._newEntity('colony', {
-      factionId,
-      systemId: systemBody.systemId,
-      systemBodyId: systemBody.id,
-      colony: {
-        populationIds: [],
-        structures: {},
-        minerals: map(this.gameConfig.minerals, () => (0))//default to zero minerals
-      }
-    });
-
-    //update faction
-    faction.faction.colonyIds.push(colony.id);
-    this.entitiesLastUpdated[factionId] = this.gameTime + 1;//mark faction as updated
+    this.createColony(systemBodyId, this.clients[clientId].factionId);
   }
 
 
@@ -363,6 +344,31 @@ export default class Server {
     const entities = this.entities;
 
     return ids.map(id => (entities[id]));
+  }
+
+  createColony(systemBodyId, factionId, minerals = {}, structures = {}, populationIds = []) {
+    const systemBody = this.entities[systemBodyId];
+    const faction = this.entities[factionId];
+
+    const colony = this._newEntity('colony', {
+      factionId,
+      systemId: systemBody.systemId,
+      systemBodyId: systemBody.id,
+      factionSystemBodyId: getFactionSystemBodyFromFactionAndSystemBody(faction, systemBody, this.entities).id,
+      colony: {
+        populationIds,
+        structures,
+        minerals,
+        researchInProgress: {},
+        buildQueue: []
+      }
+    });
+
+    //update faction
+    faction.faction.colonyIds.push(colony.id);
+    this.entitiesLastUpdated[factionId] = this.gameTime + 1;//mark faction as updated
+
+    return colony;
   }
 
 
@@ -537,12 +543,6 @@ export default class Server {
     this.entities[newEntity.id] = newEntity;
     this.entityIds.push(newEntity.id);
     this.entitiesLastUpdated[newEntity.id] = this.gameTime + 1;
-
-    //colony specific stuff
-    if(type === 'colony') {
-      newEntity.colony.researchInProgress = {};
-      newEntity.colony.buildQueue = [];
-    }
 
     //automatically add ref to this entity in linked entities
     //-props to check for links
