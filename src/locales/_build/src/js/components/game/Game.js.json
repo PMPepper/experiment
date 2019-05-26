@@ -1,19 +1,26 @@
 {
+  "Create colony": {
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        113
+      ]
+    ]
+  },
+  "Body info": {
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        124
+      ]
+    ]
+  },
   "toolbar.colonies": {
     "defaults": "Colonies",
     "origin": [
       [
         "src/js/components/game/Game.js",
-        15
-      ]
-    ]
-  },
-  "toolbar.research": {
-    "defaults": "Research",
-    "origin": [
-      [
-        "src/js/components/game/Game.js",
-        16
+        215
       ]
     ]
   },
@@ -22,7 +29,7 @@
     "origin": [
       [
         "src/js/components/game/Game.js",
-        17
+        216
       ]
     ]
   },
@@ -31,7 +38,56 @@
     "origin": [
       [
         "src/js/components/game/Game.js",
-        18
+        217
+      ]
+    ]
+  },
+  "toolbar.togglePaused": {
+    "defaults": "Toggle paused game",
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        225
+      ]
+    ]
+  },
+  "toolbar.realTime": {
+    "defaults": "Play at real time",
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        230
+      ]
+    ]
+  },
+  "toolbar.x60": {
+    "defaults": "Play at 1 minute per second",
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        235
+      ]
+    ]
+  },
+  "toolbar.x3600": {
+    "defaults": "Play at 1 hour per second",
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        241
+      ]
+    ]
+  },
+  "toolbar.x86400": {
+    "defaults": "Play at 1 day per second",
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        248
+      ],
+      [
+        "src/js/components/game/Game.js",
+        256
       ]
     ]
   },
@@ -40,7 +96,34 @@
     "origin": [
       [
         "src/js/components/game/Game.js",
-        23
+        274
+      ]
+    ]
+  },
+  "coloniesWindow.title": {
+    "defaults": "Colonies",
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        277
+      ]
+    ]
+  },
+  "fleetsWindow.title": {
+    "defaults": "Fleets",
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        280
+      ]
+    ]
+  },
+  "shipDesignWindow.title": {
+    "defaults": "Ship design",
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        281
       ]
     ]
   }

@@ -1,7 +1,6 @@
 import React from 'react';
 import * as PIXI from 'pixi.js'
 
-import * as EntityRenderers from './pixiEntityRenderers';
 import colorParse from 'color-parse';
 import rgb from 'color-space/rgb';
 import hsl from 'color-space/hsl';
@@ -14,7 +13,8 @@ import getStyleBySelector from '@/helpers/dom/get-style-by-selector';
 
 //Consts
 import {
-  systemBodyTypeMinRadius
+  systemBodyTypeMinRadius,
+  scaleLength
 } from './GameConsts';
 
 
@@ -29,8 +29,6 @@ export default class SystemMapPixiRenderer extends React.Component {
 
   _getRef = (ref) => {
     this._ref = ref;
-
-
 
     // Create our application instance
     var app = this._app = new PIXI.Application({
@@ -65,29 +63,17 @@ export default class SystemMapPixiRenderer extends React.Component {
 
     app.stage.addChild(this._graphics);
 
-    this._renderProps = {
-      app,
-      background,
-      graphics,
-      children: {},
-      usedChildren: {}
-    };
-
-    const scaleText = this._scaleText = new PIXI.Text('xxx', {
+    const scaleText = this._scaleText = new PIXI.Text('', {
       fill: '#FFFFFF',
       fontSize: 16,
       fontFamily: 'Arial',
-      //fontStyle: getProp('fontStyle', systemBodyLabelTypeStyle, systemBodyLabelStyle),
-      //fontVariant: getProp('fontVariant', systemBodyLabelTypeStyle, systemBodyLabelStyle),
-      //fontWeight: getProp('fontWeight', systemBodyLabelTypeStyle, systemBodyLabelStyle),
-
       stroke: '#000000',
       strokeWidth: 2,
       strokeOpacity: 1,
     });
 
     scaleText.anchor.set(0, 1);
-    //scaleText.resolution = 4;
+    scaleText.resolution = window.devicePixelRatio;
     scaleText.position.x = 16 + 3;
     scaleText.position.y = app.renderer.height - 16;
 
@@ -99,16 +85,24 @@ export default class SystemMapPixiRenderer extends React.Component {
     // });
   }
 
-  render() {
-    const {windowSize, entities, renderEntities, colonies, styles, x, y, zoom, options, elementProps} = this.props;
+  _children = {};
+  _usedChildren = {};
 
-    const scaleLength = 288;
+  render() {
+    const {windowSize, renderPrimitives, styles, x, y, zoom, options, elementProps} = this.props;
+
+    const systemBodyStyles = this._systemBodyStyles;
+
 
     if(this._app) {
       this._app.renderer.resize(window.innerWidth, window.innerHeight);
     }
 
     if(this._background) {
+      const stage = this._app.stage;
+      const children = this._children;
+      const usedChildren = this._usedChildren;
+
       this._background.width = window.innerWidth;
       this._background.height = window.innerHeight;
 
@@ -116,16 +110,39 @@ export default class SystemMapPixiRenderer extends React.Component {
 
       graphics.clear();
 
-      renderEntities.forEach(entity => {
-        const renderer = EntityRenderers[entity.render.type];
+      renderPrimitives.forEach(primitive => {
+        switch(primitive.t) {
+          case 'circle':
+            drawCircle(graphics, primitive.x, primitive.y, primitive.r, systemBodyStyles[primitive.subType][primitive.type], primitive.opacity);
+            break;
+          case 'text':
+            //get or create label entity
+            const labelName = primitive.id;
+            let text = children[labelName];
 
-        renderer && renderer(this._renderProps, windowSize, x, y, zoom, entity, entities, colonies, options, this._systemBodyStyles);
+            if(!text) {
+              text = children[labelName] = new PIXI.Text(primitive.text, systemBodyStyles[primitive.subType][primitive.type]);
+              text.resolution = window.devicePixelRatio;//1.25;
+              text.anchor.set(0.5, 0);
+
+              stage.addChild(text);
+            }
+
+            //record that this entity is in use
+            usedChildren[labelName] = text;
+
+            //position text
+            text.position.x = primitive.x;
+            text.position.y = primitive.y;
+            text.alpha = primitive.opacity;
+            break;
+          default:
+            debugger;
+            break;
+        }
       });
 
       //tidy up unused children
-      const {children, usedChildren} = this._renderProps;
-      const stage = this._app.stage;
-
       for(let keys = Object.keys(children), l = keys.length, i = 0; i < l; i++) {
         const key = keys[i];
 
@@ -142,15 +159,7 @@ export default class SystemMapPixiRenderer extends React.Component {
         }
       }
 
-      //TODO render scale
-      // <g transform={`translate(16, ${windowSize.height - 16})`}>
-      //   <text x="5.5" y="-5.5" fill="#FFF">{formatDistanceSI(scaleLength / zoom, 1, 3)}</text>
-      //   <line x1="0.5" y1="0.5" x2="0.5" y2="-4.5" stroke="#FFF" />
-      //   <line x1="0.5" y1="0.5" x2={scaleLength + 0.5} y2="0.5" stroke="#FFF" />
-      //   <line x1={scaleLength + 0.5} y1="0.5" x2={scaleLength + 0.5} y2="-4.5" stroke="#FFF" />
-      // </g>
-
-      const scaleLength = 288;
+      //render scale
       const scalePadding = 16;
       const markLength = 4;
 
@@ -186,30 +195,28 @@ export default class SystemMapPixiRenderer extends React.Component {
   }
 }
 
-//Orbit
-// stroke: #FFF;
-// stroke-width: 1px;
-// stroke-opacity: 0.25;
-// fill: none;
-
-// .colonyHighlight {
-//   stroke: #3D3;
-//   stroke-width: 1.5px;
-//   fill: none;
-// }
-
-// .systemBodyLabel {
-//   fill: #FFF;
-//   font: normal 12px sans-serif;
-//   text-anchor: middle;
-// }
-
-// systemBody {
-//   &.star {
-//     fill: #FDFF00;
-//   }
 
 
+function drawCircle(graphics, x, y, r, style, opacity = 1) {
+  if(style.strokeWidth) {
+    graphics.lineStyle(style.strokeWidth, style.stroke[0], opacity * style.strokeOpacity);
+  } else {
+    graphics.lineStyle(0);
+  }
+
+  if(style.fill) {
+    graphics.beginFill(style.fill[0], style.fill[1] * opacity);
+  }
+
+  graphics.drawCircle(x, y, r);
+
+  if(style.fill) {
+    graphics.endFill();
+  }
+}
+
+
+//Init code
 function getSystemBodyStyles(styles) {
   const orbitStyle = getStyleBySelector(`.${styles.orbit}`);
   const systemBodyStyle = getStyleBySelector(`.${styles.systemBody}`);
@@ -225,7 +232,7 @@ function getSystemBodyStyles(styles) {
     const colonyHighlightTypeStyle = getStyleBySelector(`.${styles.colonyHighlight}.${styles[systemBodyType]}`);
 
     return {
-      body: {
+      systemBody: {
         fill: colorParseOrNull(getProp('fill', systemBodyTypeStyle, systemBodyStyle)),
         stroke: colorParseOrNull(getProp('stroke', systemBodyTypeStyle, systemBodyStyle)),
         strokeWidth: parseFloatOr(getProp('strokeWidth', systemBodyTypeStyle, systemBodyStyle)),
@@ -237,7 +244,7 @@ function getSystemBodyStyles(styles) {
         strokeWidth: parseFloatOr(getProp('strokeWidth', orbitTypeStyle, orbitStyle)),
         strokeOpacity: parseFloatOr(getProp('strokeOpacity', orbitTypeStyle, orbitStyle), 1),
       },
-      label: getTextStyle({
+      systemBodyLabel: getTextStyle({
         // fontFamily: 'Arial',
         // fontSize: 36,
         // fontStyle: 'italic',
@@ -265,7 +272,7 @@ function getSystemBodyStyles(styles) {
 
         //TODO dropshadow
       }),
-      highlight: {
+      colonyHighlight: {
         fill: colorParseOrNull(getProp('fill', colonyHighlightTypeStyle, colonyHighlightStyle)),
         stroke: colorParseOrNull(getProp('stroke', colonyHighlightTypeStyle, colonyHighlightStyle)),
         strokeWidth: parseFloatOr(getProp('strokeWidth', colonyHighlightTypeStyle, colonyHighlightStyle)),
@@ -286,7 +293,7 @@ function getTextStyle(styles) {
     fontWeight: styles.fontWeight,
     fill: intToRGB(styles.fill[0]),
 
-    //hard coded, because I can't be bothered to work out how to conver css drop shadows into pixi.js
+    //hard coded, because I can't be bothered to work out how to convert css drop shadows into pixi.js
     dropShadow: false,
 
     stroke: '#000000',

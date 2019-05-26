@@ -222,30 +222,30 @@ function Game({
       <div className="vspaceStart">
         <div className="hspaceStart">
           <Button selected={!!clientState.isPaused} onClick={() => {client.setIsPaused(!clientState.isPaused)}}>
-            <span className="offscreen"><Trans id="toolbar.colonies">Toggle paused game</Trans></span>
+            <span className="offscreen"><Trans id="toolbar.togglePaused">Toggle paused game</Trans></span>
             <Icon icon="pause" />
           </Button>
 
           <Button selected={clientState.desiredGameSpeed === 1} onClick={() => {client.setDesiredSpeed(1)}}>
-            <span className="offscreen"><Trans id="toolbar.colonies">Play at real time</Trans></span>
+            <span className="offscreen"><Trans id="toolbar.realTime">Play at real time</Trans></span>
             <Icon icon="play" />
           </Button>
 
           <Button selected={clientState.desiredGameSpeed === 2} onClick={() => {client.setDesiredSpeed(2)}}>
-            <span className="offscreen"><Trans id="toolbar.colonies">Play at x60</Trans></span>
+            <span className="offscreen"><Trans id="toolbar.x60">Play at 1 minute per second</Trans></span>
             <Icon icon="play" />
             <Icon icon="play" />
           </Button>
 
           <Button selected={clientState.desiredGameSpeed === 3} onClick={() => {client.setDesiredSpeed(3)}}>
-            <span className="offscreen"><Trans id="toolbar.colonies">Play at x3,600</Trans></span>
+            <span className="offscreen"><Trans id="toolbar.x3600">Play at 1 hour per second</Trans></span>
             <Icon icon="play" />
             <Icon icon="play" />
             <Icon icon="play" />
           </Button>
 
           <Button selected={clientState.desiredGameSpeed === 4} onClick={() => {client.setDesiredSpeed(4)}}>
-            <span className="offscreen"><Trans id="toolbar.colonies">Play at x86,400</Trans></span>
+            <span className="offscreen"><Trans id="toolbar.x86400">Play at 1 day per second</Trans></span>
             <Icon icon="play" />
             <Icon icon="play" />
             <Icon icon="play" />
@@ -253,7 +253,7 @@ function Game({
           </Button>
 
           <Button selected={clientState.desiredGameSpeed === 5} onClick={() => {client.setDesiredSpeed(5)}}>
-            <span className="offscreen"><Trans id="toolbar.colonies">Play at x86,400</Trans></span>
+            <span className="offscreen"><Trans id="toolbar.x86400">Play at 1 day per second</Trans></span>
             <Icon icon="play" />
             <Icon icon="play" />
             <Icon icon="play" />

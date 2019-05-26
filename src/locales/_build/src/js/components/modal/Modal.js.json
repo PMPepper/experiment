@@ -1,0 +1,11 @@
+{
+  "modal-close": {
+    "defaults": "Close",
+    "origin": [
+      [
+        "src/js/components/modal/Modal.js",
+        75
+      ]
+    ]
+  }
+}

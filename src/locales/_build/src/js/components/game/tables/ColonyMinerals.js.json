@@ -1,0 +1,50 @@
+{
+  "Mineral": {
+    "origin": [
+      [
+        "src/js/components/game/tables/ColonyMinerals.js",
+        11
+      ]
+    ]
+  },
+  "Quantity": {
+    "origin": [
+      [
+        "src/js/components/game/tables/ColonyMinerals.js",
+        17
+      ]
+    ]
+  },
+  "Access": {
+    "origin": [
+      [
+        "src/js/components/game/tables/ColonyMinerals.js",
+        23
+      ]
+    ]
+  },
+  "Annual production": {
+    "origin": [
+      [
+        "src/js/components/game/tables/ColonyMinerals.js",
+        29
+      ]
+    ]
+  },
+  "Years to depletion": {
+    "origin": [
+      [
+        "src/js/components/game/tables/ColonyMinerals.js",
+        35
+      ]
+    ]
+  },
+  "Stockpile": {
+    "origin": [
+      [
+        "src/js/components/game/tables/ColonyMinerals.js",
+        41
+      ]
+    ]
+  }
+}

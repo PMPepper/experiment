@@ -1,0 +1,18 @@
+{
+  "Project": {
+    "origin": [
+      [
+        "src/js/components/game/tables/AvailableResearchProjects.js",
+        11
+      ]
+    ]
+  },
+  "RPs": {
+    "origin": [
+      [
+        "src/js/components/game/tables/AvailableResearchProjects.js",
+        17
+      ]
+    ]
+  }
+}

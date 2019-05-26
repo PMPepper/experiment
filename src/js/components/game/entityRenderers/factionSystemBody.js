@@ -104,7 +104,7 @@ export default function factionSystemBodyRenderer(renderPrimitives, entityScreen
   }
 
   if(displayLabel) {
-    renderPrimitives.push(text(`${id}-label`, entity.factionSystemBody.name, cx, cy + r + 3 + 14, opacity, 'systemBodyLabel', systemBody.type));
+    renderPrimitives.push(text(`${id}-label`, entity.factionSystemBody.name, cx, cy + r + 4, opacity, 'systemBodyLabel', systemBody.type));
   }
 
   //record position

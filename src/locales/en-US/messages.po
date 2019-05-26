@@ -13,22 +13,165 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/js/components/game/Game.js:23
+#: src/js/components/game/tables/ColonyMinerals.js:23
+msgid "Access"
+msgstr ""
+
+#: src/js/components/game/tables/ColonyMinerals.js:29
+msgid "Annual production"
+msgstr ""
+
+#: src/js/components/game/Game.js:124
+msgid "Body info"
+msgstr ""
+
+#: src/js/components/game/AddResearchModal.js:45
+msgid "Cancel"
+msgstr ""
+
+#: src/js/components/window/Window.js:72
+msgid "Close"
+msgstr ""
+
+#: src/js/components/game/AddResearchModal.js:44
+msgid "Create"
+msgstr ""
+
+#: src/js/components/game/Game.js:113
+msgid "Create colony"
+msgstr ""
+
+#: src/js/components/game/WindowResearch.js:70
+#: src/js/components/game/WindowResearch.js:96
+msgid "Create research project"
+msgstr ""
+
+#: src/js/components/game/ColonyInfo.js:67
+msgid "Industry"
+msgstr ""
+
+#: src/js/components/game/tables/ColonyMinerals.js:11
+msgid "Mineral"
+msgstr ""
+
+#: src/js/components/game/ColonyInfo.js:70
+msgid "Mining"
+msgstr ""
+
+#: src/js/components/game/tables/AvailableResearchProjects.js:11
+msgid "Project"
+msgstr ""
+
+#: src/js/components/game/tables/ColonyMinerals.js:17
+msgid "Quantity"
+msgstr ""
+
+#: src/js/components/game/tables/AvailableResearchProjects.js:17
+msgid "RPs"
+msgstr ""
+
+#: src/js/components/game/ColonyInfo.js:86
+msgid "Research"
+msgstr ""
+
+#: src/js/components/game/WindowResearch.js:73
+msgid "Select a research project"
+msgstr ""
+
+#: src/js/components/game/tables/ColonyMinerals.js:41
+msgid "Stockpile"
+msgstr ""
+
+#: src/js/components/game/ColonyInfo.js:62
+msgid "Summary"
+msgstr ""
+
+#: src/js/components/game/ColonyInfo.js:83
+msgid "System body not surveyed"
+msgstr ""
+
+#: src/js/components/game/WindowResearch.js:41
+msgid "Total research facilities: {0}"
+msgstr ""
+
+#: src/js/components/game/tables/ColonyMinerals.js:35
+msgid "Years to depletion"
+msgstr ""
+
+#: src/js/components/game/Game.js:277
+msgid "coloniesWindow.title"
+msgstr ""
+
+#: src/js/components/error/ErrorBoundary.js:41
+msgid "errorboundary-componentStack-title"
+msgstr ""
+
+#: src/js/components/error/ErrorBoundary.js:49
+msgid "errorboundary-error-msg"
+msgstr ""
+
+#: src/js/components/error/ErrorBoundary.js:37
+msgid "errorboundary-error-title"
+msgstr ""
+
+#: src/js/components/error/ErrorBoundary.js:36
+#: src/js/components/error/ErrorBoundary.js:47
+msgid "errorboundary-title"
+msgstr ""
+
+#: src/js/components/game/Game.js:280
+msgid "fleetsWindow.title"
+msgstr ""
+
+#: src/js/components/modal/Modal.js:75
+msgid "modal-close"
+msgstr ""
+
+#: src/js/components/game/Game.js:274
 msgid "optionsPanel.title"
 msgstr ""
 
-#: src/js/components/game/Game.js:15
+#: src/js/components/game/Game.js:281
+msgid "shipDesignWindow.title"
+msgstr ""
+
+#: src/js/components/game/Game.js:215
 msgid "toolbar.colonies"
 msgstr ""
 
-#: src/js/components/game/Game.js:17
+#: src/js/components/game/Game.js:216
 msgid "toolbar.fleets"
 msgstr ""
 
-#: src/js/components/game/Game.js:16
-msgid "toolbar.research"
+#: src/js/components/game/Game.js:230
+msgid "toolbar.realTime"
 msgstr ""
 
-#: src/js/components/game/Game.js:18
+#: src/js/components/game/Game.js:16
+#~ msgid "toolbar.research"
+#~ msgstr ""
+
+#: src/js/components/game/Game.js:217
 msgid "toolbar.shipDesign"
+msgstr ""
+
+#: src/js/components/game/Game.js:225
+msgid "toolbar.togglePaused"
+msgstr ""
+
+#: src/js/components/game/Game.js:241
+msgid "toolbar.x3600"
+msgstr ""
+
+#: src/js/components/game/Game.js:235
+msgid "toolbar.x60"
+msgstr ""
+
+#: src/js/components/game/Game.js:248
+#: src/js/components/game/Game.js:256
+msgid "toolbar.x86400"
+msgstr ""
+
+#: src/js/components/game/WindowResearch.js:46
+msgid "windowResearch.area.select"
 msgstr ""

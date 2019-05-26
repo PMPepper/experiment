@@ -1,0 +1,18 @@
+{
+  "Create": {
+    "origin": [
+      [
+        "src/js/components/game/AddResearchModal.js",
+        44
+      ]
+    ]
+  },
+  "Cancel": {
+    "origin": [
+      [
+        "src/js/components/game/AddResearchModal.js",
+        45
+      ]
+    ]
+  }
+}

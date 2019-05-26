@@ -46,10 +46,12 @@
 
 .systemBodyLabel {
   fill: #FFF;
-  font: normal 12px sans-serif;
+  font: normal 20px sans-serif;
   text-anchor: middle;
 
   pointer-events: none;
+
+  dominant-baseline: hanging
 
   //filter: url(#textShadow);
 }

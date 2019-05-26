@@ -1,0 +1,42 @@
+{
+  "Summary": {
+    "origin": [
+      [
+        "src/js/components/game/ColonyInfo.js",
+        62
+      ]
+    ]
+  },
+  "Industry": {
+    "origin": [
+      [
+        "src/js/components/game/ColonyInfo.js",
+        67
+      ]
+    ]
+  },
+  "Mining": {
+    "origin": [
+      [
+        "src/js/components/game/ColonyInfo.js",
+        70
+      ]
+    ]
+  },
+  "System body not surveyed": {
+    "origin": [
+      [
+        "src/js/components/game/ColonyInfo.js",
+        83
+      ]
+    ]
+  },
+  "Research": {
+    "origin": [
+      [
+        "src/js/components/game/ColonyInfo.js",
+        86
+      ]
+    ]
+  }
+}

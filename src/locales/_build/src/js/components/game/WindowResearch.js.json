@@ -1,0 +1,39 @@
+{
+  "Total research facilities: {0}": {
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        41
+      ]
+    ]
+  },
+  "windowResearch.area.select": {
+    "defaults": "- - Select - -",
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        46
+      ]
+    ]
+  },
+  "Create research project": {
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        70
+      ],
+      [
+        "src/js/components/game/WindowResearch.js",
+        96
+      ]
+    ]
+  },
+  "Select a research project": {
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        73
+      ]
+    ]
+  }
+}
