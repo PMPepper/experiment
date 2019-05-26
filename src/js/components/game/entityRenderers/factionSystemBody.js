@@ -1,5 +1,5 @@
 import * as RenderFlags from '../renderFlags';
-import {circle, text} from '../SystemMap';
+import {circle, text, position} from '../SystemMap';
 import {
   outOfBoundsVCull, outOfBoundsHCull, startFadeRadius, fullyFadeRadius,
   startFadeOrbitRadius, fullyFadeOrbitRadius, startFadeLargeOrbit,
@@ -7,7 +7,7 @@ import {
 } from '../GameConsts';
 
 
-export default function factionSystemBodyRenderer(renderPrimitives, windowSize, x, y, zoom, entity, entities, colonies, options) {
+export default function factionSystemBodyRenderer(renderPrimitives, entityScreenPositions, windowSize, x, y, zoom, entity, entities, colonies, options) {
   const id = entity.id;
   const systemBodyEntity = entities[entity.systemBodyId];
   const systemBody = systemBodyEntity.systemBody;
@@ -106,4 +106,7 @@ export default function factionSystemBodyRenderer(renderPrimitives, windowSize, 
   if(displayLabel) {
     renderPrimitives.push(text(`${id}-label`, entity.factionSystemBody.name, cx, cy + r + 3 + 14, opacity, 'systemBodyLabel', systemBody.type));
   }
+
+  //record position
+  entityScreenPositions.push(position(entity.systemBodyId, cx, cy, displayBody ? r : 0));
 }

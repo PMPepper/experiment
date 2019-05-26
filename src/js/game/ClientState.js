@@ -131,21 +131,15 @@ export default class ClientState {
   }
 
   getFactionSystemFromSystem(system) {
-    system = +(system.id || system);//convert to id, if needed
-
-    const entityIds = this.entityIds;
     const entities = this.entities;
     const factionId = this.factionId;
-    let id, entity;
 
-    //TODO could use another cached getter, e.g. getFactionSystemBodies to thin down list..?
-    for(let i = 0; i < entityIds.length; i++) {
-      id = entityIds[i];
-      entity = entities[id];
+    system = toEntity(system, entities);
 
-      if(entity.type === 'factionSystem' && entity.factionId === factionId && entity.systemId === system) {
-        return entity;
-      }
+    if(system && system.factionSystemIds) {
+      const factionSystemId = system.factionSystemIds.find(factionSystemId => (entities[factionSystemId].factionId === factionId));
+
+      return factionSystemId ? entities[factionSystemId] : null;
     }
 
     return null;

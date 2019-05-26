@@ -297,12 +297,14 @@ export default class Server {
     const faction = this.entities[factionId];
 
     //TODO validate (cannot create colony if you already have one, must be a system body, etc)
+    //TODO make a createColony function, rather than creating the entity directly (do for all entities)
     const colony = this._newEntity('colony', {
       factionId,
       systemId: systemBody.systemId,
       systemBodyId: systemBody.id,
       colony: {
         populationIds: [],
+        structures: {},
         minerals: map(this.gameConfig.minerals, () => (0))//default to zero minerals
       }
     });

@@ -23,6 +23,7 @@ import FPSStats from '@/components/dev/FPSStats';
 
 //helpers
 import cloneOmittingProps from '@/helpers/react/clone-omitting-props';
+import sortArrayOnPropertyNumeric from '@/helpers/sorting/sort-array-on-property-numeric';
 
 //reducers
 import {open, close} from '@/redux/HORs/isOpen';
@@ -43,82 +44,171 @@ function Game({
   const entityIds = clientState.entityIds;
 
   return <div className={styles.game}>
-    <AddContextMenu key={selectedSystemId} getItems={(e, systemPosition, zoom, renderableEntities) => {
+    <AddContextMenu key={selectedSystemId} getItems={(e, entityScreenPositions) => {
+      const items = [];
 
-      //Not happy with any of this... need to re-think context menu
-      let closestEntity = null;
-      let closestDistance = Number.POSITIVE_INFINITY;
+      const clickX = e.clientX;
+      const clickY = e.clientY;
 
-      for(let i = 0; i < entityIds.length; i++) {
-        const entity = entities[entityIds[i]];
+      const factionId = clientState.factionId;
 
-        if(entity.position) {
-          let dx = systemPosition.x - entity.position.x;
-          let dy = systemPosition.y - entity.position.y;
-          let comparisonDistance = (dx * dx) + (dy * dy);//No need to sqrt if just comparing
+      //get all system bodies with r OR within mininmum of ...3 px?
+      const minSystemBodyDist = 3;
+      const systemBodies = [];
 
-          if(comparisonDistance < closestDistance) {
-            closestDistance = comparisonDistance;
-            closestEntity = entity;
-          }
-        }
-      }
-
-      const thresholdDistance = Math.pow(10 / zoom, 2)
-
-      if(closestDistance < thresholdDistance) {
-        e.preventDefault();
-        const entityId = closestEntity.id//+e.target.dataset.entityId;
-        const entity = entities[entityId];
-        const factionId = clientState.factionId;
-        const items = [];
+      entityScreenPositions.forEach(position => {
+        const entity = entities[position.id];
 
         if(entity.type === 'systemBody') {
-          if(items.length > 0) {
-            items.push('spacer');
-          }
+          const r = Math.max(minSystemBodyDist, position.r);
 
-          const factionSystemBody = clientState.getFactionSystemBodyFromSystemBody(entity);
-          const colonies = clientState.getColoniesForSystemBody(entity);
-          //const factions = clientState.factions;
+          const dx = position.x - clickX;
+          const dy = position.y - clickY;
 
-          items.push({label: factionSystemBody.factionSystemBody.name, icon: <Icon icon="globe" />});
-          items.push({label: <Trans>Body info</Trans>, action: () => {alert('TODO')}})
+          const d = (dx * dx) + (dy * dy);
 
-          if(entity.systemBody.type !== 'star') {
-            let hasOwnColony = false;
-
-            const coloniesItems = colonies.map(colony => {
-              if(colony.factionId === factionId) {
-                hasOwnColony = true;
-              }
-
-              return {
-                label: entities[colony.factionId].faction.name,
-                action: colony.factionId === factionId ? () => {
-                  setSelectedColonyId(colony.id);//and select this colony
-                  setSystemMapFollowing(colony.systemBodyId);
-                  open('coloniesWindow');//open up colonies window
-                } : null
-              }
-            });
-
-            if(!hasOwnColony) {
-              coloniesItems.unshift({label: <Trans>Create colony</Trans>, action: () => {
-                client.createColony(entity.id);
-              }})
-            }
-
-            items.push({label: <Trans>Colonies</Trans>, items: coloniesItems});
+          if(d <= (r * r)) {
+            systemBodies.push({d, entity});
           }
         }
+      });
 
-        return items;
-      }
+      sortArrayOnPropertyNumeric(systemBodies, 'd');
+
+      systemBodies.forEach(item => {
+        const systemBody = item.entity;
+
+        const factionSystemBody = clientState.getFactionSystemBodyFromSystemBody(systemBody);
+
+
+        const systemBodyItem = {
+          label: factionSystemBody.factionSystemBody.name,
+          icon: <Icon icon="globe" />,
+          items: []
+        };
+
+        //Colonies stuff
+        if(systemBody.systemBody.type !== 'star') {
+          const colonies = clientState.getColoniesForSystemBody(systemBody) || [];
+
+          let hasOwnColony = false;
+
+          colonies.forEach(colony => {
+            if(colony.factionId === factionId) {
+              hasOwnColony = true;
+            }
+
+            systemBodyItem.items.push({
+              label: entities[colony.factionId].faction.name,
+              action: colony.factionId === factionId ? () => {
+                setSelectedColonyId(colony.id);//and select this colony
+                setSystemMapFollowing(colony.systemBodyId);
+                open('coloniesWindow');//open up colonies window
+              } : null
+            });
+          })
+
+          if(!hasOwnColony) {
+            systemBodyItem.items.unshift({
+              label: <Trans>Create colony</Trans>,
+              action: () => {
+                client.createColony(systemBody.id);
+              }
+            })
+          }
+
+          systemBodyItem.items.push('spacer');
+        }
+
+        systemBodyItem.items.push({
+          label: <Trans>Body info</Trans>,
+          action: () => {alert('TODO')}
+        });
+
+        items.push(systemBodyItem);
+      })
+
+
+      return items;
+
+
+
+
+      //
+      // //Not happy with any of this... need to re-think context menu
+      // let closestEntity = null;
+      // let closestDistance = Number.POSITIVE_INFINITY;
+      //
+      // for(let i = 0; i < entityIds.length; i++) {
+      //   const entity = entities[entityIds[i]];
+      //
+      //   if(entity.position) {
+      //     let dx = systemPosition.x - entity.position.x;
+      //     let dy = systemPosition.y - entity.position.y;
+      //     let comparisonDistance = (dx * dx) + (dy * dy);//No need to sqrt if just comparing
+      //
+      //     if(comparisonDistance < closestDistance) {
+      //       closestDistance = comparisonDistance;
+      //       closestEntity = entity;
+      //     }
+      //   }
+      // }
+      //
+      // const thresholdDistance = Math.pow(10 / zoom, 2)
+      //
+      // if(closestDistance < thresholdDistance) {
+      //   e.preventDefault();
+      //   const entityId = closestEntity.id//+e.target.dataset.entityId;
+      //   const entity = entities[entityId];
+      //   const factionId = clientState.factionId;
+      //   const items = [];
+      //
+      //   if(entity.type === 'systemBody') {
+      //     if(items.length > 0) {
+      //       items.push('spacer');
+      //     }
+      //
+      //     const factionSystemBody = clientState.getFactionSystemBodyFromSystemBody(entity);
+      //     const colonies = clientState.getColoniesForSystemBody(entity);
+      //     //const factions = clientState.factions;
+      //
+      //     items.push({label: factionSystemBody.factionSystemBody.name, icon: <Icon icon="globe" />});
+      //     items.push({label: <Trans>Body info</Trans>, action: () => {alert('TODO')}})
+      //
+      //     if(entity.systemBody.type !== 'star') {
+      //       let hasOwnColony = false;
+      //
+      //       const coloniesItems = colonies.map(colony => {
+      //         if(colony.factionId === factionId) {
+      //           hasOwnColony = true;
+      //         }
+      //
+      //         return {
+      //           label: entities[colony.factionId].faction.name,
+      //           action: colony.factionId === factionId ? () => {
+      //             setSelectedColonyId(colony.id);//and select this colony
+      //             setSystemMapFollowing(colony.systemBodyId);
+      //             open('coloniesWindow');//open up colonies window
+      //           } : null
+      //         }
+      //       });
+      //
+      //       if(!hasOwnColony) {
+      //         coloniesItems.unshift({label: <Trans>Create colony</Trans>, action: () => {
+      //           client.createColony(entity.id);
+      //         }})
+      //       }
+      //
+      //       items.push({label: <Trans>Colonies</Trans>, items: coloniesItems});
+      //     }
+      //   }
+      //
+      //   return items;
+      // }
 
       return false;
     }}>
-      <SystemMap clientState={clientState} {...systemMap} systemId={selectedSystemId} setFollowing={setSystemMapFollowing} />
+      <SystemMap clientState={clientState} {...systemMap} systemId={selectedSystemId} setFollowing={setSystemMapFollowing} systemMapRef={(ref) => {console.log(ref)}} />
     </AddContextMenu>
     <div className={styles.toolbar}>
       <div className="hspaceStart">

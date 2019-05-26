@@ -1,11 +1,8 @@
 import React from 'react';
 
-import * as EntityRenderers from './svgEntityRenderers';
-
 import {scaleLength} from './GameConsts';
 
 //Helpers
-import reduce from '@/helpers/object/reduce';
 import formatDistanceSI from '@/helpers/string/format-distance-si';
 
 

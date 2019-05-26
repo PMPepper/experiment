@@ -2,6 +2,7 @@
 
 import React from 'react';
 import {compose} from 'recompose';
+import objectpool from 'objectpool';
 
 import defaultStyles from './systemMap.scss';
 import * as EntityRenderers from './entityRenderers';
@@ -55,6 +56,10 @@ class SystemMap extends React.Component {
     this.lastFollowing = null;
     this.isMouseDragging = false;
 
+    if(props.systemMapRef) {
+      props.systemMapRef(this);
+    }
+
     addItem(this._onFrameUpdate);
 
     this._elementProps = {
@@ -68,9 +73,9 @@ class SystemMap extends React.Component {
       onClick: this._onClick,
       onWheel: this._onWheel,
       onContextMenu: (e) => {
-        const worldPos = this.screenToWorld(e.clientX, e.clientY);
+        //const worldPos = this.screenToWorld(e.clientX, e.clientY);
 
-        props.onContextMenu(e, worldPos, this.state.zoom, this._renderableEntities);
+        props.onContextMenu(e, this._entityScreenPositions);
       }
     };
 
@@ -262,12 +267,22 @@ class SystemMap extends React.Component {
 
   _onClick = (e) => {
     const target = e.target;
-    //TODO this needs re-writing...
-    if('entityId' in target.dataset) {
-      const entityId = +target.dataset.entityId;
 
-      this.props.setFollowing(entityId);
-    }
+    const clickX = e.clientX;
+    const clickY = e.clientY
+
+    const clickedEntity = this._entityScreenPositions.find(position => {
+      if(position.r === 0) {
+        return;
+      }
+
+      const dx = position.x - clickX;
+      const dy = position.y - clickY;
+
+      return (dx * dx) + (dy * dy) <= (position.r * position.r);
+    })
+
+    clickedEntity && this.props.setFollowing(clickedEntity.id);
   }
 
   _onWheel = (e) => {
@@ -308,6 +323,9 @@ class SystemMap extends React.Component {
 
   //React lifecycle methods
 
+  _renderPrimitives = [];
+  _entityScreenPositions = [];
+
   render() {
     const props = this.props;
     const {systemId, windowSize, clientState, styles, cx, cy, options, renderComponent: RenderComponent} = props;
@@ -318,17 +336,43 @@ class SystemMap extends React.Component {
     x -= (windowSize.width * cx) / zoom;
     y -= (windowSize.height * cy) / zoom;
 
-    const renderableEntities = this._renderableEntities = clientState.getRenderableEntities(systemId);
+    //return previous primitives to the pool
+    const renderPrimitives = this._renderPrimitives;
 
-    const renderPrimitives = [];
+    renderPrimitives.forEach(primitive => {
+      switch (primitive.t) {
+        case 'circle':
+          circlePool.release(primitive);
+          break;
+        case 'text':
+          textPool.release(primitive);
+          break;
+        default:
+          debugger;//shouldn't happen!
+      }
+    });
+
+    //reset primitives length
+    renderPrimitives.length = 0;
+
+    //reset entityScreenPositions to pool
+    const entityScreenPositions = this._entityScreenPositions;
+
+    entityScreenPositions.forEach(position => {positionsPool.release(position);});
+
+    entityScreenPositions.length = 0;
+
+
+    //Get new primitives + screen positions
+    const renderableEntities = this._renderableEntities = clientState.getRenderableEntities(systemId);
 
     renderableEntities.forEach(entity => {
       const renderer = EntityRenderers[entity.render.type];
 
-      renderer && renderer(renderPrimitives, windowSize, x, y, zoom, entity, clientState.entities, colonies, options.display);
+      renderer && renderer(renderPrimitives, entityScreenPositions, windowSize, x, y, zoom, entity, clientState.entities, colonies, options.display);
     });
 
-
+    //Output rendered content
     return <RenderComponent
       x={x}
       y={y}
@@ -359,6 +403,10 @@ class SystemMap extends React.Component {
     removeItem(this._onFrameUpdate);
 
     this._endDragging();
+
+    if(this.props.systemMapRef) {
+      this.props.systemMapRef(null);
+    }
   }
 
   //static props
@@ -374,7 +422,7 @@ class SystemMap extends React.Component {
   };
 }
 
-
+//Compose the component
 export default compose(
   WindowSizeComponent(),
   KeyboardControlsComponent()
@@ -403,10 +451,54 @@ export function getSystemBodyVisibleMaxZoom(systemBodyEntity) {
 
 
 
+//define object pools + generators
+const circlePool = objectpool.generate({t: 'circle', id: null, x: 0, y: 0, r: 0, opacity: 0, type: null, subType: null}, {count: 50, regenerate: 1});
+const textPool = objectpool.generate({t: 'text', text: null, id: null, x: 0, y: 0, opacity: 0, type: null, subType: null}, {count: 50, regenerate: 1});
+
 export function circle(id, x, y, r, opacity, type, subType) {
-  return {t: 'circle', id, x, y, r, opacity, type, subType};
+  const circle = circlePool.get();
+
+  circle.id = id;
+  circle.x = x;
+  circle.y = y;
+  circle.r = r;
+  circle.opacity = opacity;
+  circle.type = type;
+  circle.subType = subType;
+
+  return circle;
 }
 
-export function text(id, text, x, y, opacity, type, subType) {
-  return {t: 'text', id, text, x, y, opacity, type, subType};
+export function text(id, textVal, x, y, opacity, type, subType) {
+  const text = textPool.get();
+
+  text.id = id;
+  text.text = textVal;
+  text.x = x;
+  text.y = y;
+  text.opacity = opacity;
+  text.type = type;
+  text.subType = subType;
+
+  return text;
+}
+
+//entity position pool
+const positionsPool = objectpool.generate(
+  {id: null, x: 0, y: 0, r: 0},
+  {
+    count: 50,
+    regenerate: 1
+  }
+);
+
+export function position(id, x, y, r) {
+  const position = positionsPool.get();
+
+  position.id = id;
+  position.x = x;
+  position.y = y;
+  position.r = r;
+
+  return position;
 }
