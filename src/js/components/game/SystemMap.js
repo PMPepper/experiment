@@ -4,6 +4,7 @@ import React from 'react';
 import {compose} from 'recompose';
 
 import defaultStyles from './systemMap.scss';
+import * as EntityRenderers from './entityRenderers';
 import SystemMapSVGRenderer from './SystemMapSVGRenderer';
 import SystemMapPixiRenderer from './SystemMapPixiRenderer';
 import {startFadeRadius, fullyFadeRadius, startFadeOrbitRadius, fullyFadeOrbitRadius} from './GameConsts';
@@ -311,6 +312,7 @@ class SystemMap extends React.Component {
     const props = this.props;
     const {systemId, windowSize, clientState, styles, cx, cy, options, renderComponent: RenderComponent} = props;
     let {x, y, zoom} = this.state;
+    const colonies = clientState.getColoniesBySystemBody(systemId);
 
     //center in window
     x -= (windowSize.width * cx) / zoom;
@@ -318,13 +320,20 @@ class SystemMap extends React.Component {
 
     const renderableEntities = this._renderableEntities = clientState.getRenderableEntities(systemId);
 
+    const renderPrimitives = [];
+
+    renderableEntities.forEach(entity => {
+      const renderer = EntityRenderers[entity.render.type];
+
+      renderer && renderer(renderPrimitives, windowSize, x, y, zoom, entity, clientState.entities, colonies, options.display);
+    });
+
+
     return <RenderComponent
       x={x}
       y={y}
       zoom={zoom}
-      entities={clientState.entities}
-      renderEntities={renderableEntities}
-      colonies={clientState.getColoniesBySystemBody(systemId)}
+      renderPrimitives={renderPrimitives}
       styles={styles}
       windowSize={windowSize}
       options={options.display}
@@ -360,8 +369,8 @@ class SystemMap extends React.Component {
     y: 0,
     cx: 0.5,
     cy: 0.5,
-    renderComponent: SystemMapPixiRenderer,
-    //renderComponent: SystemMapSVGRenderer,
+    //renderComponent: SystemMapPixiRenderer,
+    renderComponent: SystemMapSVGRenderer,
   };
 }
 
@@ -394,33 +403,10 @@ export function getSystemBodyVisibleMaxZoom(systemBodyEntity) {
 
 
 
-/*
-<canvas className={styles.systemMap} {...windowSize} ref={(ref) => {
-  if(ref) {
-    const ctx = ref.getContext('2d');
+export function circle(id, x, y, r, opacity, type, subType) {
+  return {t: 'circle', id, x, y, r, opacity, type, subType};
+}
 
-    ctx.fillStyle = 'rgb(0, 0, 20)';
-    ctx.fillRect(0, 0, windowSize.width, windowSize.height);
-
-    ctx.fillStyle = 'rgb(200, 0, 0)';
-    ctx.fillRect(400, 100, 50, 50);
-
-    ctx.fillStyle = 'rgba(0, 0, 200, 0.5)';
-    ctx.fillRect(430, 130, 50, 50);
-  }
-}}></canvas>
-*/
-
-/*
-<filter id="textShadow" height="130%">
-  <feGaussianBlur in="SourceAlpha" stdDeviation="1"/> <!-- stdDeviation is how much to blur -->
-  {/*<feOffset dx="2" dy="2" result="offsetblur"/> <!-- how much to offset -->
-  <feComponentTransfer>
-    <feFuncA type="linear" slope="1"/> <!-- slope is the opacity of the shadow -->
-  </feComponentTransfer>
-  <feMerge>
-    <feMergeNode/> <!-- this contains the offset blurred image -->
-    <feMergeNode in="SourceGraphic"/> <!-- this contains the element that the filter is applied to -->
-  </feMerge>
-</filter>
-*/
+export function text(id, text, x, y, opacity, type, subType) {
+  return {t: 'text', id, text, x, y, opacity, type, subType};
+}

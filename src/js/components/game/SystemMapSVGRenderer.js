@@ -2,6 +2,8 @@ import React from 'react';
 
 import * as EntityRenderers from './svgEntityRenderers';
 
+import {scaleLength} from './GameConsts';
+
 //Helpers
 import reduce from '@/helpers/object/reduce';
 import formatDistanceSI from '@/helpers/string/format-distance-si';
@@ -9,20 +11,39 @@ import formatDistanceSI from '@/helpers/string/format-distance-si';
 
 //The component
 export default function SystemMapSVGRenderer(props) {
-  const {windowSize, entities, renderEntities, colonies, styles, x, y, zoom, options, elementProps} = props;
-
-  const scaleLength = 288;
-
+  const {windowSize, renderPrimitives, styles, x, y, zoom, options, elementProps} = props;
 
   return <div
       className={styles.systemMapWrapper}
       {...elementProps}
     >
       <svg className={styles.systemMap}>
-        {renderEntities.map(entity => {
-          const Renderer = EntityRenderers[entity.render.type];
+        {renderPrimitives.map(primitive => {
+          switch(primitive.t) {
+            case 'circle':
+              return <circle
+                className={`${styles[primitive.type]} ${styles[primitive.subType]}`}
+                cx={primitive.x}
+                cy={primitive.y}
+                r={primitive.r}
+                opacity={primitive.opacity}
+                key={primitive.id}
+              />
+            case 'text':
+              return <text
+                className={`${styles[primitive.type]} ${styles[primitive.subType]}`}
+                x={primitive.x}
+                y={primitive.y}
+                fillOpacity={primitive.opacity}
+                key={primitive.id}
+              >
+                {primitive.text}
+              </text>;
+            default:
+              debugger;//shouldn't happen!
+              return null;
+          }
 
-          return Renderer && <Renderer windowSize={windowSize} x={x} y={y} zoom={zoom} entity={entity} entities={entities} colonies={colonies} key={entity.id} options={options} styles={styles} />;
         })}
         <g transform={`translate(16, ${windowSize.height - 16})`}>
           <text x="5.5" y="-5.5" fill="#FFF">{formatDistanceSI(scaleLength / zoom, 1, 3)}</text>
@@ -33,36 +54,3 @@ export default function SystemMapSVGRenderer(props) {
       </svg>
     </div>
 }
-
-
-
-/*
-<canvas className={styles.systemMap} {...windowSize} ref={(ref) => {
-  if(ref) {
-    const ctx = ref.getContext('2d');
-
-    ctx.fillStyle = 'rgb(0, 0, 20)';
-    ctx.fillRect(0, 0, windowSize.width, windowSize.height);
-
-    ctx.fillStyle = 'rgb(200, 0, 0)';
-    ctx.fillRect(400, 100, 50, 50);
-
-    ctx.fillStyle = 'rgba(0, 0, 200, 0.5)';
-    ctx.fillRect(430, 130, 50, 50);
-  }
-}}></canvas>
-*/
-
-/*
-<filter id="textShadow" height="130%">
-  <feGaussianBlur in="SourceAlpha" stdDeviation="1"/> <!-- stdDeviation is how much to blur -->
-  {/*<feOffset dx="2" dy="2" result="offsetblur"/> <!-- how much to offset -->
-  <feComponentTransfer>
-    <feFuncA type="linear" slope="1"/> <!-- slope is the opacity of the shadow -->
-  </feComponentTransfer>
-  <feMerge>
-    <feMergeNode/> <!-- this contains the offset blurred image -->
-    <feMergeNode in="SourceGraphic"/> <!-- this contains the element that the filter is applied to -->
-  </feMerge>
-</filter>
-*/

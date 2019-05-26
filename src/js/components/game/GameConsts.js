@@ -22,3 +22,6 @@ export const systemBodyTypeMinRadius = {
 
 export const startFadeLargeOrbit = 12500;
 export const fullyFadeLargeOrbit = 25000;
+
+
+export const scaleLength = 288;
