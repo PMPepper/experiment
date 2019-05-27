@@ -37,8 +37,10 @@ class WindowResearch extends React.Component {
       const selectedResearchProjectId = Object.keys(coloniesWindow.availableResearchTable.selectedRows).pop() || null;
       const selectedResearchProject = initialGameState.research[selectedResearchProjectId] && initialGameState.research[selectedResearchProjectId].area == coloniesWindow.researchSelectedArea ? initialGameState.research[selectedResearchProjectId] : null;
 
+      const totalNumResearchFacilities = Object.values(colony.colony.structuresWithCapability.research).reduce((sum, add) => {return sum + add;}, 0);
+
       return <div className="vspaceStart">
-        <div><Trans>Total research facilities: {colony.colony.researchProduction.units}</Trans></div>
+        <div><Trans>Total research facilities: {totalNumResearchFacilities}</Trans></div>
         <div>TODO in progress research projects</div>
         <div>
           <h4>Available research projects</h4>

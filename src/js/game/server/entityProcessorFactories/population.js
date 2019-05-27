@@ -8,7 +8,7 @@ export default function populationFactory(lastTime, time) {
         const species = entities[entity.speciesId];
         const dayGrowthRate = Math.pow(species.species.growthRate, 1/365.25);
 
-        //TODO affected by envirnoment
+        //TODO affected by environment
         //TODO do not grow on colony ships, transports etc
 
         entity.population.quantity *= dayGrowthRate;

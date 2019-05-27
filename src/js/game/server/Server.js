@@ -1,5 +1,6 @@
 import resolvePath from '@/helpers/object/resolve-path';
 import map from '@/helpers/object/map';
+import forEach from '@/helpers/object/forEach';
 import isEmpty from '@/helpers/object/isEmpty';
 import getFactionSystemBodyFromFactionAndSystemBody from '@/helpers/app/getFactionSystemBodyFromFactionAndSystemBody';
 
@@ -10,6 +11,9 @@ import * as FactionClientTypes from '../FactionClientTypes';
 import movementFactory from './entityProcessorFactories/movement';
 //import populationFactory from './entityProcessorFactories/population';
 import colonyFactory from './entityProcessorFactories/colony';
+
+
+import calculatePopulationWorkers from '@/game/server/entityProcessorFactories/colony/calculatePopulationWorkers';
 
 
 //Server phases
@@ -145,8 +149,6 @@ export default class Server {
     //TODO check that name is unique
 
     const client = this.clients[clientId];
-
-
 
 
     //TODO check that client settings are valid e.g. is connecting to valid faction(s) not already controlled by someone else
@@ -336,8 +338,14 @@ export default class Server {
     console.log('Unknown message from client: ', type, data, clientId);
   }
 
-  getEntityById(id) {
-    return this.entities[id];
+  getEntityById(id, type = null) {
+    const entity = this.entities[id] || null;
+
+    if(entity && type && entity.type !== type) {
+      return null;
+    }
+
+    return entity
   }
 
   getEntitiesByIds(ids) {
@@ -360,7 +368,12 @@ export default class Server {
         structures,
         minerals,
         researchInProgress: {},
-        buildQueue: []
+        buildQueue: [],
+        capabilityProductionTotals: {},
+        structuresWithCapability: {},
+        populationCapabilityProductionTotals: {},
+        populationStructuresWithCapability: {},
+        populationUnitCapabilityProduction: {},
       }
     });
 
@@ -369,6 +382,81 @@ export default class Server {
     this.entitiesLastUpdated[factionId] = this.gameTime + 1;//mark faction as updated
 
     return colony;
+  }
+
+  createPopulation(factionId, colonyId, speciesId, quantity) {
+    const colony = this.getEntityById(colonyId, 'colony');
+
+
+    const entity = this._newEntity('population', {
+      factionId,
+      speciesId,
+      colonyId: colony ? colony.id : null,
+
+      population: {
+        quantity,
+
+        supportWorkers: 0,
+        effectiveWorkers: 0,
+      }
+    });
+
+    //Init worker counts
+    calculatePopulationWorkers(entity, this.entities);
+
+    if(colony) {
+      this.addPopulationToColony(colony.id, entity.id);
+    }
+
+    return entity;
+  }
+
+  addPopulationToColony(colonyId, populationId) {
+    const colony = this.getEntityById(colonyId, 'colony');
+    const population = this.getEntityById(populationId, 'population');
+
+    if(!colony || !population) {
+      debugger;//shouldn't happen
+
+      return;
+    }
+
+    colony.colony.populationIds.push(population.id);
+
+    population.colonyId = colony.id;
+
+    //mark as updated
+    this.entitiesLastUpdated[colonyId] = this.gameTime + 1;//mark faction as updated
+    this.entitiesLastUpdated[populationId] = this.gameTime + 1;//mark faction as updated
+  }
+
+  addStructuresToColony(colonyId, populationId, structures) {
+    const colony = this.getEntityById(colonyId, 'colony');
+
+    if(!colony) {
+      return
+    }
+
+    populationId = populationId || 0;
+
+    if(!colony.colony.structures[populationId]) {
+      colony.colony.structures[populationId] = {}
+    }
+
+    const currentStructures = colony.colony.structures[populationId];
+
+    forEach(structures, (quantity, structureId) => {
+      if(currentStructures[structureId]) {
+        currentStructures[structureId] += quantity;
+      } else {
+        currentStructures[structureId] = quantity;
+      }
+
+      //prevent negative quantities
+      currentStructures[structureId] = Math.max(0, currentStructures[structureId]);
+    });
+
+    this.entitiesLastUpdated[colonyId] = this.gameTime + 1;//mark as updated
   }
 
 

@@ -181,44 +181,30 @@ export default function createWorldFromDefinition(server, definition) {
 
     //now add starting colonies
     factionDefinition.startingColonies.forEach(startingColonyDefinition => {
-      /*
-      system: 'Sol',//ID from systemsSystems object (the key)
-      body: 'Mars',//body ID (what if random?)
-      populations: [
-        {
-          species: 'Humans',
-          population: 1000000000,
-        }
-      ],
-      structures: {
-        "1": 200,
-        "2": 100,
-        "5": 10
-      },
-      */
-
       const systemBody = systemBodiesBySystemDefinitionIdBySystemBodyDefinitionName[startingColonyDefinition.system][startingColonyDefinition.body];
 
+      //Create the colony
+      const colony = server.createColony(systemBody.id, faction.id, map(definition.minerals, () => (0)));//, structures, populationIds.filter(id => (id !== null))
+
+      const structures = {};
+
       //Create the populations
-      const populationIds = startingColonyDefinition.populations.map(populationDefinition => {
-        const species = speciesByDefinitionId[populationDefinition.species];
+      startingColonyDefinition.populations.forEach(populationDefinition => {
+        let populationId = 0;
 
-        const entity = server._newEntity('population', {
-          factionId: faction.id,
-          speciesId: species.id,
-          //systemId: systemBody.systemId,
-          //systemBodyId: systemBody.id,
+        if(populationDefinition.species) {
+          const species = speciesByDefinitionId[populationDefinition.species];
 
-          population: {
-            quantity: populationDefinition.population
-          }
-        })
+          const entity = server.createPopulation(faction.id, colony.id, species.id, populationDefinition.population);
 
-        return entity.id;
+          populationId = entity.id;
+        }
+
+        if(populationDefinition.structures) {//assign structures to colony
+          server.addStructuresToColony(colony.id, populationId, {...populationDefinition.structures});
+        }
       });
 
-      //now create the colony itself
-      const colony = server.createColony(systemBody.id, faction.id, map(definition.minerals, () => (0)), {...startingColonyDefinition.structures}, populationIds);
 
       //mark system body as surveyed
       if(startingColonyDefinition.isSurveyed) {
@@ -232,31 +218,6 @@ export default function createWorldFromDefinition(server, definition) {
       }
     });
   })
-
-  /*
-  definition.players.forEach(playerDefinition => {
-    const player = server._newEntity('player', {player: {name: playerDefinition.name}, factionIds: []});
-
-    //record player
-    server.players[player.id] = player;
-
-    playerDefinition.factions.forEach(playerFactionDefinition => {
-      const faction = factionsByDefinitionName[playerFactionDefinition.name];
-
-      if(!faction) {
-        throw new Error(`Unknown faction '${playerFactionDefinition.name}' in player definition '${playerDefinition.name}'`);
-      }
-
-      const factionPlayer = server._newEntity('factionPlayer', {factionId: faction.id, playerId: player.id, factionPlayer: {role: playerFactionDefinition.role}});
-
-      //record factionPlayer
-      server.factionPlayers[factionPlayer.id] = factionPlayer;
-    });
-  })*/
-
-  //TODO clients
-  //const client1 = server._newEntity('client', {playerId: player1.id, factionId: faction1.id});
-
 }
 
 function generateAvailableMinerals(bodyDefinition, definition) {

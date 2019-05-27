@@ -369,63 +369,93 @@ export default {
 
     "m1": {
       name: "Mining rate 1",
-      miningMod: 0.2,
+      modifyCapabilities: {
+        mining: 0.2,
+      },
     },
     "m2": {
       name: "Mining rate 2",
-      miningMod: 0.2,
+      modifyCapabilities: {
+        mining: 0.2,
+      },
     },
     "m3": {
       name: "Mining rate 3",
-      miningMod: 0.2,
+      modifyCapabilities: {
+        mining: 0.2,
+      },
     },
     "m4": {
       name: "Mining rate 4",
-      miningMod: 0.2,
+      modifyCapabilities: {
+        mining: 0.2,
+      },
     },
     "m5": {
       name: "Mining rate 5",
-      miningMod: 0.2,
+      modifyCapabilities: {
+        mining: 0.2,
+      },
     },
     "c1": {
       name: "Construction rate 1",
-      constructionMod: 0.2,
+      modifyCapabilities: {
+        construction: 0.2,
+      },
     },
     "c2": {
       name: "Construction rate 2",
-      constructionMod: 0.2,
+      modifyCapabilities: {
+        construction: 0.2,
+      },
     },
     "c3": {
       name: "Construction rate 3",
-      constructionMod: 0.2,
+      modifyCapabilities: {
+        construction: 0.2,
+      },
     },
     "c4": {
       name: "Construction rate 4",
-      constructionMod: 0.2,
+      modifyCapabilities: {
+        construction: 0.2,
+      },
     },
     "c5": {
       name: "Construction rate 5",
-      constructionMod: 0.2,
+      modifyCapabilities: {
+        construction: 0.2,
+      },
     },
     "r1": {
       name: "Research rate 1",
-      researchMod: 0.2,
+      modifyCapabilities: {
+        research: 0.2,
+      },
     },
     "r2": {
       name: "Research rate 2",
-      researchMod: 0.2,
+      modifyCapabilities: {
+        research: 0.2,
+      },
     },
     "r3": {
       name: "Research rate 3",
-      researchMod: 0.2,
+      modifyCapabilities: {
+        research: 0.2,
+      },
     },
     "r4": {
       name: "Research rate 4",
-      researchMod: 0.2,
+      modifyCapabilities: {
+        research: 0.2,
+      },
     },
     "r5": {
       name: "Research rate 5",
-      researchMod: 0.2,
+      modifyCapabilities: {
+        research: 0.2,
+      },
     },
   }
 };

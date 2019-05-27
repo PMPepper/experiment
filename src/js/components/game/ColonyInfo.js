@@ -38,20 +38,17 @@ export default class ColonyInfo extends React.Component {
 
     const isMineralsSurveyed = factionSystemBody.factionSystemBody.isSurveyed;
 
-
     //Mineral rows
-    const miningProduction = colony.colony.miningProduction;
-
     const mineralsRows = isMineralsSurveyed ? map(clientState.initialGameState.minerals, (mineral, mineralId) => {
       const systemBodyMinerals = systemBody.availableMinerals[mineralId];
-      const annualProduction = miningProduction.total * systemBodyMinerals.access;
+      const annualProduction = (colony.colony.capabilityProductionTotals.mining || 0) * systemBodyMinerals.access;
 
       return {
         mineral,
         quantity: Math.ceil(systemBodyMinerals.quantity),
         access: systemBodyMinerals.access,
         production: annualProduction,
-        depletion: roundToDigits(systemBodyMinerals.quantity / annualProduction, 3),
+        depletion: annualProduction > 0 ? roundToDigits(systemBodyMinerals.quantity / annualProduction, 3) : Number.NaN,
         stockpile: Math.floor(colony.colony.minerals[mineralId]),
       };
     }) : null;

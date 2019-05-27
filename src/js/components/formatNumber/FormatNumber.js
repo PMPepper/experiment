@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {Trans} from "@lingui/macro";
 
 import formatNumber from '@/helpers/string/format-number';
 import isInteger from '@/prop-types/is-integer';
 
 
 export default function FormatNumber({value, langCode = null, decimalPlaces = null, options = null}) {
-  return formatNumber(value, decimalPlaces, langCode, options);
+  return isNaN(value) ? <Trans id="formatNumber.isNaN">-</Trans> : formatNumber(value, decimalPlaces, langCode, options);
 }
 
 if(process.env.NODE_ENV !== 'production') {
