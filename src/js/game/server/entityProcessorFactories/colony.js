@@ -26,14 +26,13 @@ export default function colonyFactory(lastTime, time, init) {
         const structureDefinitions = gameConfig.structures;
         const capabilityProductionTotals = {};//the total procution this colony is capable of for each capability (mining, research, etc)
         const structuresWithCapability = {};//total structures for each capability [capability][structureId] = number of structures
-        let totalRequiredWorkforce = 0;
 
         colony.colony.populationCapabilityProductionTotals = {};
         colony.colony.populationStructuresWithCapability = {};
 
         //for each population, calculate population growth, total number of workers and production output
-        for(i = 0, l = colony.colony.populationIds.length; i < l; ++i) {
-          let population = entities[colony.colony.populationIds[i]];
+        for(i = 0, l = colony.populationIds.length; i < l; ++i) {
+          let population = entities[colony.populationIds[i]];
 
           calculatePopulationGrowth(init, population, colony, entities);
 
@@ -89,7 +88,10 @@ export default function colonyFactory(lastTime, time, init) {
           })
         }
 
-        //TODO Research
+        //Research
+        if(capabilityProductionTotals.research) {
+
+        }
         //const researchProduction = capabilityProductionTotals.research;
 
 

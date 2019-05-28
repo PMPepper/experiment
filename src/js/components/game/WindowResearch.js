@@ -7,6 +7,7 @@ import {I18n} from "@lingui/react";
 
 //Components
 import Layout, {Row, Cell} from '@/components/layout/Layout';
+import Button from '@/components/button/Button';
 import ReduxDataTableState from '@/components/datatable/ReduxDataTableState';
 import AvailableResearchProjects from '@/components/game/tables/AvailableResearchProjects';
 import Modal from '@/components/modal/Modal';
@@ -41,7 +42,13 @@ class WindowResearch extends React.Component {
 
       return <div className="vspaceStart">
         <div><Trans>Total research facilities: {totalNumResearchFacilities}</Trans></div>
-        <div>TODO in progress research projects</div>
+        <div>
+          <div className="hspaceStart">
+            <Button onClick={null}><Trans id="windowResearch.groups.create">Create</Trans></Button>
+            <Button onClick={null}><Trans id="windowResearch.groups.edit">Edit</Trans></Button>
+            <Button onClick={null}><Trans id="windowResearch.groups.remove">Remove</Trans></Button>
+          </div>
+        </div>
         <div>
           <h4>Available research projects</h4>
           <select className="space" value={coloniesWindow.researchSelectedArea} onChange={(e) => {this.props.setResearchSelectedArea(e.target.value)}}>

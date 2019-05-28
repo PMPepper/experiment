@@ -289,12 +289,57 @@ export default class Server {
 
   message_createColony(systemBodyId, clientId) {
     if(this.phase !== RUNNING) {
-      throw new Error('Can only set is paused while server is in "running" phase');
+      throw new Error('Can only create colony while server is in "running" phase');
     }
 
     this._checkValidClient(clientId);
 
-    this.createColony(systemBodyId, this.clients[clientId].factionId);
+    const colony = this.createColony(systemBodyId, this.clients[clientId].factionId);
+
+    return Promise.resolve(colony.id);
+  }
+
+  message_createResearchGroup(colonyId, structures, projects, clientId) {
+    if(this.phase !== RUNNING) {
+      throw new Error('Can only add research group while server is in "running" phase');
+    }
+
+    this._checkValidClient(clientId);
+
+    const factionId = this.clients[clientId].factionId;
+    const colony = this.getEntityById(colonyId);
+
+    if(!colony || colony.factionId !== factionId) {
+      throw new Error('Cannot add researchGroup, invalid colony');
+    }
+
+    const researchGroup = this.createResearchGroup(colonyId, structures || {}, projects || []);
+
+    return Promise.resolve(researchGroup.id);
+  }
+
+  message_removeResearchGroup(researchGroupId, clientId) {
+    if(this.phase !== RUNNING) {
+      throw new Error('Can only remove research group while server is in "running" phase');
+    }
+
+    this._checkValidClient(clientId);
+
+    this.clients[clientId].factionId;
+
+    //TODO
+  }
+
+  message_updateResearchGroup(researchGroupId, structures, projects, clientId) {
+    if(this.phase !== RUNNING) {
+      throw new Error('Can only remove research group while server is in "running" phase');
+    }
+
+    this._checkValidClient(clientId);
+
+    this.clients[clientId].factionId;
+
+    //TODO
   }
 
 
@@ -363,11 +408,13 @@ export default class Server {
       systemId: systemBody.systemId,
       systemBodyId: systemBody.id,
       factionSystemBodyId: getFactionSystemBodyFromFactionAndSystemBody(faction, systemBody, this.entities).id,
+      researchGroupIds: [],//groups performing research
+      populationIds,
       colony: {
-        populationIds,
         structures,
         minerals,
-        researchInProgress: {},
+        researchInProgress: {},//progress on research projects on this colony
+
         buildQueue: [],
         capabilityProductionTotals: {},
         structuresWithCapability: {},
@@ -382,6 +429,27 @@ export default class Server {
     this.entitiesLastUpdated[factionId] = this.gameTime + 1;//mark faction as updated
 
     return colony;
+  }
+
+  createResearchGroup(colonyId, structures, projects) {
+    const colony = this.getEntityById(colonyId, 'colony');
+
+    if(!colony) {
+      throw new Error('cannot create research group, invalid colonyId');
+    }
+
+    const researchGroup = this._newEntity('researchGroup', {
+      factionId: colony.factionId,
+      colonyId: colony.id,
+
+
+      researchGroup: {
+        structures,//describes what this group would like to use - what they get depends on what is available - groups are assigned structures based on order
+        projects//array of research projects IDs, to be performed in order
+      }
+    });
+
+    return researchGroup;
   }
 
   createPopulation(factionId, colonyId, speciesId, quantity) {
@@ -404,9 +472,9 @@ export default class Server {
     //Init worker counts
     calculatePopulationWorkers(entity, this.entities);
 
-    if(colony) {
-      this.addPopulationToColony(colony.id, entity.id);
-    }
+    // if(colony) {
+    //   this.addPopulationToColony(colony.id, entity.id);
+    // }
 
     return entity;
   }
@@ -421,7 +489,7 @@ export default class Server {
       return;
     }
 
-    colony.colony.populationIds.push(population.id);
+    colony.populationIds.push(population.id);
 
     population.colonyId = colony.id;
 
@@ -634,7 +702,7 @@ export default class Server {
 
     //automatically add ref to this entity in linked entities
     //-props to check for links
-    const idProps = ['factionId', 'speciesId', 'systemBodyId', 'systemId', 'speciesId', 'factionSystemId', 'factionSystemBodyId'];
+    const idProps = ['factionId', 'speciesId', 'systemBodyId', 'systemId', 'speciesId', 'factionSystemId', 'factionSystemBodyId', 'colonyId'];
 
     for(let i = 0; i < idProps.length; i++) {
       const prop = idProps[i];

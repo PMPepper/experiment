@@ -1,9 +1,9 @@
 {
-  "Total research facilities: {0}": {
+  "Total research facilities: {totalNumResearchFacilities}": {
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        41
+        43
       ]
     ]
   },
@@ -12,7 +12,7 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        46
+        48
       ]
     ]
   },
@@ -20,11 +20,11 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        70
+        72
       ],
       [
         "src/js/components/game/WindowResearch.js",
-        96
+        98
       ]
     ]
   },
@@ -32,7 +32,7 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        73
+        75
       ]
     ]
   }
