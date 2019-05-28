@@ -7,6 +7,7 @@ import defaultStyles from './styles.scss';
 
 import ErrorBoundary from '@/components/error/ErrorBoundary';
 import FadeAnimation from '@/components/transitions/FadeAnimation';
+import RenderChildren from '@/components/renderChildren/RenderChildren';
 
 import getFocusableElements from '@/helpers/dom/get-focusable-elements';
 import combineProps from '@/helpers/react/combine-props';
@@ -48,16 +49,18 @@ export default class Modal extends React.Component {
     const modifierClasses = css(bg && styles[`bg-${bg}`], mode && styles[`mode-${mode}`], size && styles[`size-${size}`]);
 
     return ReactDOM.createPortal(
-      <FadeAnimation onChangeAnimationState={onClosed ? (to, from) => {to === 0 && onClosed();} : null}>
-        {isOpen && <article
-          ref={this._setRef}
-          aria-modal="true"
-          aria-label={contentLabel ? contentLabel : null}
-          className={css(styles.modal, modifierClasses)}
-          tabIndex="0"
-          onFocus={this._onFocus}
-          onKeyDown={this._onKeyDown}
-        >
+      <FadeAnimation
+        component="article"
+        aria-modal="true"
+        aria-label={contentLabel ? contentLabel : null}
+        className={css(styles.modal, modifierClasses)}
+        tabIndex="0"
+        onFocus={this._onFocus}
+        onKeyDown={this._onKeyDown}
+        getRef={this._setRef}
+        onChangeAnimationState={onClosed ? (to, from) => {to === 0 && onClosed();} : null}
+      >
+        {isOpen && <RenderChildren>
           <span tabIndex="0" className="offscreen"></span>
           <div className={css(styles.overlay, modifierClasses)} onClick={clickOutsideCloses ? onRequestClose : null}></div>
           <section
@@ -84,7 +87,7 @@ export default class Modal extends React.Component {
             </div>
           </section>
           <span tabIndex="0" className="offscreen"></span>{/*This is used for focus management*/}
-        </article>}
+        </RenderChildren>}
       </FadeAnimation>,
       document.body,//DEV make this in some way configurable? Not when YAGNI.
     );

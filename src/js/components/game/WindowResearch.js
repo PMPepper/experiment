@@ -5,13 +5,15 @@ import {connect} from 'react-redux';
 import {Trans} from "@lingui/macro";
 import {I18n} from "@lingui/react";
 
+import { Button } from 'semantic-ui-react'
+
 //Components
 import Layout, {Row, Cell} from '@/components/layout/Layout';
-import Button from '@/components/button/Button';
+//import Button from '@/components/button/Button';
 import ReduxDataTableState from '@/components/datatable/ReduxDataTableState';
 import AvailableResearchProjects from '@/components/game/tables/AvailableResearchProjects';
 import Modal from '@/components/modal/Modal';
-import AddResearchModal from '@/components/game/AddResearchModal';
+import AddEditResearchGroup from '@/components/game/AddEditResearchGroup';
 
 //Helpers
 import filter from '@/helpers/object/filter';
@@ -24,8 +26,12 @@ import {setResearchSelectedArea} from '@/redux/reducers/coloniesWindow';
 class WindowResearch extends React.Component {
 
   state = {
-    isAddResearchProjectOpen: false
+    isAddEditResearchGroupOpen: false
   };
+
+  onClickAddResearchGroup = () => {
+    this.setState({isAddEditResearchGroupOpen: true})
+  }
 
 
   render () {
@@ -44,7 +50,7 @@ class WindowResearch extends React.Component {
         <div><Trans>Total research facilities: {totalNumResearchFacilities}</Trans></div>
         <div>
           <div className="hspaceStart">
-            <Button onClick={null}><Trans id="windowResearch.groups.create">Create</Trans></Button>
+            <Button onClick={this.onClickAddResearchGroup}><Trans id="windowResearch.groups.create">Create</Trans></Button>
             <Button onClick={null}><Trans id="windowResearch.groups.edit">Edit</Trans></Button>
             <Button onClick={null}><Trans id="windowResearch.groups.remove">Remove</Trans></Button>
           </div>
@@ -56,7 +62,7 @@ class WindowResearch extends React.Component {
             {Object.keys(researchAreas).map(areaId => (<option value={areaId} key={areaId}>{researchAreas[areaId]}</option>))}
           </select>
 
-          <Layout>
+          {/*<Layout>
             <Row>
               <Cell large={1} medium={1}>
                 <ReduxDataTableState path="coloniesWindow.availableResearchTable">
@@ -76,14 +82,14 @@ class WindowResearch extends React.Component {
                   <div>
                     <p>{selectedResearchProject.description}</p>
 
-                    <button type="button" onClick={() => {this.setState({isAddResearchProjectOpen: true})}}><Trans>Create research project</Trans></button>
+                    <button type="button" onClick={() => {this.setState({isAddEditResearchGroupOpen: true})}}><Trans>Create research project</Trans></button>
                   </div>
                   :
                   <Trans>Select a research project</Trans>
                 }
               </Cell>
             </Row>
-          </Layout>
+          </Layout>*/}
 
 
         </div>
@@ -103,10 +109,16 @@ class WindowResearch extends React.Component {
         })*/}
         <Modal
           title={<Trans>Create research project</Trans>}
-          isOpen={this.state.isAddResearchProjectOpen}
-          onRequestClose={() => {this.setState({isAddResearchProjectOpen: false})}}
+          isOpen={this.state.isAddEditResearchGroupOpen}
+          onRequestClose={() => {this.setState({isAddEditResearchGroupOpen: false})}}
         >
-          {selectedResearchProject && <AddResearchModal key={selectedResearchProject.id} researchProject={selectedResearchProject} faction={this.faction} colony={this.colony} gameConfig={this.props.clientState.initialGameState} />}
+          <AddEditResearchGroup
+            //key={selectedResearchProject.id}
+            //researchProject={selectedResearchProject}
+            faction={this.faction}
+            colony={this.colony}
+            gameConfig={this.props.clientState.initialGameState}
+          />
         </Modal>
       </div>;
     }}</I18n>
