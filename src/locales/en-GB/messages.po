@@ -41,12 +41,12 @@ msgstr ""
 msgid "Create colony"
 msgstr ""
 
-#: src/js/components/game/WindowResearch.js:70
-#: src/js/components/game/WindowResearch.js:96
+#: src/js/components/game/WindowResearch.js:72
+#: src/js/components/game/WindowResearch.js:98
 msgid "Create research project"
 msgstr ""
 
-#: src/js/components/game/ColonyInfo.js:67
+#: src/js/components/game/ColonyInfo.js:64
 msgid "Industry"
 msgstr ""
 
@@ -54,7 +54,7 @@ msgstr ""
 msgid "Mineral"
 msgstr ""
 
-#: src/js/components/game/ColonyInfo.js:70
+#: src/js/components/game/ColonyInfo.js:67
 msgid "Mining"
 msgstr ""
 
@@ -70,11 +70,11 @@ msgstr ""
 msgid "RPs"
 msgstr ""
 
-#: src/js/components/game/ColonyInfo.js:86
+#: src/js/components/game/ColonyInfo.js:83
 msgid "Research"
 msgstr ""
 
-#: src/js/components/game/WindowResearch.js:73
+#: src/js/components/game/WindowResearch.js:75
 msgid "Select a research project"
 msgstr ""
 
@@ -82,16 +82,20 @@ msgstr ""
 msgid "Stockpile"
 msgstr ""
 
-#: src/js/components/game/ColonyInfo.js:62
+#: src/js/components/game/ColonyInfo.js:59
 msgid "Summary"
 msgstr ""
 
-#: src/js/components/game/ColonyInfo.js:83
+#: src/js/components/game/ColonyInfo.js:80
 msgid "System body not surveyed"
 msgstr ""
 
 #: src/js/components/game/WindowResearch.js:41
-msgid "Total research facilities: {0}"
+#~ msgid "Total research facilities: {0}"
+#~ msgstr ""
+
+#: src/js/components/game/WindowResearch.js:43
+msgid "Total research facilities: {totalNumResearchFacilities}"
 msgstr ""
 
 #: src/js/components/game/tables/ColonyMinerals.js:35
@@ -121,6 +125,10 @@ msgstr ""
 
 #: src/js/components/game/Game.js:280
 msgid "fleetsWindow.title"
+msgstr ""
+
+#: src/js/components/formatNumber/FormatNumber.js:10
+msgid "formatNumber.isNaN"
 msgstr ""
 
 #: src/js/components/modal/Modal.js:75
@@ -172,6 +180,6 @@ msgstr ""
 msgid "toolbar.x86400"
 msgstr ""
 
-#: src/js/components/game/WindowResearch.js:46
+#: src/js/components/game/WindowResearch.js:48
 msgid "windowResearch.area.select"
 msgstr ""
