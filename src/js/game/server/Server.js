@@ -635,10 +635,10 @@ export default class Server {
     }
   }
 
-  _getEntityProcessors(lastGameTime, gameTime) {
+  _getEntityProcessors(lastGameTime, gameTime, init = false) {
 
     //create entity processors
-    const entityProcessors = this.entityProcessorFactories.map(factory => (factory(lastGameTime, gameTime))).filter(processor => (!!processor));
+    const entityProcessors = this.entityProcessorFactories.map(factory => (factory(lastGameTime, gameTime, init))).filter(processor => (!!processor));
 
     //create composed function for processing all entities
     //called for each entity - any processor the mutates the entity must return true

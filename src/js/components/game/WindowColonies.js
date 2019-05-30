@@ -2,7 +2,7 @@ import React from 'react';
 import memoize from 'memoize-one';
 import {compose} from 'recompose';
 import {connect} from 'react-redux';
-import {Trans} from "@lingui/macro";
+import {Trans} from '@lingui/macro';
 
 import Tree from '@/components/tree/Tree';
 import Layout, {Row, Cell} from '@/components/layout/Layout';

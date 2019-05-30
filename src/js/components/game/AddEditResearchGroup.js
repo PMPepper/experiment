@@ -4,7 +4,8 @@ import {I18n} from '@lingui/react';
 import memoize from 'memoize-one';
 
 //Components
-import { Form, Input, Button } from 'semantic-ui-react'
+//import { Form, Input, Button } from 'semantic-ui-react'
+import Form from '@/components/form/Form';
 
 //Helpers
 import mapToSortedArray from '@/helpers/object/map-to-sorted-array';
@@ -38,8 +39,191 @@ export default class AddEditResearchGroup extends React.Component {
     const {colony, gameConfig} = this.props;
 
     return <I18n>{({i18n}) => {
-      return <Form>
-        <Form.Group inline>
+      if(!colony.colony.structuresWithCapability.research) {
+        //this colony cannot do any research
+        return '[TODO Colony incapable of research!]';
+      }
+
+      //Legends cannot be inline
+      //Inline fields and their children must use the 'x wide' syntax???
+
+      return <Form name="example">
+
+        <Form.Group>
+          <Form.Legend>Shipping information</Form.Legend>
+
+          <Form.Group>
+            <Form.Legend label>Name</Form.Legend>
+
+            <Form.Row two>
+              <Form.Field name="firstName">
+                <Form.Label hide>First name</Form.Label>
+                <Form.Input placeholder="First name" />
+              </Form.Field>
+
+              <Form.Field name="lastName">
+                <Form.Label hide>Last name</Form.Label>
+                <Form.Input placeholder="Last name" />
+              </Form.Field>
+            </Form.Row>
+          </Form.Group>
+
+          <Form.Group>
+            <Form.Legend label>Billing address</Form.Legend>
+
+            <Form.Row four>
+              <Form.Field three wide name="streetAddress">
+                <Form.Label hide>Street address</Form.Label>
+                <Form.Input placeholder="Street address" />
+              </Form.Field>
+
+              <Form.Field one wide name="lastName">
+                <Form.Label hide>Last name</Form.Label>
+                <Form.Input placeholder="Last name" />
+              </Form.Field>
+            </Form.Row>
+
+            <Form.Row two>
+              <Form.Field name="region">
+                <Form.Label>State/Region</Form.Label>
+                <Form.Input placeholder="State/region" />
+              </Form.Field>
+
+              <Form.Field name="country">
+                <Form.Label>Country</Form.Label>
+                <Form.Select placeholder="Country" options={[{value: 'foo', label: 'Foo'}, {value: 'bar', label: 'bar'}]} />
+              </Form.Field>
+            </Form.Row>
+          </Form.Group>
+        </Form.Group>
+
+        <Form.Group>
+          <Form.Legend>Billing information</Form.Legend>
+
+          <Form.Row one>
+            <Form.Field name="cardType">
+              <Form.Label>Card type</Form.Label>
+              <Form.Select options={[{value: 'foo', label: 'Foo'}, {value: 'bar', label: 'bar'}]} />
+            </Form.Field>
+          </Form.Row>
+
+          <Form.Row sixteen>
+            <Form.Field seven wide name="cardNumber">
+              <Form.Label>Card number</Form.Label>
+              <Form.Input placeholder="Card #" />
+            </Form.Field>
+            <Form.Field three wide name="cardCVC">
+              <Form.Label>CVC</Form.Label>
+              <Form.Input placeholder="CVC" maxLength="3" />
+            </Form.Field>
+
+            <Form.Group six wide>
+              <Form.Legend label>Expiration</Form.Legend>
+
+              <Form.Row two>
+                <Form.Field name="cardExpiryMonth">
+                  <Form.Label hide>Card expiry month</Form.Label>
+                  <Form.Select options={[{value: 'foo', label: 'Foo'}, {value: 'bar', label: 'bar'}]} />
+                </Form.Field>
+                <Form.Field name="cardExpiryYear">
+                  <Form.Label hide>Card expiry year</Form.Label>
+                  <Form.Input placeholder="Year" />
+                </Form.Field>
+              </Form.Row>
+            </Form.Group>
+          </Form.Row>
+        </Form.Group>
+
+        <Form.Row>
+          <Form.Field name="justARow">
+            <Form.Label>Just a row</Form.Label>
+            <Form.Input placeholder="Just a row" />
+          </Form.Field>
+        </Form.Row>
+
+        {/*Examples of checkboxes*/}
+        <Form.Row one>
+          <Form.Field name="cardExpiryYear">
+            <Form.Label>Do not include a receipt in the package</Form.Label>
+            <Form.Input placeholder="Year" type="checkbox" />
+          </Form.Field>
+        </Form.Row>
+
+        <Form.Row two>
+          <Form.Field name="cardExpiryYear">
+            <Form.Label>Do not include a receipt in the package</Form.Label>
+            <Form.Input placeholder="Year" type="checkbox" />
+          </Form.Field>
+
+          <Form.Field name="cardExpiryYear">
+            <Form.Label>Do not include a receipt in the package</Form.Label>
+            <Form.Input placeholder="Year" type="checkbox" />
+          </Form.Field>
+        </Form.Row>
+
+        {/*Inline checkbox - width needs to be set on the label AND field - TODO maybe the field could handle this?*/}
+        <Form.Row twelve>
+          <Form.Field seven wide name="cardExpiryYear">
+            <Form.Label seven wide>Another checkbox</Form.Label>
+            <Form.Input placeholder="Year" type="checkbox" />
+          </Form.Field>
+
+          <Form.Field five wide name="cardExpiryYear">
+            <Form.Label five wide>Yet another checkbox</Form.Label>
+            <Form.Input placeholder="Year" type="checkbox" />
+          </Form.Field>
+        </Form.Row>
+
+        {/*Examples of inline rows*/}
+        <Form.Group>
+          <Form.Legend>Inline rows</Form.Legend>
+          <Form.Row twelve>
+            <Form.Field name="inlineRow" six wide inline>
+              <Form.Label two wide>Inline row</Form.Label>
+              <Form.Input four wide placeholder="Inline row" />
+            </Form.Field>
+
+            <Form.Field name="inlineRow" six wide inline>
+              <Form.Label two wide>Inline row</Form.Label>
+              <Form.Input four wide placeholder="Inline row" />
+            </Form.Field>
+          </Form.Row>
+
+          <Form.Row twelve>
+            <Form.Field name="inlineRow" twelve wide inline>
+              <Form.Label two wide>Inline row</Form.Label>
+              <Form.Input ten wide placeholder="Inline row" />
+            </Form.Field>
+          </Form.Row>
+
+          <Form.Row twelve>
+            <Form.Field name="inlineRow" six wide inline>
+              <Form.Label two wide>Inline row</Form.Label>
+              <Form.Select four wide options={[{value: 'foo', label: 'Foo'}, {value: 'bar', label: 'bar'}]} />
+            </Form.Field>
+
+            {/*Inline checkbox - width needs to be set on the label - TODO maybe the field could handle this (same as above)?*/}
+            <Form.Field name="inlineRow" six wide inline>
+              <Form.Label six wide>Do not include a receipt in the package</Form.Label>
+              <Form.Input placeholder="Year" type="checkbox" />
+            </Form.Field>
+          </Form.Row>
+
+          {/*Inline row without explicit column width declarations - assumes all items the same width*/}
+          <Form.Row three>
+            <Form.Field name="inlineRow" inline>
+              <Form.Label>Inline row</Form.Label>
+              <Form.Input placeholder="Inline row" />
+            </Form.Field>
+
+            <Form.Field name="inlineRow" inline>
+              <Form.Label hide>Inline row</Form.Label>
+              <Form.Input placeholder="Inline row" />
+            </Form.Field>
+          </Form.Row>
+        </Form.Group>
+
+        {/*<Form.Group inline>
           <label><Trans id="addEditResearchGroup.researchArea.label">Research area</Trans></label>
           <Form.Select options={this.getResearchAreaOptions(i18n, gameConfig.researchAreas)} placeholder={i18n._('addEditResearchGroup.researchArea.placeholder', null, {defaults: '- -please select- -'})} />
         </Form.Group>
@@ -57,8 +241,8 @@ export default class AddEditResearchGroup extends React.Component {
               const value = this.state.facilities[structureId] || 0;
 
               return <Form.Field inline key={structureId}>
-                <label>{structure.name}</label>{/*TODO translation!*/}
-                <Input type="number" id={id} min={0} max={available} step={1} />{/*value={value} onChange={(e) => {this.updateSelectedFacilities(structureId, +e.target.value)}}*/}
+                <label>{structure.name}</label>{/*TODO translation!
+                <Input type="number" id={id} min={0} max={available} step={1} />{/*value={value} onChange={(e) => {this.updateSelectedFacilities(structureId, +e.target.value)}}
               </Form.Field>;
             },
             (a, b) => {return a.name > b.name ? -1 : 1},//TODO sort on translated text using locale (i18n.language),
@@ -70,7 +254,7 @@ export default class AddEditResearchGroup extends React.Component {
         </Button>
         <Button onClick={this.context}>
           <Trans>Cancel</Trans>
-        </Button>
+        </Button>*/}
       </Form>
     }}</I18n>
 

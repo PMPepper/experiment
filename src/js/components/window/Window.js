@@ -1,6 +1,6 @@
 import React from 'react';
 import {compose} from 'recompose';
-import {Trans} from "@lingui/macro"
+import {Trans} from '@lingui/macro'
 
 //HOCs
 import WindowSizeComponent from '@/HOCs/WindowSizeComponent';

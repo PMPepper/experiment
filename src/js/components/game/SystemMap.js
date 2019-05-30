@@ -33,7 +33,6 @@ const fastWheelZoomSpeed = 1.5;
 const zoomEaseFactor = 1/3;
 const zoomEaseThreshold = 0.0001;
 
-
 //time (in seconds) over which easing gets ramped from base to 1 when following a position
 //this is to catch up with fast objects
 const followExtraEaseTime = 0.5;

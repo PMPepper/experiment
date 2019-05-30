@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Trans} from "@lingui/macro";
+import {Trans} from '@lingui/macro';
 
 import formatNumber from '@/helpers/string/format-number';
 import isInteger from '@/prop-types/is-integer';

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Trans} from "@lingui/macro"
+import {Trans} from '@lingui/macro'
 
 import dataTableFactory from '@/components/datatable/DataTableFactory';
 

@@ -2,7 +2,7 @@ import React from 'react';
 //import memoize from 'memoize-one';
 import {compose} from 'recompose';
 import {connect} from 'react-redux';
-import {Trans} from "@lingui/macro";
+import {Trans} from '@lingui/macro';
 
 //Internal components
 import ColonyMineralsTable from './tables/ColonyMinerals';

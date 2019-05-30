@@ -1,7 +1,7 @@
 import React from 'react';
 import {compose} from 'recompose';
 import {connect} from 'react-redux';
-import {Trans} from "@lingui/macro"
+import {Trans} from '@lingui/macro'
 
 import styles from './styles.scss';
 import SystemMap from './SystemMap';
@@ -18,6 +18,7 @@ import AddContextMenu from '@/components/contextMenu/AddContextMenu';
 
 import FPSStats from '@/components/dev/FPSStats';
 //import Icon from '@/components/icon/Icon';
+import Test from './Test';
 
 
 
@@ -281,6 +282,7 @@ function Game({
       <Window lastInteracted={shipDesignWindow.lastInteracted} reduxPath="shipDesignWindow" title={<Trans id="shipDesignWindow.title">Ship design</Trans>}>TODO ship design window!</Window>
     </SortChildren>
     <FPSStats isActive={true} />
+    <Test />
   </div>
 }
 

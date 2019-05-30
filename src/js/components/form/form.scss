@@ -1,0 +1,264 @@
+@import '../../../css/shared';
+
+$formFontSize: 1.4rem;
+$formLegendFontSize: 1.6rem;
+$formLabelFontSize: $formFontSize;
+$formBaseSpacing: 1.6rem;
+
+$formTextColour: #333;
+$formLineColour: #CCC;
+$formHoverLineColour: darken($formLineColour, 15%);
+$formFocusLineColour: #80b5d5;
+
+$boxBorderRadius: 0.3rem;
+
+@mixin formBoxStyle($padding: $formBaseSpacing/2) {
+  padding: $padding;
+  border: 0.1rem solid $formLineColour;
+  border-radius: $boxBorderRadius;
+  box-shadow: 0 0 0.3rem 0 rgba(0,0,0,.15) inset;
+  transition: background 0.3s ease, border-color 0.3s ease;
+
+  &:hover {
+    border-color: $formHoverLineColour;
+  }
+
+  &:focus {
+    border-color: $formFocusLineColour;
+  }
+}
+
+.form {
+  font-weight: bold;
+  color: $formTextColour;
+
+  > .group:first-child > .legend:first-child {
+    margin-top: 0;
+  }
+}
+
+.group {//a fieldset element
+  clear: left;
+  font-size: $formFontSize;
+  display: block;
+  border: 0;
+  margin: 0 0 $formBaseSpacing 0;
+  padding: 0;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &.hasLegend {
+    font-weight: bold;
+  }
+}
+
+.legend {
+  display: block;
+  float: left;
+  width: 100%;
+  margin: $formBaseSpacing/2 0 $formBaseSpacing 0;
+  padding: 0 0 ($formBaseSpacing/2) 0;
+  font-weight: bold;
+  font-size: $formLegendFontSize;
+  border-bottom: 0.1rem solid $formLineColour;
+
+  &.asLabel {
+    font-size: $formLabelFontSize;
+    border: 0;
+    padding: 0;
+    margin: 0 0 $formBaseSpacing/4 0;
+  }
+}
+
+$rowFieldHorizontalSpacing: $formBaseSpacing/2;
+
+.row {
+  clear: left;
+  display: flex;
+  flex-direction: row;
+  margin: 0 (-$rowFieldHorizontalSpacing) ($formBaseSpacing) (-$rowFieldHorizontalSpacing);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  > .field,
+  > .group {
+    flex: 0 1 auto;
+    padding-left: $rowFieldHorizontalSpacing;
+    padding-right: $rowFieldHorizontalSpacing;
+  }
+}
+
+.field {
+  clear: left;
+  font-size: $formFontSize;
+  display: flex;
+  flex-flow: row wrap;
+  min-width: 0;
+
+  &.inline {
+    align-items: baseline;
+  }
+}
+
+.input {
+  @include formBoxStyle;
+
+  font-size: $formFontSize;
+  flex: 100% 0 1;
+  min-width: 0;
+  cursor: text;
+
+  .isCheckbox > & {
+    @include offscreen;
+  }
+}
+
+.select {
+  @include formBoxStyle;
+  cursor: pointer;
+
+  font-size: $formFontSize;
+  flex: 100% 0 1;
+  min-width: 0;
+}
+
+.label {
+  font-size: $formLabelFontSize;
+  border: 0;
+  padding: 0;
+  margin: 0 0 $formBaseSpacing/4 0;
+  display: block;
+  cursor: pointer;
+  min-width: 0;
+
+  //checkbox stuff
+  $isCheckboxPadding: $formBaseSpacing/2;
+  $toggleWidth: 2em;
+  $toggleSize: 1em;
+
+  .inline {
+
+  }
+
+  .isCheckbox > & {
+    @include formBoxStyle($padding: $isCheckboxPadding $isCheckboxPadding $isCheckboxPadding calc(#{$isCheckboxPadding} + #{$isCheckboxPadding} + #{$toggleWidth}));
+
+    display: block;
+    width: 100%;
+    position: relative;
+
+    &::before {
+      display: block;
+      position: absolute;
+      content: '';
+      z-index: 1;
+      background: rgba(0,0,0,.05);
+      width: $toggleWidth;
+      height: $toggleSize;
+      top: $isCheckboxPadding;
+      left: $isCheckboxPadding;
+      border-radius: 500rem;
+      transition: background .3s ease;
+    }
+
+    &::after {
+      display: block;
+      box-shadow: 0 1px 2px 0 rgba(34,36,38,.15), 0 0 0 1px rgba(34,36,38,.15) inset;
+      background: rgb(230,230,230);
+      position: absolute;
+      opacity: 1;
+      content: '';
+      z-index: 2;
+      width: $toggleSize;
+      height: $toggleSize;
+      top: $isCheckboxPadding;
+      left: $isCheckboxPadding;
+      border-radius: 500rem;
+      transition: background .3s ease, left .3s ease;
+    }
+
+    &:hover {
+      &::after {
+        background: rgb(215,215,215);
+      }
+    }
+  }
+
+  //checkbox checked/focus styles
+  @at-root {
+    .isCheckbox > .input:checked + .label {
+      &::before {
+        background: rgba(0,0,0,.25);
+      }
+
+      &::after {
+        left: calc(#{$isCheckboxPadding} + #{$toggleWidth} - #{$toggleSize});
+      }
+    }
+
+    .isCheckbox > .input:focus + .label {
+      border-color: $formFocusLineColour;
+    }
+  }
+}
+
+.inline {
+  &.label,
+  &.input,
+  &.select {
+    //margin-left: $rowFieldHorizontalSpacing;
+    //margin-right: $rowFieldHorizontalSpacing;
+  }
+}
+
+.hide {
+  @include offscreen;
+}
+
+$columns: (one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen);
+
+@for $i from 1 through length($columns) {
+  $column: nth($columns, $i);
+
+  .row.#{$column} {
+    > .field,
+    > .group {
+      flex: percentage(1/$i) 0 1;
+
+      &.wide {
+        @for $j from 1 through $i {
+          $columnsWide: nth($columns, $j);
+
+          &.#{$columnsWide} {
+            flex: percentage($j / $i) 0 1;
+          }
+        }
+      }
+    }
+  }
+
+  .field.inline.#{$column} {
+    padding-left: 0;
+    padding-right: 0;
+
+    > .label,
+    > .input,
+    > .select {
+      margin-left: $rowFieldHorizontalSpacing;
+      margin-right: $rowFieldHorizontalSpacing;
+
+      @for $j from 1 through $i {
+        $columnsWide: nth($columns, $j);
+
+        &.#{$columnsWide} {
+          $value: calc(#{percentage($j / $i)} - #{$rowFieldHorizontalSpacing * 2});
+          flex: $value 0 1;
+        }
+      }
+    }
+  }
+}

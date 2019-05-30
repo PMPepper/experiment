@@ -2,7 +2,7 @@ import React from 'react';
 import memoize from 'memoize-one';
 import {compose} from 'recompose';
 import {connect} from 'react-redux';
-import {Trans} from "@lingui/macro";
+import {Trans} from '@lingui/macro';
 import {I18n} from "@lingui/react";
 
 import { Button } from 'semantic-ui-react'

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {I18nProvider} from '@lingui/react';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
-import 'semantic-ui-css/semantic.min.css';
+//import 'semantic-ui-css/semantic.min.css';
 
 import * as dom from './dom';
 import polyfills from './polyfills';

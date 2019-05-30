@@ -3,7 +3,31 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        43
+        50
+      ]
+    ]
+  },
+  "windowResearch.groups.create": {
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        53
+      ]
+    ]
+  },
+  "windowResearch.groups.edit": {
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        54
+      ]
+    ]
+  },
+  "windowResearch.groups.remove": {
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        55
       ]
     ]
   },
@@ -12,7 +36,7 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        48
+        61
       ]
     ]
   },
@@ -20,19 +44,7 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        72
-      ],
-      [
-        "src/js/components/game/WindowResearch.js",
-        98
-      ]
-    ]
-  },
-  "Select a research project": {
-    "origin": [
-      [
-        "src/js/components/game/WindowResearch.js",
-        75
+        111
       ]
     ]
   }
