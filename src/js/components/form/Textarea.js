@@ -6,7 +6,6 @@ import styles from './form.scss';
 //HOCs
 import NumberOfColumnsHOC from './NumberOfColumnsHOC';
 
-
 //Helpers
 import css from '@/helpers/css/class-list-to-string';
 import combineProps from '@/helpers/react/combine-props';
@@ -18,12 +17,10 @@ import {ColumnsContext} from './Form';
 //The component
 export default compose(
   NumberOfColumnsHOC
-)(
-  function Row({children, ...props}) {
-    return <ColumnsContext.Consumer>{(columnsData) => {
-      const columns = columnsData && columnsData.columns;
+)(function Textarea({inline, ...props}) {
+  return <ColumnsContext.Consumer>{(columnsData) => {
+    let columns = columnsData && columnsData.columns;
 
-      return <div {...combineProps({className: css(styles.row, styles[columns || 'one'])}, props)}>{children}</div>
-    }}</ColumnsContext.Consumer>
-  }
-);
+    return <textarea {...combineProps(props, {className: css(styles.textarea, inline && styles.inline, inline && styles[columns || 'one'])})} />
+  }}</ColumnsContext.Consumer>
+});

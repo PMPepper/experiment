@@ -1,3 +1,5 @@
+//A group of semantically grouped inputs.
+
 import React from 'react';
 import {compose} from 'recompose';
 
@@ -14,8 +16,11 @@ import css from '@/helpers/css/class-list-to-string';
 import combineProps from '@/helpers/react/combine-props';
 import getChildrenOfType from '@/helpers/react/get-children-of-type';
 
-//A group of semantically grouped inputs.
+//Contexts
+import {ColumnsContext} from './Form';
 
+
+//The component
 export default compose(
   NumberOfColumnsHOC
 )(function Group({numberOfColumns, columns, wide, children, ...props}) {
@@ -25,7 +30,11 @@ export default compose(
     throw new Error('Group may not have more than 1 legend');
   }
 
-  return <fieldset {...combineProps({className: css(styles.group, legends.length === 1 && styles.hasLegend, wide && styles.wide, columns && styles[columns])}, props)}>
-    {children}
-  </fieldset>
+  return <ColumnsContext.Consumer>{(columnsData) => {
+    const columns = columnsData && columnsData.columns;
+
+    return <fieldset {...combineProps({className: css(styles.group, legends.length === 1 && styles.hasLegend, columns && styles[columns])}, props)}>
+      {children}
+    </fieldset>
+  }}</ColumnsContext.Consumer>
 });

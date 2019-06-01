@@ -19,11 +19,11 @@ import {ColumnsContext} from './Form';
 export default compose(
   NumberOfColumnsHOC
 )(
-  function Row({children, ...props}) {
+  function Column({children, ...props}) {
     return <ColumnsContext.Consumer>{(columnsData) => {
       const columns = columnsData && columnsData.columns;
 
-      return <div {...combineProps({className: css(styles.row, styles[columns || 'one'])}, props)}>{children}</div>
+      return <div {...combineProps({className: css(styles.column, styles[columns || 'one'])}, props)}>{children}</div>
     }}</ColumnsContext.Consumer>
   }
 );

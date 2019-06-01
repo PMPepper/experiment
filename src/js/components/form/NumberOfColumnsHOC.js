@@ -1,66 +1,71 @@
 import React from 'react';
 import {getDisplayName} from 'recompose';
 
+import {ColumnsContext} from './Form';
+
 
 export default function numberOfColumns(PresentationalComponent) {
 
-  function NumberOfColumns({one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, ...props}) {
+  function NumberOfColumns({wide, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, ...props}) {
     let columns = null;
-    let name = null;
+    let numberOfColumns = null;
 
     if(one) {
-      name = 'one';
-      columns = 1;
+      columns = 'one';
+      numberOfColumns = 1;
     } else if(two) {
-      name = 'two';
-      columns = 2;
+      columns = 'two';
+      numberOfColumns = 2;
     } else if(three) {
-      name = 'three';
-      columns = 3;
+      columns = 'three';
+      numberOfColumns = 3;
     } else if(four) {
-      name = 'four';
-      columns = 4;
+      columns = 'four';
+      numberOfColumns = 4;
     } else if(five) {
-      name = 'five';
-      columns = 5;
+      columns = 'five';
+      numberOfColumns = 5;
     } else if(six) {
-      name = 'six';
-      columns = 6;
+      columns = 'six';
+      numberOfColumns = 6;
     } else if(seven) {
-      name = 'seven';
-      columns = 7;
+      columns = 'seven';
+      numberOfColumns = 7;
     } else if(eight) {
-      name = 'eight';
-      columns = 8;
+      columns = 'eight';
+      numberOfColumns = 8;
     } else if(nine) {
-      name = 'nine';
-      columns = 9;
+      columns = 'nine';
+      numberOfColumns = 9;
     } else if(ten) {
-      name = 'ten';
-      columns = 10;
+      columns = 'ten';
+      numberOfColumns = 10;
     } else if(eleven) {
-      name = 'eleven';
-      columns = 11;
+      columns = 'eleven';
+      numberOfColumns = 11;
     } else if(twelve) {
-      name = 'twelve';
-      columns = 12;
+      columns = 'twelve';
+      numberOfColumns = 12;
     } else if(thirteen) {
-      name = 'thirteen';
-      columns = 13;
+      columns = 'thirteen';
+      numberOfColumns = 13;
     } else if(fourteen) {
-      name = 'fourteen';
-      columns = 14;
+      columns = 'fourteen';
+      numberOfColumns = 14;
     } else if(fifteen) {
-      name = 'fifteen';
-      columns = 15;
+      columns = 'fifteen';
+      numberOfColumns = 15;
     } else if(sixteen) {
-      name = 'sixteen';
-      columns = 16;
+      columns = 'sixteen';
+      numberOfColumns = 16;
     }
 
     //TODO if in Debug mode, check that multiple column numbers aren't set!
-
-    return <PresentationalComponent {...props} numberOfColumns={columns} columns={name} />
+    return <ColumnsContext.Consumer>{(parentColumns) => (
+      <ColumnsContext.Provider value={{wide, numberOfColumns, columns, parentColumns}}>
+        <PresentationalComponent {...props} />
+      </ColumnsContext.Provider>
+    )}</ColumnsContext.Consumer>
   }
 
   NumberOfColumns.displayName = `${NumberOfColumns.name}(${getDisplayName(PresentationalComponent)})`;
