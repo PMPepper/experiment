@@ -1,3 +1,7 @@
+//TODO check altered entities?
+//TODO update body minerals
+
+
 import resolvePath from '@/helpers/object/resolve-path';
 import map from '@/helpers/object/map';
 import forEach from '@/helpers/object/forEach';
@@ -8,9 +12,9 @@ import createWorldFromDefinition from './createWorldFromDefinition';
 //import * as entityCacheTypes from './entityCacheTypes';
 import * as FactionClientTypes from '../FactionClientTypes';
 
-import movementFactory from './entityProcessorFactories/movement';
-//import populationFactory from './entityProcessorFactories/population';
-import colonyFactory from './entityProcessorFactories/colony';
+import orbitProcessorFactory from './entityProcessorFactories/orbit';
+//import populationFactory from './entityProcessors/population';
+import colonyProcessorFactory from './entityProcessorFactories/colony';
 
 
 import calculatePopulationWorkers from '@/game/server/entityProcessorFactories/colony/calculatePopulationWorkers';
@@ -51,7 +55,7 @@ export default class Server {
   entityIds = null;
   entitiesLastUpdated = null;
 
-  entityProcessorFactories = [movementFactory, colonyFactory];
+  entityProcessors = [orbitProcessorFactory(), colonyProcessorFactory()];
 
   clientLastUpdatedTime = null
 
@@ -591,17 +595,13 @@ export default class Server {
     const entities = this.entities;
 
     const entityIds = this.entityIds;
-    const entitiesLastUpdated = this.entitiesLastUpdated;
+
     const numEntities = entityIds.length;
-    let processors = null;
+
 
     if(step === null) {
       //initial entity initialisation
-      processors = this._getEntityProcessors(this.gameTime, this.gameTime, true);
-
-      for(let j = 0; j < numEntities; ++j) {
-        processors(entities[entityIds[j]], entities);
-      }
+      this.entityProcessors.forEach(entityProcessor => entityProcessor.processEntitites(this.gameTime, this.gameTime, entities, this.gameConfig, true, true));
 
       return;
     }
@@ -612,30 +612,16 @@ export default class Server {
       let lastGameTime = this.gameTime;
 
       //update game time
-      this.gameTime = Math.min(this.gameTime + step, advanceToTime);
+      const gameTime = this.gameTime = Math.min(this.gameTime + step, advanceToTime);
 
-      const gameTime = this.gameTime;
+      this.entityProcessors.forEach(entityProcessor => {
+        const alteredEntities = entityProcessor.processEntitites(lastGameTime, gameTime, entities, this.gameConfig, false, gameTime === advanceToTime);
 
-      let processors = this._getEntityProcessors(lastGameTime, gameTime);
-      let result;
-
-      //for each entity
-      for(let i = 0; i < numEntities; ++i) {
-        let entityId = entityIds[i];
-        result = processors(entities[entityId], entities);
-
-        if(result) {
-          //this entity was mutated
-          entitiesLastUpdated[entityId] = gameTime;
-
-          if(result instanceof Array) {
-            result.forEach(id => {
-              entitiesLastUpdated[id] = gameTime;
-            });
-          }
-        }
-      }
+        //keep track of altered entities
+        alteredEntities.forEach(this._alteredEntity);
+      });
     }
+
 
     // Measure performance and store results
     performance.measure('advanceTime execution time step = '+step, 'advanceTime');
@@ -645,24 +631,6 @@ export default class Server {
     // Finally, clean up the entries.
     performance.clearMarks();
     performance.clearMeasures();
-  }
-
-  _getEntityProcessors(lastGameTime, gameTime, init = false) {
-
-    //create entity processors
-    const entityProcessors = this.entityProcessorFactories.map(factory => (factory(lastGameTime, gameTime, init))).filter(processor => (!!processor));
-
-    //create composed function for processing all entities
-    //called for each entity - any processor the mutates the entity must return true
-    return (entity, entities) => {
-      let entityWasMutated = false;
-
-      for(let i = 0, l = entityProcessors.length; i < l;++i) {
-        entityWasMutated = entityProcessors[i](entity, entities, this.gameConfig) || entityWasMutated;
-      }
-
-      return entityWasMutated;
-    }
   }
 
   _getClientState(clientId, full = false) {
@@ -739,7 +707,18 @@ export default class Server {
       }
     }
 
+    //add to entityProcessors
+    this.entityProcessors.forEach(entityProcessor => entityProcessor.addEntity(newEntity));
+
     return newEntity;
+  }
+
+  _alteredEntity = (entity) => {
+    //record that entity has been updated
+    this.entitiesLastUpdated[entity.id] = this.gameTime;
+
+    //Check if this entity needs to be added/removed to/from any processors
+    this.entityProcessors.forEach(entityProcessor => entityProcessor.updateEntity(entity));
   }
 
   _removeEntity(entity) {
@@ -751,6 +730,9 @@ export default class Server {
       this.entityIds.splice(this.entityIds.indexOf(entity), 1);
 
       delete this.entities[entity];
+
+      //remove from entityProcessors
+      this.entityProcessors.forEach(entityProcessor => entityProcessor.removeEntity(entity));
     }
   }
 
