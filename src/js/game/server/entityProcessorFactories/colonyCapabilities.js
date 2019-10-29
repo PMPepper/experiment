@@ -1,45 +1,31 @@
 import EntityProcessor from '@/game/server/EntityProcessor';
-
-import forEach from '@/helpers/object/forEach';
-
-
-import calculatePopulationGrowth from '@/game/server/entityProcessorFactories/colony/calculatePopulationGrowth';
 import calculatePopulationProductionCapabilites from '@/game/server/entityProcessorFactories/colony/calculatePopulationProductionCapabilites';
 import calculateTechnologyModifiers from '@/game/server/entityProcessorFactories/colony/calculateTechnologyModifiers';
 
-import DAY_ANNUAL_FRACTION from '@/game/Consts';
 
-
-function colonyTest(entity) {
+function colonyCapabilitiesTest(entity) {
   return entity.type === 'colony';
 }
 
-function colonyFactory(lastTime, time, init) {
+function colonyCapabilitiesFactory(lastTime, time, init, full) {
   const lastDay = Math.floor(lastTime / 86400);
   const today = Math.floor(time / 86400);
 
   //only update once a day
   if(lastDay !== today || init) {
-    return function colonyProcessor(colony, entities, gameConfig) {
+    return function colonyCapabilitiesProcessor(colony, entities, gameConfig) {
       let i, l, totalPopulation = 0, totalEffectiveWorkers = 0, totalSupportWorkers = 0;
 
       const faction = entities[colony.factionId];
-      const technologyModifiers = calculateTechnologyModifiers(faction.faction.technology)
-      const systemBody = entities[colony.systemBodyId];
-      const factionSystemBody = entities[colony.factionSystemBodyId];
-
+      const technologyModifiers = calculateTechnologyModifiers(faction.faction.technology);
       const structureDefinitions = gameConfig.structures;
+
       const capabilityProductionTotals = {};//the total procution this colony is capable of for each capability (mining, research, etc)
       const structuresWithCapability = {};//total structures for each capability [capability][structureId] = number of structures
 
-      colony.colony.populationCapabilityProductionTotals = {};
-      colony.colony.populationStructuresWithCapability = {};
-
-      //for each population, calculate population growth, total number of workers and production output
+      //for each population, calculate total number of workers and production output
       for(i = 0, l = colony.populationIds.length; i < l; ++i) {
         let population = entities[colony.populationIds[i]];
-
-        calculatePopulationGrowth(init, population, colony, entities);
 
         //keep track of totals
         totalPopulation += population.population.quantity;
@@ -71,39 +57,12 @@ function colonyFactory(lastTime, time, init) {
       colony.colony.capabilityProductionTotals = capabilityProductionTotals;
       colony.colony.structuresWithCapability = structuresWithCapability;
 
-      //mining
-      if(capabilityProductionTotals.mining && factionSystemBody.factionSystemBody.isSurveyed) {
-        //can mine
-        //-how much you can mine per year
-        const miningProduction = capabilityProductionTotals.mining;//calculateProduction('mining', capabilityProductionTotals.mining, technologyModifiers.miningMod, gameConfig);//totalStructureCapabilities.mining * labourEfficiency * technologyModifiers.miningMod * 1;//TODO include species mining rate here + any other adjustments (morale etc)
-
-        forEach(gameConfig.minerals, (mineralName, mineralId) => {
-          const systemBodyMinerals = systemBody.availableMinerals[mineralId];
-          let dailyProduction = miningProduction * systemBodyMinerals.access * DAY_ANNUAL_FRACTION;
-
-          if(dailyProduction > systemBodyMinerals.quantity) {
-            dailyProduction = systemBodyMinerals.quantity
-          }
-
-          colony.colony.minerals[mineralId] = colony.colony.minerals[mineralId] + dailyProduction;
-
-          //DO NOT edit other entities
-          //systemBody.availableMinerals[mineralId].quantity -= dailyProduction;
-        })
-      }
-
-      //Research
-      if(capabilityProductionTotals.research) {
-
-      }
-      //const researchProduction = capabilityProductionTotals.research;
-
-
       return true;
     }
   }
 
-  return null
+  return null;
 }
 
-export default () => (new EntityProcessor(colonyTest, colonyFactory));
+
+export default () => (new EntityProcessor(colonyCapabilitiesTest, colonyCapabilitiesFactory));

@@ -13,8 +13,13 @@ import createWorldFromDefinition from './createWorldFromDefinition';
 import * as FactionClientTypes from '../FactionClientTypes';
 
 import orbitProcessorFactory from './entityProcessorFactories/orbit';
-//import populationFactory from './entityProcessors/population';
-import colonyProcessorFactory from './entityProcessorFactories/colony';
+import shipMovementFactory from './entityProcessorFactories/shipMovement';
+import colonyCapabilitiesFactory from './entityProcessorFactories/colonyCapabilities';
+import populationGrowthFactory from './entityProcessorFactories/populationGrowth';
+import miningFactory from './entityProcessorFactories/mining';
+import researchFactory from './entityProcessorFactories/research';
+import constructionFactory from './entityProcessorFactories/construction';
+import shipBuildingFactory from './entityProcessorFactories/shipBuilding';
 
 
 import calculatePopulationWorkers from '@/game/server/entityProcessorFactories/colony/calculatePopulationWorkers';
@@ -55,7 +60,16 @@ export default class Server {
   entityIds = null;
   entitiesLastUpdated = null;
 
-  entityProcessors = [orbitProcessorFactory(), colonyProcessorFactory()];
+  entityProcessors = [
+    orbitProcessorFactory(),//-done
+    shipMovementFactory(),
+    populationGrowthFactory(),//-done
+    colonyCapabilitiesFactory(),//-done
+    constructionFactory(),
+    miningFactory(),
+    researchFactory(),
+    shipBuildingFactory()
+  ];
 
   clientLastUpdatedTime = null
 
@@ -683,6 +697,7 @@ export default class Server {
     //automatically add ref to this entity in linked entities
     //-props to check for links
     const idProps = ['factionId', 'speciesId', 'systemBodyId', 'systemId', 'speciesId', 'factionSystemId', 'factionSystemBodyId', 'colonyId'];
+    const allModifiedEntities = new Set();
 
     for(let i = 0; i < idProps.length; i++) {
       const prop = idProps[i];
@@ -703,12 +718,21 @@ export default class Server {
           linkedEntity[linkedIdsProp].push(newEntity.id);
           //...and update last updated time
           this.entitiesLastUpdated[linkedEntity.id] = this.gameTime + 1;
+
+          //Record that an entity has been modified
+          allModifiedEntities.add(linkedEntity);
         }
       }
     }
 
     //add to entityProcessors
-    this.entityProcessors.forEach(entityProcessor => entityProcessor.addEntity(newEntity));
+    this.entityProcessors.forEach(entityProcessor => {
+      entityProcessor.addEntity(newEntity);
+
+      allModifiedEntities.forEach(modifiedEntity => {
+        entityProcessor.updateEntity(modifiedEntity);
+      });
+    });
 
     return newEntity;
   }
