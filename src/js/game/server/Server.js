@@ -17,6 +17,7 @@ import shipMovementFactory from './entityProcessorFactories/shipMovement';
 import colonyCapabilitiesFactory from './entityProcessorFactories/colonyCapabilities';
 import populationGrowthFactory from './entityProcessorFactories/populationGrowth';
 import miningFactory from './entityProcessorFactories/mining';
+import mineralExtractionFactory from './entityProcessorFactories/mineralExtraction';
 import researchFactory from './entityProcessorFactories/research';
 import constructionFactory from './entityProcessorFactories/construction';
 import shipBuildingFactory from './entityProcessorFactories/shipBuilding';
@@ -67,6 +68,7 @@ export default class Server {
     colonyCapabilitiesFactory(),//-done
     constructionFactory(),
     miningFactory(),
+    mineralExtractionFactory(),
     researchFactory(),
     shipBuildingFactory()
   ];

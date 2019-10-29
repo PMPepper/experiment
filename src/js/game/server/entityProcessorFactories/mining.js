@@ -1,6 +1,6 @@
 import EntityProcessor from '@/game/server/EntityProcessor';
 
-import getColoniesBySystemBody from '@/helpers/app/getColoniesBySystemBody';
+import calculateSystemBodyGlobalMiningRate from '@/game/server/entityProcessorFactories/colony/calculateSystemBodyGlobalMiningRate';
 import forEach from '@/helpers/object/forEach';
 
 import {DAY_ANNUAL_FRACTION} from '@/game/Consts';
@@ -23,28 +23,22 @@ function miningFactory(lastTime, time, init, full) {
         return false;//no need to do anything for a colony that does not produce any minerals
       }
 
+      const totalSystemBodyMiningRate = calculateSystemBodyGlobalMiningRate(colony.systemBodyId, entities);
       const systemBody = entities[colony.systemBodyId];
-      const allColoniesOnBody = getColoniesBySystemBody(colony.systemBodyId, entities);
-      const totalSystemBodyMiningProduction = allColoniesOnBody.reduce(
-        (total, colony) => {
-          return total + colony.colony.capabilityProductionTotals.mining
-        },
-        0
-      );
 
       forEach(gameConfig.minerals, (mineralName, mineralId) => {
         const systemBodyMinerals = systemBody.availableMinerals[mineralId];
 
         //total production across all colonies
-        const globalDailyProduction = totalSystemBodyMiningProduction * systemBodyMinerals.access * DAY_ANNUAL_FRACTION;
+        const globalDailyProduction = totalSystemBodyMiningRate * systemBodyMinerals.access * DAY_ANNUAL_FRACTION;
 
         //If production exceeds available quantity, share equally amongst all colonies
-        const maxFraction = (globalDailyProduction > systemBodyMinerals.quantity) ? colonyMiningProduction / totalSystemBodyMiningProduction : 1;
+        const maxFraction = (globalDailyProduction > systemBodyMinerals.quantity) ? colonyMiningProduction / totalSystemBodyMiningRate : 1;
 
         //add minerals to colony (systemBody will be decreased by next entityProcessor)
         colony.colony.minerals[mineralId] += colonyMiningProduction * systemBodyMinerals.access * DAY_ANNUAL_FRACTION * maxFraction;
       })
-      
+
       return true;
     }
   }

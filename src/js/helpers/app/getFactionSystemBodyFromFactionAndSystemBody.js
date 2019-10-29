@@ -1,5 +1,5 @@
 import toId from './toId';
-import toEntity from './toEntity';
+import toEntity from '@/helpers/app/toEntity';
 
 export default function getFactionSystemBodyFromFactionAndSystemBody(faction, systemBody, entities) {
   const factionId = toId(faction);
