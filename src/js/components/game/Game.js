@@ -282,7 +282,7 @@ function Game({
       <Window lastInteracted={shipDesignWindow.lastInteracted} reduxPath="shipDesignWindow" title={<Trans id="shipDesignWindow.title">Ship design</Trans>}>TODO ship design window!</Window>
     </SortChildren>
     <FPSStats isActive={true} />
-    <Test />
+    {/*<Test />*/}
   </div>
 }
 

@@ -1,6 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 
@@ -9,8 +9,8 @@ module.exports = {
   devtool: 'hidden-source-map',
   entry: './src/js/main.js',
   optimization: {
-    minimizer: [new UglifyJsPlugin({
-      uglifyOptions: {
+    minimizer: [new TerserPlugin({
+      terserOptions: {
         output: {
           comments: false,
         },
