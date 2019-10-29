@@ -585,6 +585,9 @@ export default class Server {
   }
 
   _advanceTime(step = 1) {
+      //Initial performance mark
+    performance.mark('advanceTime');
+
     const entities = this.entities;
 
     const entityIds = this.entityIds;
@@ -633,6 +636,15 @@ export default class Server {
         }
       }
     }
+
+    // Measure performance and store results
+    performance.measure('advanceTime execution time step = '+step, 'advanceTime');
+
+    window._measuredPerformance.push(performance.getEntriesByType("measure")[0]);
+
+    // Finally, clean up the entries.
+    performance.clearMarks();
+    performance.clearMeasures();
   }
 
   _getEntityProcessors(lastGameTime, gameTime, init = false) {

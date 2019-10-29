@@ -53,6 +53,7 @@ polyfills.then(() => {
         <Provider store={store}>
           <I18nProvider language="en-GB">
             <Game client={client} />
+            <OutputMeasuredPerformance />
           </I18nProvider>
         </Provider>,
         document.getElementById('app')
@@ -66,4 +67,44 @@ polyfills.then(() => {
 
 if(process.env.NODE_ENV !== 'production') {
   //module.hot.accept();
+}
+
+
+
+//////////////////
+// Benchmarking //
+//////////////////
+import useInterval from '@/hooks/useInterval';
+import useForceRender from '@/hooks/useForceRender';
+
+let lastName = '';
+const values = [] = window._measuredPerformance = [];
+const numValues = 600;
+
+function OutputMeasuredPerformance(props) {
+  const forceRender = useForceRender();
+  useInterval(forceRender, 1);
+
+  let mp = null;
+
+  if(values.length > 0) {
+    mp = values[values.length - 1];
+
+    if(mp.name !== lastName) {
+      lastName = mp.name;
+      values.length = 0;
+      values.push(mp);
+    }
+
+    while(values.length > numValues) {
+      values.shift();
+    }
+  }
+
+  const avg = values.reduce((total, value) => {return total + value.duration}, 0) / values.length;
+
+  return <div style={{position: 'absolute', left: '10px', bottom: '50px', background: '#FFF', padding: '10px', color: '#000', width: '200px'}}>
+    <p>{lastName}</p>
+    <p>{avg}</p>
+  </div>
 }
