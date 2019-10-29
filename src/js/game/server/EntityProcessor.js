@@ -1,4 +1,5 @@
-
+//Benchmarked using Object and Set as alternative datastructures, array was
+//the fastest option
 
 
 export default class EntityProcessor {

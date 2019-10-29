@@ -7,7 +7,8 @@ import calculatePopulationGrowth from '@/game/server/entityProcessorFactories/co
 import calculatePopulationProductionCapabilites from '@/game/server/entityProcessorFactories/colony/calculatePopulationProductionCapabilites';
 import calculateTechnologyModifiers from '@/game/server/entityProcessorFactories/colony/calculateTechnologyModifiers';
 
-const DAY_ANNUAL_FRACTION = 1/365.25
+import DAY_ANNUAL_FRACTION from '@/game/Consts';
+
 
 function colonyTest(entity) {
   return entity.type === 'colony';
