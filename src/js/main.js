@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {I18nProvider} from '@lingui/react';
+import {I18nProvider, I18n} from '@lingui/react';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
 //import 'semantic-ui-css/semantic.min.css';
@@ -12,6 +12,8 @@ import core from '../css/core.scss';
 //App specific
 import root from '@/redux/root';
 import Game from '@/components/game/Game';
+
+import {I18nContext} from '@/hooks/useI18n';
 
 
 //Game engine
@@ -52,8 +54,12 @@ polyfills.then(() => {
       ReactDOM.render(
         <Provider store={store}>
           <I18nProvider language="en-GB">
-            <Game client={client} />
-            <OutputMeasuredPerformance />
+            <I18n>{({i18n}) => (
+              <I18nContext.Provider value={i18n}>
+                <Game client={client} />
+                <OutputMeasuredPerformance />
+              </I18nContext.Provider>
+            )}</I18n>
           </I18nProvider>
         </Provider>,
         document.getElementById('app')

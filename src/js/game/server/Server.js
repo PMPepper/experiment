@@ -64,11 +64,11 @@ export default class Server {
   entityProcessors = [
     orbitProcessorFactory(),//-done
     shipMovementFactory(),
-    populationGrowthFactory(),//-done
+    populationGrowthFactory(),//-done //TODO combine with colonyCapabilitiesFactory
     colonyCapabilitiesFactory(),//-done
     constructionFactory(),
-    miningFactory(),
-    mineralExtractionFactory(),
+    miningFactory(),//-done
+    mineralExtractionFactory(),//-done
     researchFactory(),
     shipBuildingFactory()
   ];
