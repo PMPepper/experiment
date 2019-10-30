@@ -16,6 +16,8 @@ import AddEditResearchGroup from '@/components/game/AddEditResearchGroup';
 
 //Hooks
 import useI18n from '@/hooks/useI18n';
+import useShallowEqualSelector from '@/hooks/useShallowEqualSelector';
+import useActions from '@/hooks/useActions';
 
 //Helpers
 import filter from '@/helpers/object/filter';
@@ -25,7 +27,13 @@ import {setResearchSelectedArea} from '@/redux/reducers/coloniesWindow';
 
 
 //The component
-function WindowResearch({colonyId, clientState, coloniesWindow, setResearchSelectedArea}) {
+export default function WindowResearch({colonyId}) {
+  const {clientState, coloniesWindow} = useShallowEqualSelector(state => ({
+    clientState: state.game,
+    coloniesWindow: state.coloniesWindow,
+  }));
+  const setResearchSelectedAreaDispatcher = useActions(setResearchSelectedArea);
+
   const i18n = useI18n();
   const [isAddEditResearchGroupOpen, setIsAddEditResearchGroupOpen] = useState(false);
   const onClickOpenAddResearchGroup = useCallback(() => {setIsAddEditResearchGroupOpen(true)}, [setIsAddEditResearchGroupOpen]);
@@ -52,7 +60,7 @@ function WindowResearch({colonyId, clientState, coloniesWindow, setResearchSelec
     </div>
     <div>
       <h4>Available research projects</h4>
-      <select className="space" value={coloniesWindow.researchSelectedArea} onChange={(e) => {setResearchSelectedArea(e.target.value)}}>
+      <select className="space" value={coloniesWindow.researchSelectedArea} onChange={(e) => {setResearchSelectedAreaDispatcher(e.target.value)}}>
         <option value="">{i18n._('windowResearch.area.select', null, {defaults: '- - Select - -'})}</option>
         {Object.keys(researchAreas).map(areaId => (<option value={areaId} key={areaId}>{researchAreas[areaId]}</option>))}
       </select>
@@ -132,16 +140,3 @@ function WindowResearch({colonyId, clientState, coloniesWindow, setResearchSelec
 //             (project.requireResearchIds.every(requiredResearchId => (completedResearch[requiredResearchId])));//have the prerequisites been researched?
 //   });
 // });
-
-
-export default compose(
-  connect(state => {
-    return {
-      clientState: state.game,
-      coloniesWindow: state.coloniesWindow,
-      //selectedSystemId: state.selectedSystemId,
-    }
-  }, {
-    setResearchSelectedArea
-  })
-)(WindowResearch);
