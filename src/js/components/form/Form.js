@@ -18,9 +18,6 @@
 
 
 import React from 'react';
-import {Trans} from '@lingui/macro';
-import {I18n} from '@lingui/react';
-import { Form as AForm } from 'react-advanced-form'
 
 import defaultStyles from './form.scss';
 
@@ -36,29 +33,29 @@ import Select from './Select';
 import Checkboxes from './Checkboxes';
 import Label from './Label';
 
-
+//Helpers
 import css from '@/helpers/css/class-list-to-string';
+import combineProps from '@/helpers/react/combine-props';
 
-export const ColumnsContext = React.createContext(null);
+//Consts
+import {StyleContext} from './contexts';
 
 
 //The component
-export default class Form extends React.Component {
+const Form = React.forwardRef(function Form({children, styles, ...rest}, ref) {
 
-  render() {
-    const {children, styles} = this.props;
-
-    return <ColumnsContext.Provider value={null}>
-      <AForm className={styles.form} action={(...args) => {console.log('Form action: ', args)}}>
-        {children}
-      </AForm>
-    </ColumnsContext.Provider>
-  }
-}
+  return <StyleContext.Provider value={styles}>
+    <form {...combineProps({className: styles.form}, rest)} ref={ref}>
+      {children}
+    </form>
+  </StyleContext.Provider>
+});
 
 Form.defaultProps = {
   styles: defaultStyles
 };
+
+export default Form;
 
 //Add to forms namespace
 Form.Group = Group;

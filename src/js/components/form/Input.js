@@ -1,26 +1,21 @@
-import React from 'react';
-import {compose} from 'recompose';
+import React, {useContext} from 'react';
 
-import styles from './form.scss';
-
-//HOCs
-import NumberOfColumnsHOC from './NumberOfColumnsHOC';
+//Hooks
+import useGetLayoutClasses from './useGetLayoutClasses';
 
 //Helpers
 import css from '@/helpers/css/class-list-to-string';
 import combineProps from '@/helpers/react/combine-props';
 
-//Contexts
-import {ColumnsContext} from './Form';
-
+//Other
+import {StyleContext} from './contexts';
 
 //The component
-export default compose(
-  NumberOfColumnsHOC
-)(function Input({inline, ...props}) {
-  return <ColumnsContext.Consumer>{(columnsData) => {
-    let columns = columnsData && columnsData.columns;
+const Input = React.forwardRef(function Input({inline, width, ...props}, ref) {
+  const className = useGetLayoutClasses('input', 0, inline ? width : 0);
+  const styles = useContext(StyleContext);
 
-    return <input {...combineProps(props, {className: css(styles.input, inline && styles.inline, inline && styles[columns || 'one'])})} />
-  }}</ColumnsContext.Consumer>
+  return <input {...combineProps(props, {className: css(className, inline && styles.inline)})} ref={ref} />
 });
+
+export default Input;

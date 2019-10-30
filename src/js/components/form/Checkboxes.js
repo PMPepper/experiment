@@ -1,41 +1,36 @@
-import React from 'react';
-import {compose} from 'recompose';
+import React, {useContext} from 'react';
 
-import styles from './form.scss';
-
-//HOCs
-import NumberOfColumnsHOC from './NumberOfColumnsHOC';
+//Hooks
+import useGetLayoutClasses from './useGetLayoutClasses';
 
 //Helpers
 import css from '@/helpers/css/class-list-to-string';
 import combineProps from '@/helpers/react/combine-props';
 import base64Encode from '@/helpers/string/base64Encode';
 
-//Contexts
-import {ColumnsContext} from './Form';
+//Other
+import {StyleContext} from './contexts';
 
 
 //The component
-const Checkboxes = compose(
-  NumberOfColumnsHOC
-)(function Checkboxes({options, inline, name, id, vertical, horizontal, columns = 1, ...props}) {
-  return <ColumnsContext.Consumer>{(columnsData) => {
-    let fieldColumns = columnsData && columnsData.columns;
-    //orientation - defaults to vertical (if both or neither are true, uses vertical)
-    vertical = !!vertical || !horizontal;
-    horizontal = !vertical;
+const Checkboxes = React.forwardRef(function Checkboxes({options, inline, name, id, vertical, horizontal, columns, width, ...props}, ref) {
+  const className = useGetLayoutClasses('checkboxes', columns, inline ? width : 0);
+  const styles = useContext(StyleContext);
 
-    return <div {...combineProps(props, {className: css(styles.checkboxes, inline && styles.inline, inline && styles[fieldColumns || 'one'], vertical && styles.vertical, horizontal && styles.horizontal, styles[`columns_${columns}`])})}>
-      {options.map(option => {
-        const inputId = `${id}_${base64Encode(option.value)}`;
+  //orientation - defaults to vertical (if both or neither are true, uses vertical)
+  vertical = !!vertical || !horizontal;
+  horizontal = !vertical;
 
-        return <label className={css(styles.checkboxesItem)} key={option.value} htmlFor={inputId}>
-          <input className={css(styles.checkboxesInput)} type="checkbox" value={option.value} name={name} id={inputId} />
-          <span className={css(styles.checkboxesLabel)}>{option.label}</span>
-        </label>
-      })}
-    </div>
-  }}</ColumnsContext.Consumer>
+  return <div {...combineProps(props, {className: css(className, inline && styles.inline, vertical && styles.vertical, horizontal && styles.horizontal)})} ref={ref}>
+    {options.map(option => {
+      const inputId = `${id}_${base64Encode(option.value)}`;
+
+      return <label className={css(styles.checkboxesItem, styles['width-1'])} key={option.value} htmlFor={inputId}>
+        <input className={css(styles.checkboxesInput)} type="checkbox" value={option.value} name={name} id={inputId} />
+        <span className={css(styles.checkboxesLabel)}>{option.label}</span>
+      </label>
+    })}
+  </div>
 });
 
 Checkboxes.labelToLegend = function labelToLegend(label, id) {

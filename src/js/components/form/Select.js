@@ -1,30 +1,26 @@
-import React from 'react';
-import {compose} from 'recompose';
+import React, {useContext} from 'react';
 
-import styles from './form.scss';
-
-//HOCs
-import NumberOfColumnsHOC from './NumberOfColumnsHOC';
+//Hooks
+import useGetLayoutClasses from './useGetLayoutClasses';
 
 //Helpers
 import css from '@/helpers/css/class-list-to-string';
 import combineProps from '@/helpers/react/combine-props';
 
-//Contexts
-import {ColumnsContext} from './Form';
+//Other
+import {StyleContext} from './contexts';
 
 
 //The component
-export default compose(
-  NumberOfColumnsHOC
-)(function Select({options, inline, ...props}) {
-  return <ColumnsContext.Consumer>{(columnsData) => {
-    let columns = columnsData && columnsData.columns;
+const Select = React.forwardRef(function Select({options, width, inline, ...props}, ref) {
+  const className = useGetLayoutClasses('select', 0, inline ? width : 0);
+  const styles = useContext(StyleContext);
 
-    return <select {...combineProps(props, {className: css(styles.select, inline && styles.inline, inline && styles[columns || 'one'])})}>
-      {options.map(option => (
-        <option key={option.value} value={option.value}>{option.label}</option>
-      ))}
-    </select>
-  }}</ColumnsContext.Consumer>
+  return <select {...combineProps(props, {className: css(className, inline && styles.inline)})} ref={ref}>
+    {options.map(option => (
+      <option key={option.value} value={option.value}>{option.label}</option>
+    ))}
+  </select>
 });
+
+export default Select;

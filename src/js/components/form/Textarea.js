@@ -1,26 +1,22 @@
-import React from 'react';
-import {compose} from 'recompose';
+import React, {useContext} from 'react';
 
-import styles from './form.scss';
-
-//HOCs
-import NumberOfColumnsHOC from './NumberOfColumnsHOC';
+//Hooks
+import useGetLayoutClasses from './useGetLayoutClasses';
 
 //Helpers
 import css from '@/helpers/css/class-list-to-string';
 import combineProps from '@/helpers/react/combine-props';
 
-//Contexts
-import {ColumnsContext} from './Form';
+//Other
+import {StyleContext} from './contexts';
 
 
 //The component
-export default compose(
-  NumberOfColumnsHOC
-)(function Textarea({inline, ...props}) {
-  return <ColumnsContext.Consumer>{(columnsData) => {
-    let columns = columnsData && columnsData.columns;
+const Textarea = React.forwardRef(function Textarea({inline, width, ...props}, ref) {
+  const className = useGetLayoutClasses('textarea', 0, inline ? width : 0);
+  const styles = useContext(StyleContext);
 
-    return <textarea {...combineProps(props, {className: css(styles.textarea, inline && styles.inline, inline && styles[columns || 'one'])})} />
-  }}</ColumnsContext.Consumer>
+  return <textarea {...combineProps(props, {className: css(className, inline && styles.inline)})} ref={ref} />
 });
+
+export default Textarea;

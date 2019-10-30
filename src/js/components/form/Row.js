@@ -1,29 +1,19 @@
-import React from 'react';
-import {compose} from 'recompose';
+import React, {useContext} from 'react';
 
-import styles from './form.scss';
-
-//HOCs
-import NumberOfColumnsHOC from './NumberOfColumnsHOC';
-
+//Hooks
+import useGetLayoutClasses from './useGetLayoutClasses';
 
 //Helpers
 import css from '@/helpers/css/class-list-to-string';
 import combineProps from '@/helpers/react/combine-props';
 
-//Contexts
-import {ColumnsContext} from './Form';
-
 
 //The component
-export default compose(
-  NumberOfColumnsHOC
-)(
-  function Row({children, ...props}) {
-    return <ColumnsContext.Consumer>{(columnsData) => {
-      const columns = columnsData && columnsData.columns;
+const Row = React.forwardRef(function Row({columns, width, ...props}, ref) {
+  const className = useGetLayoutClasses('row', columns, width);
 
-      return <div {...combineProps({className: css(styles.row, styles[columns || 'one'])}, props)}>{children}</div>
-    }}</ColumnsContext.Consumer>
-  }
-);
+  return <div {...combineProps({className}, props)} ref={ref} />
+});
+
+
+export default Row;

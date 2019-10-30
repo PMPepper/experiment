@@ -66,7 +66,7 @@ $boxBorderRadius: 0.3rem;
 .legend {
   display: block;
   float: left;
-  width: 100%;
+  width: calc(100% - #{$formBaseSpacing});
   margin: $formBaseSpacing/2 $rowFieldHorizontalSpacing $formBaseSpacing;
   padding: 0 0 ($formBaseSpacing/2) 0;
   font-weight: bold;
@@ -195,7 +195,7 @@ $maxNumberOfCheckboxesColumns: 16;
     column-gap: 0;
 
     @for $columns from 1 through $maxNumberOfCheckboxesColumns {
-      &.columns_#{$columns} {
+      &.columns-#{$columns} {
         columns: auto $columns;
       }
     }
@@ -206,7 +206,7 @@ $maxNumberOfCheckboxesColumns: 16;
     flex-flow: row wrap;
 
     @for $columns from 1 through $maxNumberOfCheckboxesColumns {
-      &.columns_#{$columns} > * {
+      &.columns-#{$columns} > * {
         flex: percentage(1/$columns) 0 1;
       }
     }
@@ -282,8 +282,6 @@ $maxNumberOfCheckboxesColumns: 16;
   }
 }
 
-$columns: (one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen);
-
 .row {
   clear: left;
   display: flex;
@@ -308,12 +306,13 @@ $columns: (one, two, three, four, five, six, seven, eight, nine, ten, eleven, tw
   }
 }
 
-@for $i from 1 through length($columns) {
-  $column: nth($columns, $i);
+$maxColumns: 16;
 
-  .#{$column} {
+@for $columns from 1 through $maxColumns {
+  .columns-#{$columns} {
+
     > * {
-      $percentage: percentage(1/$i);
+      $percentage: percentage(1/$columns);
       $width: $percentage;
       flex: $width 0 1;
       min-width: 0;
@@ -324,18 +323,10 @@ $columns: (one, two, three, four, five, six, seven, eight, nine, ten, eleven, tw
 
       @include paddedElements($percentage);
 
-
-      @for $j from 1 through $i {
-        $columnsWide: nth($columns, $j);
-
-        &.#{$columnsWide} {
-          $percentage: percentage($j / $i);
-          $value: $percentage;
-          flex-basis: $value;
-
-          &.inline {
-            flex-basis: $percentage;
-          }
+      @for $width from 1 through $columns {
+        &.width-#{$width} {
+          $percentage: percentage($width / $columns);
+          flex-basis: $percentage;
 
           @include paddedElements($percentage);
         }
@@ -343,3 +334,43 @@ $columns: (one, two, three, four, five, six, seven, eight, nine, ten, eleven, tw
     }
   }
 }
+
+//
+// $columns: (one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen);
+//
+//
+// @for $i from 1 through length($columns) {
+//   $column: nth($columns, $i);
+//
+//   .#{$column} {
+//     > * {
+//       $percentage: percentage(1/$i);
+//       $width: $percentage;
+//       flex: $width 0 1;
+//       min-width: 0;
+//
+//       &.grow {
+//         flex-grow: 1;
+//       }
+//
+//       @include paddedElements($percentage);
+//
+//
+//       @for $j from 1 through $i {
+//         $columnsWide: nth($columns, $j);
+//
+//         &.#{$columnsWide} {
+//           $percentage: percentage($j / $i);
+//           $value: $percentage;
+//           flex-basis: $value;
+//
+//           &.inline {
+//             flex-basis: $percentage;
+//           }
+//
+//           @include paddedElements($percentage);
+//         }
+//       }
+//     }
+//   }
+// }

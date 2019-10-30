@@ -1,26 +1,22 @@
-import React from 'react';
-import {compose} from 'recompose';
+import React, {useContext} from 'react';
 
-import styles from './form.scss';
-
-//HOCs
-import NumberOfColumnsHOC from './NumberOfColumnsHOC';
+//Hooks
+import useGetLayoutClasses from './useGetLayoutClasses';
 
 //Helpers
 import css from '@/helpers/css/class-list-to-string';
 import combineProps from '@/helpers/react/combine-props';
 
-//Contexts
-import {ColumnsContext} from './Form';
+//Other
+import {StyleContext} from './contexts';
 
 
 //The component
-export default compose(
-  NumberOfColumnsHOC
-)(function Label({children, hide, inline, component: Component = 'label', ...props}) {
-  return <ColumnsContext.Consumer>{(columnsData) => {
-    let columns = columnsData && columnsData.columns;
+const Label = React.forwardRef(function Label({width, hide, inline, component: Component = 'label', ...props}, ref) {
+  const className = useGetLayoutClasses('label', 0, inline ? width : 0);
+  const styles = useContext(StyleContext);
 
-    return <Component {...combineProps(props, {className: css(styles.label, hide && styles.hide, inline && styles.inline, inline && styles[columns || 'one'])})}>{children}</Component>
-  }}</ColumnsContext.Consumer>
+  return <Component {...combineProps(props, {className: css(className, hide && styles.hide, inline && styles.inline)})} ref={ref} />
 });
+
+export default Label;

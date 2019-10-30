@@ -15,15 +15,7 @@ import mapToSortedArray from '@/helpers/object/map-to-sorted-array';
 import {CloseModalContext} from '@/components/modal/Modal';
 
 
-const options = [
-  {label: 'A long text label to test wrapping of text in this context', value: 'male'},
-  {label: 'Female', value: 'female'},
-  {label: 'Animal', value: 'animal'},
-  {label: 'Tree', value: 'tree'},
-  {label: 'Mineral', value: 'mineral'},
-  {label: 'Vegetable', value: 'vegetable'},
-  {label: 'Other', value: 'other'},
-]
+
 
 //The component
 export default class AddEditResearchGroup extends React.Component {
