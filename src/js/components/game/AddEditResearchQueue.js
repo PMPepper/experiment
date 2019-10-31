@@ -27,7 +27,7 @@ const blankReserchQueue = {structures: {}, researchIds: []};
 
 
 //The component
-export default function AddEditResearchQueue({faction, colony, clientState, initialResearchQueue = blankReserchQueue}) {
+export default function AddEditResearchQueue({faction, colony, clientState, onComplete, initialResearchQueue = blankReserchQueue}) {
   const i18n = useI18n();
   const close = useContext(CloseModalContext);
   const [structures, setStructures] = useState({...initialResearchQueue.structures});
@@ -215,7 +215,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, init
     </Form>
 
     <Buttons position="right">
-      <Button onClick={null}>
+      <Button onClick={() => {onComplete(structures, researchIds)}}>
         {isEditing ?
           <Trans>Edit</Trans>
           :

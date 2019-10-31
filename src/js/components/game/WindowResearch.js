@@ -19,6 +19,7 @@ import AddEditResearchQueue from '@/components/game/AddEditResearchQueue';
 import useI18n from '@/hooks/useI18n';
 import useShallowEqualSelector from '@/hooks/useShallowEqualSelector';
 import useActions from '@/hooks/useActions';
+import {useClient} from '@/components/game/Game';
 
 //Helpers
 import filter from '@/helpers/object/filter';
@@ -50,6 +51,8 @@ export default function WindowResearch({colonyId}) {
 
   const totalNumResearchFacilities = Object.values(colony.colony.structuresWithCapability.research).reduce((sum, add) => {return sum + add;}, 0);
 
+  const client = useClient();
+
   return <div className="vspaceStart">
     <div><Trans>Total research facilities: {totalNumResearchFacilities}</Trans></div>
     <div>TODO show breakdown of total/available reserach facilities</div>
@@ -71,58 +74,6 @@ export default function WindowResearch({colonyId}) {
         <Button onClick={onClickOpenAddResearchGroup}><Trans id="windowResearch.groups.create">Create</Trans></Button>
       </Buttons>
     </div>
-    <div>
-      {/*<h4>Available research projects</h4>
-      <select className="space" value={coloniesWindow.researchSelectedArea} onChange={(e) => {setResearchSelectedAreaDispatcher(e.target.value)}}>
-        <option value="">{i18n._('windowResearch.area.select', null, {defaults: '- - Select - -'})}</option>
-        {Object.keys(researchAreas).map(areaId => (<option value={areaId} key={areaId}>{researchAreas[areaId]}</option>))}
-      </select>*/}
-
-      {/*<Layout>
-        <Row>
-          <Cell large={1} medium={1}>
-            <ReduxDataTableState path="coloniesWindow.availableResearchTable">
-              <AvailableResearchProjects
-                clickToSelectRow={true}
-                rows={this.getAvailableProjectRows(
-                  this.faction.faction.research,
-                  initialGameState.research,
-                  this.colony.colony.researchInProgress,
-                  coloniesWindow.researchSelectedArea
-                )}
-              />
-            </ReduxDataTableState>
-          </Cell>
-          <Cell large={1} medium={1}>
-            {selectedResearchProject ?
-              <div>
-                <p>{selectedResearchProject.description}</p>
-
-                <button type="button" onClick={() => {this.setState({isAddEditResearchQueueOpen: true})}}><Trans>Create research project</Trans></button>
-              </div>
-              :
-              <Trans>Select a research project</Trans>
-            }
-          </Cell>
-        </Row>
-      </Layout>*/}
-
-
-    </div>
-    {/*Object.keys(researchAreas).map(areaId => {
-      const availableReseachInArea = this.getAvailableResearchInArea(areaId);
-
-      return <div key={areaId}>
-        <h4>{researchAreas[areaId]}</h4>
-        <ul>
-          {Object.keys(availableReseachInArea).map(projectId => {
-            const project = availableReseachInArea[projectId];
-
-            return <li key={projectId}>{project.name}</li>
-          })}
-        </ul>
-      </div>
-    })*/}
     <Modal
       title={<Trans>Add research queue</Trans>}//TODO edit
       isOpen={isAddEditResearchQueueOpen}
@@ -133,24 +84,13 @@ export default function WindowResearch({colonyId}) {
         colony={colony}
         clientState={clientState}
         initialResearchQueue={undefined}//TODO edit
+        onComplete={(structures, researchIds) => {
+          client.createResearchQueue(colony.id, structures, researchIds).then(result => {
+            //research queue added
+            onCloseAddResearchGroup();
+          });
+        }}
       />
     </Modal>
   </div>
 }
-
-
-
-
-// getAvailableProjectRows = memoize((completedResearch, allResearchProjects, researchInProgress, area) => {
-//   area = +area;
-//   //const allResearchProjects = initialGameState.research;
-//   //const completedResearch = faction.faction.research;
-//   //const colony = this.colony;
-//
-//   return filter(allResearchProjects, (project, id) => {
-//     return  (+project.area === area) &&//is this project in the selected area?
-//             (!completedResearch[id]) &&//has this project already been researched?
-//             (!researchInProgress[id]) &&//is this project currently being researched?
-//             (project.requireResearchIds.every(requiredResearchId => (completedResearch[requiredResearchId])));//have the prerequisites been researched?
-//   });
-// });

@@ -319,7 +319,7 @@ export default class Server {
     return Promise.resolve(colony.id);
   }
 
-  message_createResearchQueue(colonyId, structures, researchIds, clientId) {
+  message_createResearchQueue({colonyId, structures, researchIds}, clientId) {
     if(this.phase !== RUNNING) {
       throw new Error('Can only add research group while server is in "running" phase');
     }

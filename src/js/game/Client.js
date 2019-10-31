@@ -68,14 +68,14 @@ export default class Client {
     return this.connector.sendMessageToServer('setIsPaused', isPaused)
   }
 
-  createColony(bodyId) {
+  createColony = (bodyId) => {
     return this.connector.sendMessageToServer('createColony', bodyId)
   }
 
   //facilities: {[structureId]: [number assigned]}
   //researchIds: array with order of projects to perform
-  createResearchQueue(colonyId, structures = {}, researchIds = []) {
-    return this.connector.sendMessageToServer('createResearchQueue', colonyId, structures, researchIds)
+  createResearchQueue = (colonyId, structures = {}, researchIds = []) => {
+    return this.connector.sendMessageToServer('createResearchQueue', {colonyId, structures, researchIds})
   }
 
   ///////////////////////////////////////
