@@ -8,7 +8,7 @@ import Buttons from '@/components/button/Buttons';
 import LocalTableState from '@/components/datatable/LocalTableState';
 import ResearchQueueProjects from '@/components/game/tables/ResearchQueueProjects';
 import DatatableSort from '@/components/datatableSort/DatatableSort';
-//import FormatNumber from '@/components/formatNumber/FormatNumber';
+import ExpandedRowContent from '@/components/datatable/ExpandedRowContent';
 
 //Hooks
 import useI18n from '@/hooks/useI18n';
@@ -23,15 +23,18 @@ import formatNumber from '@/helpers/string/format-number';
 import {CloseModalContext} from '@/components/modal/Modal';
 import {DAY_ANNUAL_FRACTION} from '@/game/Consts';
 
+const blankReserchQueue = {structures: {}, researchIds: []};
+
 
 //The component
-export default function AddEditResearchQueue({faction, colony, clientState, initialResearchQueue}) {
+export default function AddEditResearchQueue({faction, colony, clientState, initialResearchQueue = blankReserchQueue}) {
   const i18n = useI18n();
   const close = useContext(CloseModalContext);
   const [structures, setStructures] = useState({...initialResearchQueue.structures});
   const [researchIds, setResearchIds] = useState([...initialResearchQueue.researchIds]);
+  const [isEditing] = useState(initialResearchQueue !== blankReserchQueue);
 
-  const [selectedResearchId, setSelectedResearchId] = useState('');
+  const [selectedAvailableResearchId, setSelectedAvailableResearchId] = useState('');
   const [selectedQueuedResearchId, setSelectedQueuedResearchId] = useState(null)
 
   const onQueuedResearchSelected = useCallback((researchId, isSelected) => {
@@ -39,8 +42,54 @@ export default function AddEditResearchQueue({faction, colony, clientState, init
   }, [setSelectedQueuedResearchId]);
 
   const addSelectedResearchToQueue = useCallback(() => {
-    selectedResearchId && setResearchIds([...researchIds, selectedResearchId])
-  }, [researchIds, setResearchIds, selectedResearchId])
+    if(selectedAvailableResearchId) {
+      setResearchIds([...researchIds, selectedAvailableResearchId]);
+      setSelectedAvailableResearchId('');
+    }
+  }, [researchIds, setResearchIds, selectedAvailableResearchId, setSelectedAvailableResearchId])
+
+  const onMoveUpSelectedResearch = useCallback(() => {
+    if(researchIds.length > 1 && selectedQueuedResearchId) {
+      const index = researchIds.indexOf(selectedQueuedResearchId);
+
+      if(index > 0) {
+        setResearchIds([
+          ...researchIds.slice(0, index - 1),
+          researchIds[index],
+          researchIds[index - 1],
+          ...researchIds.slice(index + 1)
+        ])
+      }
+    }
+  }, [researchIds, setResearchIds, selectedQueuedResearchId]);
+
+  const onMoveDownSelectedResearch = useCallback(() => {
+    if(researchIds.length > 1 && selectedQueuedResearchId) {
+      const index = researchIds.indexOf(selectedQueuedResearchId);
+
+      if(index < researchIds.length - 1) {
+        setResearchIds([
+          ...researchIds.slice(0, index),
+          researchIds[index+1],
+          researchIds[index],
+          ...researchIds.slice(index + 2)
+        ])
+      }
+    }
+  }, [researchIds, setResearchIds, selectedQueuedResearchId]);
+
+  const onRemoveSelectedResearch = useCallback(() => {
+    if(selectedQueuedResearchId) {
+      const index = researchIds.indexOf(selectedQueuedResearchId);
+
+      if(index != -1) {
+        setResearchIds([
+          ...researchIds.slice(0, index),
+          ...researchIds.slice(index + 1)
+        ])
+      }
+    }
+  }, [researchIds, setResearchIds, selectedQueuedResearchId]);
 
   const gameConfig = clientState.initialGameState;
 
@@ -54,7 +103,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, init
   //used to keep track of ETAs of research projects in this queue
   const currentDate = new Date(clientState.gameTimeDate)
 
-  return <div>
+  return <div className="vspaceStart">
     <Form>
       <Form.Group>
         <Form.Legend>
@@ -69,7 +118,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, init
 
             return <Form.Row key={structureId}>
               <Form.Field columns={6} inline>
-                <Form.Label width={2}>{structure.name}</Form.Label>{/*TODO translation!*/}
+                <Form.Label width={2}>{structure.name}</Form.Label>{/*TODO translation!?*/}
                 <Form.Input width={1} type="number" min={0} max={available} step={1} value={value} setValue={(newValue) => {
                   setStructures({
                     ...structures,
@@ -95,11 +144,11 @@ export default function AddEditResearchQueue({faction, colony, clientState, init
 
       <Form.Group>
         <Form.Legend>
-          <Trans id="addEditResearchQueue.researchProjects.legend">Research projects</Trans>
+          <Trans id="addEditResearchQueue.researchProjects.legend">Queued research projects</Trans>
         </Form.Legend>
         <Form.Container>
-          <LocalTableState //TODO table sorting controls
-            rows={researchIds.map(researchId => {
+          <LocalTableState
+            rows={researchIds.reduce((obj, researchId, index) => {
               const research = gameConfig.research[researchId];
               const progress = colony.colony.researchInProgress[researchId] || 0;
 
@@ -111,47 +160,67 @@ export default function AddEditResearchQueue({faction, colony, clientState, init
                 currentDate.setDate(currentDate.getDate() + days)
               }
 
-              return {
+              obj[researchId] = {
                 ...research,
                 progress,
-                eta: researchRate > 0 ? new Date(currentDate) : '-'
+                eta: researchRate > 0 ? new Date(currentDate) : '-',
+                index: index + 1
               };
-            })}
+
+              return obj;
+            }, {})}
+            itemsPerPage={5}
+
             setRowSelected={onQueuedResearchSelected}
             selectedRows={selectedQueuedResearchId ? {[selectedQueuedResearchId]: true} : {}}
             clickTogglesSelectedRows={true}
+
+            moveUp={onMoveUpSelectedResearch}
+            moveDown={onMoveDownSelectedResearch}
+            remove={onRemoveSelectedResearch}
           >
             <DatatableSort>
-              <ResearchQueueProjects />
+              <ResearchQueueProjects addExpandRowColumn={true} getExpandedRowContents={(row) => {return <ExpandedRowContent>{row.data.description}</ExpandedRowContent>}} />
+              {researchIds.length === 0 && <p className="alignCenter bodyCopy"><Trans>No research in queue</Trans></p>}
             </DatatableSort>
           </LocalTableState>
         </Form.Container>
         <Form.Group>
           <Form.Legend>
-            <Trans>Research project</Trans>
+            <Trans>Add research project to queue</Trans>
           </Form.Legend>
           <Form.Row columns={12}>
             <Form.Field width={10} columns={10} inline>
-              <Form.Label width={4}><Trans>Add research project</Trans></Form.Label>
+              <Form.Label width={4}><Trans>Available research projects</Trans></Form.Label>
               <Form.Select
                 width={6}
                 placeholder={i18n._('select.placeholder', null, {defaults: '- - Select - -'})}
-                options={getResearchOptions(i18n, faction, gameConfig, researchIds)}
-                value={selectedResearchId}
-                setValue={setSelectedResearchId}
+                options={getResearchOptions(i18n, faction, gameConfig, researchIds, colony.colony.researchInProgress)}
+                value={selectedAvailableResearchId}
+                setValue={setSelectedAvailableResearchId}
               />
             </Form.Field>
             <Form.Button width={2} onClick={addSelectedResearchToQueue}>
               <Trans>Add</Trans>
             </Form.Button>
           </Form.Row>
+          <Form.Row>
+            <Form.Field columns={12} inline>
+              <Form.Label width={4}><Trans>Description</Trans></Form.Label>
+              <Form.Textarea width={8} value={selectedAvailableResearchId ? gameConfig.research[selectedAvailableResearchId].description : ''} rows="6" />
+            </Form.Field>
+          </Form.Row>
         </Form.Group>
       </Form.Group>
     </Form>
 
-    <Buttons>
+    <Buttons position="right">
       <Button onClick={null}>
-        <Trans>Add/Edit</Trans>
+        {isEditing ?
+          <Trans>Edit</Trans>
+          :
+          <Trans>Add</Trans>
+        }
       </Button>
       <Button onClick={close}>
         <Trans>Cancel</Trans>
@@ -161,7 +230,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, init
 }
 
 
-function getResearchOptions (i18n, faction, gameConfig, excludeResearchIds) {
+function getResearchOptions(i18n, faction, gameConfig, excludeResearchIds, researchInProgress) {
   //TODO deal with translations - text can be Trans object, but research areas are dynamically driven, so how to handle translations?
 
   return Object.keys(gameConfig.researchAreas)
@@ -171,7 +240,8 @@ function getResearchOptions (i18n, faction, gameConfig, excludeResearchIds) {
       options: mapToSortedArray(
         getAvailableProjectsInArea(areaId, faction, gameConfig, excludeResearchIds),
         (research, researchId) => {
-          const researchCost = formatNumber(research.cost, 0, i18n.language, null);
+          const progress = researchInProgress[researchId] || 0;
+          const researchCost = formatNumber(research.cost - progress, 0, i18n.language, null);
 
           return {
             label: i18n._(`research.${researchId}`, {name: research.name, cost: researchCost}, {defaults: '{name}: {cost} RP'}),
@@ -183,7 +253,6 @@ function getResearchOptions (i18n, faction, gameConfig, excludeResearchIds) {
     }))
 }
 
-//TODO exclude projects already in queue
 function getAvailableProjectsInArea(areaId, faction, gameConfig, excludeResearchIds) {
   areaId = `${areaId}`;
 
@@ -196,116 +265,3 @@ function getAvailableProjectsInArea(areaId, faction, gameConfig, excludeResearch
     research.requireResearchIds.every(requiredResearchId => factionCompletedResearch[requiredResearchId])//are all prerequisites completed?
   ))
 }
-
-
-
-
-
-// import {I18n} from '@lingui/react';
-// import memoize from 'memoize-one';
-//
-// //Components
-// //import { Form, Input, Button } from 'semantic-ui-react'
-// import Form from '@/components/form/Form';
-// import Button from '@/components/button/Button';
-//
-// //Helpers
-// import mapToSortedArray from '@/helpers/object/map-to-sorted-array';
-//
-// //Other
-// import {CloseModalContext} from '@/components/modal/Modal';
-//
-//
-//
-//
-// //The component
-// export default class AddEditResearchGroup extends React.Component {
-//   static contextType = CloseModalContext;
-//
-//   state = {
-//     facilities: {}
-//   };
-//
-//   getResearchAreaOptions = memoize((i18n, researchAreas) => {
-//     //TODO deal with translations - text can be Trans object, but research areas are dynamically driven, so how to handle translations?
-//
-//     return Object.keys(researchAreas).map(areaId => ({key: areaId, label: researchAreas[areaId], value: areaId}))//<option value={areaId} key={areaId}>{researchAreas[areaId]}</option>
-//   });
-//
-//
-//   render() {
-//     const {colony, gameConfig} = this.props;
-//
-//     return <I18n>{({i18n}) => {
-//       if(!colony.colony.structuresWithCapability.research) {
-//         //this colony cannot do any research
-//         return '[TODO Colony incapable of research!]';
-//       }
-//
-//
-//       return <Form name="addEditResearchGroup">
-//         <Form.Group inline>
-//           <label><Trans id="addEditResearchGroup.researchArea.label">Research area</Trans></label>
-//           <Form.Select options={this.getResearchAreaOptions(i18n, gameConfig.researchAreas)} placeholder={i18n._('addEditResearchGroup.researchArea.placeholder', null, {defaults: '- -please select- -'})} />
-//         </Form.Group>
-//
-//         <div role="group" aria-labelledby="addEditResearchGroup.assignedResearchFacilities.legend">
-//           <div id="addEditResearchGroup.assignedResearchFacilities.legend">
-//             <Trans id="addEditResearchGroup.assignedResearchFacilities.legend">Assigned research facilities</Trans>
-//           </div>
-//           {mapToSortedArray(
-//             colony.colony.structuresWithCapability.research,
-//             (quantity, structureId) => {
-//               const structure = gameConfig.structures[structureId];
-//               const id = `addResearchModal_structure_${structureId}`;
-//               const available = quantity;//TODO reduce by in-use facilities;
-//               const value = this.state.facilities[structureId] || 0;
-//
-//               return <Form.Field inline key={structureId}>
-//                 <label>{structure.name}</label>{/*TODO translation!*/}
-//                 <Form.Input type="number" id={id} min={0} max={available} step={1} value={value} onChange={(e) => {this.updateSelectedFacilities(structureId, +e.target.value)}} />
-//               </Form.Field>;
-//             },
-//             (a, b) => {return a.name > b.name ? -1 : 1},//TODO sort on translated text using locale (i18n.language),
-//             true
-//           )}
-//         </div>
-//         <Button onClick={null}>
-//           <Trans>Add/Edit</Trans>
-//         </Button>
-//         <Button onClick={this.context}>
-//           <Trans>Cancel</Trans>
-//         </Button>
-//       </Form>
-//     }}</I18n>
-//
-//     // const {researchProject, gameConfig, faction, colony} = this.props;
-//     //
-//     // return <div className="vspaceStart">
-//     //   {mapToSortedArray(
-//     //     colony.colony.structuresWithCapability.research,
-//     //     (quantity, structureId) => {
-//     //       const structure = gameConfig.structures[structureId];
-//     //       const id = `addResearchModal_structure_${structureId}`;
-//     //       const available = quantity;//TODO reduce by in-use facilities;
-//     //       const value = this.state.facilities[structureId] || 0;
-//     //
-//     //       return <div key={structureId}>
-//     //         <label htmlFor={id}>{structure.name}</label>
-//     //         <input type="number" id={id} min={0} max={available} step={1} value={value} onChange={(e) => {this.updateSelectedFacilities(structureId, +e.target.value)}} />
-//     //       </div>;
-//     //     },
-//     //     (a, b) => {return a.name > b.name ? -1 : 1},//TODO sort on translated text using locale,
-//     //     true
-//     //   )}
-//     //   <div>
-//     //     <Button onClick={() => {alert('TODO')}}><Trans>Create</Trans></Button>
-//     //     <Button onClick={this.context}><Trans>Cancel</Trans></Button>
-//     //   </div>
-//     // </div>
-//   }
-//
-//   updateSelectedFacilities = (structureId, newValue) => {
-//     this.setState((state) => ({facilities: {...state.facilities, [structureId]: newValue}}));
-//   }
-// }

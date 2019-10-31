@@ -10,6 +10,12 @@ import FormatNumber from '@/components/formatNumber/FormatNumber';
 
 export default dataTableFactory([
   {
+    name: 'index',
+    label: <Trans>Order</Trans>,
+    valueType: 'number',
+    sort: true
+  },
+  {
     name: 'name',
     label: <Trans>Name</Trans>,
     //valueType: 'string',

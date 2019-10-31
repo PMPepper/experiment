@@ -42,7 +42,6 @@ $expandArrowHoverCol: $grey40;
   composes: responsive from "../../../css/generic.scss";
 
   color: $tableCol;
-  width: 100%;
 }
 
 .table {
@@ -185,7 +184,6 @@ $expandArrowHoverCol: $grey40;
   }
 }
 
-
 ////////////////////
 // Stacked styles //
 ////////////////////
@@ -310,10 +308,17 @@ $expandArrowHoverCol: $grey40;
 }
 
 //expand toggle button styles
+.th.expandToggleCell {
+  width: 2rem;
+}
 .td.expandToggleCell {
   padding: 0;
   position: relative;
-  min-width: 3rem;
+}
+
+.th.expandToggleCell > .columnLabel {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .tdContent.expandToggleCell {

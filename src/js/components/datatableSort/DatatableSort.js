@@ -1,33 +1,40 @@
 import React from 'react';
 
+//TODO re-order by clicking and dragging...
+
 import styles from './datatableSort.scss';
 
 //Components
 import Button from '@/components/button/Button';
 import Icon from '@/components/icon/Icon';
 
+//Helpers
+import css from '@/helpers/css/class-list-to-string';
+import combineProps from '@/helpers/react/combine-props';
+import childrenToArray from '@/helpers/react/children-to-array';
+
 
 //The components
-const DatatableSort = React.forwardRef(function DatatableSort({rows, children, ...rest}) {
-  const child = React.Children.only(children);
+const DatatableSort = React.forwardRef(function DatatableSort({children, moveUp, moveDown, remove, ...rest}, ref) {
+  children = childrenToArray(children);
 
-  return <div className={styles.datatableSort}>
+  if(children.length === 0) {
+    return null;
+  }
+
+  return <div className={styles.datatableSort} ref={ref}>
     <div className={styles.table}>
       {React.cloneElement(
-        child,
-        {
-          rows,
-          ...rest,//other props
-
-
-        }
+        children[0],
+        rest
       )}
+      {children.slice(1)}
     </div>
-    <div className={styles.controls}>
-      <Button><Icon icon="sort-up" /></Button>
-      <Button><Icon icon="trash-alt" /></Button>
-      <Button><Icon icon="sort-down" /></Button>
-    </div>
+    {(moveUp || remove || moveDown) && <div className={styles.controls}>
+      {moveUp && <Button onClick={moveUp}><Icon icon="sort-up" /></Button>}
+      {remove && <Button onClick={remove}><Icon icon="trash-alt" /></Button>}
+      {moveDown && <Button onClick={moveDown}><Icon icon="sort-down" /></Button>}
+    </div>}
   </div>
 });
 

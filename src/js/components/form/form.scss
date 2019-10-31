@@ -271,9 +271,6 @@ $maxNumberOfCheckboxesColumns: 16;
 
 .container {
   clear: left;
-  display: flex;
-  flex-flow: row wrap;
-  align-items: baseline;
   margin-bottom: $formBaseSpacing;
 }
 

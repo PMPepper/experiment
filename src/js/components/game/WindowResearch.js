@@ -124,7 +124,7 @@ export default function WindowResearch({colonyId}) {
       </div>
     })*/}
     <Modal
-      title={<Trans>Add a research queue</Trans>}
+      title={<Trans>Add research queue</Trans>}//TODO edit
       isOpen={isAddEditResearchQueueOpen}
       onRequestClose={onCloseAddResearchGroup}
     >
@@ -132,13 +132,13 @@ export default function WindowResearch({colonyId}) {
         faction={faction}
         colony={colony}
         clientState={clientState}
-        initialResearchQueue={blankReserchQueue}//TODO edit
+        initialResearchQueue={undefined}//TODO edit
       />
     </Modal>
   </div>
 }
 
-const blankReserchQueue = {structures: {}, researchIds: []};
+
 
 
 // getAvailableProjectRows = memoize((completedResearch, allResearchProjects, researchInProgress, area) => {

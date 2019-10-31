@@ -19,6 +19,10 @@
   }
 }
 
+:global(.alignCenter) {
+  text-align: center;
+}
+
 :global(.offscreen) {
   position: absolute;
   top: -9999px;
@@ -67,4 +71,8 @@
 
 :global(.draggable) {
   cursor: all-scroll;
+}
+
+:global(.bodyCopy) {
+  display: block;
 }

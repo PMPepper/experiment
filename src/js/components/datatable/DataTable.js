@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {Trans} from '@lingui/macro';
 import memoize from 'memoize-one';
 import {compose} from 'recompose';
 
@@ -270,10 +271,12 @@ registerDatatableMetatype(
 ///////////////////////
 // Expand rows stuff //
 ///////////////////////
+
+//TODO fix column size
 function getExpandRowColumn(styles) {
   return {
     name: '__expand__',
-    label: null,
+    label: ' ',
     sort: false,
     format: (value, column, row, props) => {
       const isRowExpanded = props.expandedRows[row.id];
@@ -287,7 +290,7 @@ function getExpandRowColumn(styles) {
         )}
         onClick={(e) => {e.stopPropagation(); props.setRowExpanded(row.id, !isRowExpanded)}}
       >
-        <span className="offscreen">[TODO langauge system]</span>
+        <span className="offscreen"><Trans>Click to expand/collapse row</Trans></span>
       </button>
     },
     css: [styles.expandToggleCell]

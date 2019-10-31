@@ -82,7 +82,7 @@ export default function LocalTableState({
   }, []);
 
   const stateSetRowExpanded = useCallback((id, isExpanded) => {
-    dispatch({type: 'setRowExpanded', is, isExpanded});
+    dispatch({type: 'setRowExpanded', id, isExpanded});
   }, []);
 
   const stateSetRowsExpanded = useCallback((expandedRows) => {
@@ -122,7 +122,7 @@ export default function LocalTableState({
       //handlers
       setSortColumn,
       setPage,
-      setRowExpanded: setRowExpanded || stateSetRowsExpanded,
+      setRowExpanded: setRowExpanded || stateSetRowExpanded,
       setRowsExpanded: setRowsExpanded || stateSetRowsExpanded,
       setRowSelected: setRowSelected || stateSetRowSelected,
       setRowsSelected: setRowsSelected || stateSetRowsSelected,
