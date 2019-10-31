@@ -24,9 +24,19 @@ export function startGame(gameDefinition, client) {
                 client.setIsPaused(false);
                 client.setDesiredSpeed(1);
 
+                doFakeDevStuff(client)
+
                 return client;
               });
             })
         })
     })
 }
+
+
+function doFakeDevStuff(client) {
+  client.createResearchQueue(899, {"5":3}, ["m1","pe"]);
+}
+
+//TODO add fake stuff to help development - e.g. a research queue:
+//{"structures":{"5":3},"researchIds":["m1","pe"]}

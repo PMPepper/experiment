@@ -37,7 +37,7 @@ export default function WindowResearch({colonyId}) {
   const setResearchSelectedAreaDispatcher = useActions(setResearchSelectedArea);
 
   const i18n = useI18n();
-  const [isAddEditResearchQueueOpen, setIsAddEditResearchQueueOpen] = useState(true);
+  const [isAddEditResearchQueueOpen, setIsAddEditResearchQueueOpen] = useState(false);
   const onClickOpenAddResearchGroup = useCallback(() => {setIsAddEditResearchQueueOpen(true)}, [setIsAddEditResearchQueueOpen]);
   const onCloseAddResearchGroup = useCallback(() => {setIsAddEditResearchQueueOpen(false)}, [setIsAddEditResearchQueueOpen]);
 
@@ -60,7 +60,7 @@ export default function WindowResearch({colonyId}) {
       {colony.researchQueueIds.map(researchQueueId => {
         const researchQueue = clientState.entities[researchQueueId];
 
-        return <li>
+        return <li key={researchQueueId}>
           <p>TODO research queue overview</p>
           <Buttons>
             <Button onClick={null}><Trans id="windowResearch.groups.edit">Edit</Trans></Button>
