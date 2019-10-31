@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Trans} from '@lingui/macro';
 
 import Modal from '@/components/modal/Modal';
-import AddEditResearchGroup from '@/components/game/AddEditResearchGroup';
+import AddEditResearchQueue from '@/components/game/AddEditResearchQueue';
 
 export default compose(
   connect(state => {
@@ -29,7 +29,7 @@ export default compose(
     isOpen={true}
     onRequestClose={() => {}}
   >
-    <AddEditResearchGroup
+    <AddEditResearchQueue
       //key={selectedResearchProject.id}
       //researchProject={selectedResearchProject}
       faction={faction}

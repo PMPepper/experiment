@@ -72,6 +72,12 @@ export default class Client {
     return this.connector.sendMessageToServer('createColony', bodyId)
   }
 
+  //facilities: {[structureId]: [number assigned]}
+  //researchIds: array with order of projects to perform
+  createResearchQueue(colonyId, structures = {}, researchIds = []) {
+    return this.connector.sendMessageToServer('createResearchQueue', colonyId, structures, researchIds)
+  }
+
   ///////////////////////////////////////
   // Server -> Client message handlers //
   ///////////////////////////////////////

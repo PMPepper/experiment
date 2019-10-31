@@ -1,6 +1,6 @@
 import React from 'react';
 
-import styles from './styles.scss';
+import styles from './button.scss';
 
 import combineProps from '@/helpers/react/combine-props';
 import css from '@/helpers/css/class-list-to-string';

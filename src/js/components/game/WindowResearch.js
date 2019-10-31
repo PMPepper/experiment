@@ -4,15 +4,16 @@ import {compose} from 'recompose';
 import {connect} from 'react-redux';
 import {Trans} from '@lingui/macro';
 
-import { Button } from 'semantic-ui-react'
+import styles from './windowResearch.scss';
 
 //Components
 import Layout, {Row, Cell} from '@/components/layout/Layout';
-//import Button from '@/components/button/Button';
+import Button from '@/components/button/Button';
+import Buttons from '@/components/button/Buttons';
 import ReduxDataTableState from '@/components/datatable/ReduxDataTableState';
 import AvailableResearchProjects from '@/components/game/tables/AvailableResearchProjects';
 import Modal from '@/components/modal/Modal';
-import AddEditResearchGroup from '@/components/game/AddEditResearchGroup';
+import AddEditResearchQueue from '@/components/game/AddEditResearchQueue';
 
 //Hooks
 import useI18n from '@/hooks/useI18n';
@@ -35,9 +36,9 @@ export default function WindowResearch({colonyId}) {
   const setResearchSelectedAreaDispatcher = useActions(setResearchSelectedArea);
 
   const i18n = useI18n();
-  const [isAddEditResearchGroupOpen, setIsAddEditResearchGroupOpen] = useState(false);
-  const onClickOpenAddResearchGroup = useCallback(() => {setIsAddEditResearchGroupOpen(true)}, [setIsAddEditResearchGroupOpen]);
-  const onCloseAddResearchGroup = useCallback(() => {setIsAddEditResearchGroupOpen(false)}, [setIsAddEditResearchGroupOpen]);
+  const [isAddEditResearchQueueOpen, setIsAddEditResearchQueueOpen] = useState(true);
+  const onClickOpenAddResearchGroup = useCallback(() => {setIsAddEditResearchQueueOpen(true)}, [setIsAddEditResearchQueueOpen]);
+  const onCloseAddResearchGroup = useCallback(() => {setIsAddEditResearchQueueOpen(false)}, [setIsAddEditResearchQueueOpen]);
 
   const initialGameState = clientState.initialGameState;
   const researchAreas = initialGameState.researchAreas;
@@ -51,19 +52,31 @@ export default function WindowResearch({colonyId}) {
 
   return <div className="vspaceStart">
     <div><Trans>Total research facilities: {totalNumResearchFacilities}</Trans></div>
+    <div>TODO show breakdown of total/available reserach facilities</div>
+    <ul className={styles.researchQueueList}>
+      {colony.researchQueueIds.map(researchQueueId => {
+        const researchQueue = clientState.entities[researchQueueId];
+
+        return <li>
+          <p>TODO research queue overview</p>
+          <Buttons>
+            <Button onClick={null}><Trans id="windowResearch.groups.edit">Edit</Trans></Button>
+            <Button onClick={null}><Trans id="windowResearch.groups.remove">Remove</Trans></Button>
+          </Buttons>
+        </li>
+      })}
+    </ul>
     <div>
-      <div className="hspaceStart">
+      <Buttons>
         <Button onClick={onClickOpenAddResearchGroup}><Trans id="windowResearch.groups.create">Create</Trans></Button>
-        <Button onClick={null}><Trans id="windowResearch.groups.edit">Edit</Trans></Button>
-        <Button onClick={null}><Trans id="windowResearch.groups.remove">Remove</Trans></Button>
-      </div>
+      </Buttons>
     </div>
     <div>
-      <h4>Available research projects</h4>
+      {/*<h4>Available research projects</h4>
       <select className="space" value={coloniesWindow.researchSelectedArea} onChange={(e) => {setResearchSelectedAreaDispatcher(e.target.value)}}>
         <option value="">{i18n._('windowResearch.area.select', null, {defaults: '- - Select - -'})}</option>
         {Object.keys(researchAreas).map(areaId => (<option value={areaId} key={areaId}>{researchAreas[areaId]}</option>))}
-      </select>
+      </select>*/}
 
       {/*<Layout>
         <Row>
@@ -85,7 +98,7 @@ export default function WindowResearch({colonyId}) {
               <div>
                 <p>{selectedResearchProject.description}</p>
 
-                <button type="button" onClick={() => {this.setState({isAddEditResearchGroupOpen: true})}}><Trans>Create research project</Trans></button>
+                <button type="button" onClick={() => {this.setState({isAddEditResearchQueueOpen: true})}}><Trans>Create research project</Trans></button>
               </div>
               :
               <Trans>Select a research project</Trans>
@@ -112,19 +125,20 @@ export default function WindowResearch({colonyId}) {
     })*/}
     <Modal
       title={<Trans>Create research project</Trans>}
-      isOpen={isAddEditResearchGroupOpen}
+      isOpen={isAddEditResearchQueueOpen}
       onRequestClose={onCloseAddResearchGroup}
     >
-      <AddEditResearchGroup
-        //key={selectedResearchProject.id}
-        //researchProject={selectedResearchProject}
+      <AddEditResearchQueue
         faction={faction}
         colony={colony}
-        gameConfig={clientState.initialGameState}
+        clientState={clientState}
+        initialResearchQueue={blankReserchQueue}//TODO edit
       />
     </Modal>
   </div>
 }
+
+const blankReserchQueue = {structures: {}, researchIds: []};
 
 
 // getAvailableProjectRows = memoize((completedResearch, allResearchProjects, researchInProgress, area) => {

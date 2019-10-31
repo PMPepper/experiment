@@ -1,0 +1,25 @@
+@import '../../../css/shared';
+
+
+.buttons {
+
+}
+
+.position-left {
+  @extend %hspaceStart;
+}
+
+.position-center {
+  text-align: center;
+  margin-left: (-$columnSpace);
+
+  > * {
+    margin-left: $columnSpace;
+  }
+}
+
+.position-right {
+  @extend %hspaceStart;
+
+  justify-content: flex-end;
+}

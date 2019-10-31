@@ -319,7 +319,7 @@ export default class Server {
     return Promise.resolve(colony.id);
   }
 
-  message_createResearchGroup(colonyId, structures, projects, clientId) {
+  message_createResearchQueue(colonyId, structures, researchIds, clientId) {
     if(this.phase !== RUNNING) {
       throw new Error('Can only add research group while server is in "running" phase');
     }
@@ -330,40 +330,67 @@ export default class Server {
     const colony = this.getEntityById(colonyId);
 
     if(!colony || colony.factionId !== factionId) {
-      throw new Error('Cannot add researchGroup, invalid colony');
+      throw new Error('Cannot add researchQueue, invalid colony');
     }
 
-    const researchGroup = this.createResearchGroup(colonyId, structures || {}, projects || []);
+    const researchQueue = this.createResearchQueue(colonyId, structures || {}, researchIds || []);
 
-    return Promise.resolve(researchGroup.id);
+    return Promise.resolve(researchQueue.id);
   }
 
-  message_removeResearchGroup(researchGroupId, clientId) {
+  message_removeResearchQueue(researchQueueId, clientId) {
     if(this.phase !== RUNNING) {
       throw new Error('Can only remove research group while server is in "running" phase');
     }
 
     this._checkValidClient(clientId);
+    this._clientOwnsEntity(researchQueueId);
 
-    this.clients[clientId].factionId;
+    const researchQueue = this.entities[researchQueueId];
 
-    //TODO
+    //TODO check that this is a valid research queue
+    console.log(researchQueue);
+    debugger;
+
+    //remove this entity
+    this._removeEntity(researchQueueId);
+
+    return Promise.resolve(researchQueue.id);
   }
 
-  message_updateResearchGroup(researchGroupId, structures, projects, clientId) {
+  message_updateResearchQueue(researchQueueId, structures, researchIds, clientId) {
     if(this.phase !== RUNNING) {
       throw new Error('Can only remove research group while server is in "running" phase');
     }
 
     this._checkValidClient(clientId);
+    this._clientOwnsEntity(researchQueueId);
 
-    this.clients[clientId].factionId;
+    const researchQueue = this.entities[researchQueueId];
 
-    //TODO
+    //TODO check that this is a valid research queue
+    console.log(researchQueue);
+    debugger;
+
+    return Promise.resolve(researchQueue.id);
   }
 
 
   //-validation methods
+  _clientOwnsEntity(clientId, entity) {
+    if(typeof(entity) === 'number') {
+      entity = this.entities[entity];
+    }
+
+    if(!entity) {
+      throw new Error('Entity not found');
+    }
+
+    if(this.clients[clientId].factionId !== factionId) {
+      throw new Error('Client does not control this entity');
+    }
+  }
+
   _checkValidClientName(name, clientId) {
     if(!name) {
       throw new Error('Client required a name');
@@ -428,7 +455,7 @@ export default class Server {
       systemId: systemBody.systemId,
       systemBodyId: systemBody.id,
       factionSystemBodyId: getFactionSystemBodyFromFactionAndSystemBody(faction, systemBody, this.entities).id,
-      researchGroupIds: [],//groups performing research
+      researchQueueIds: [],//groups performing research
       populationIds,
       colony: {
         structures,
@@ -451,25 +478,24 @@ export default class Server {
     return colony;
   }
 
-  createResearchGroup(colonyId, structures, projects) {
+  createResearchQueue(colonyId, structures, researchIds) {
     const colony = this.getEntityById(colonyId, 'colony');
 
     if(!colony) {
       throw new Error('cannot create research group, invalid colonyId');
     }
 
-    const researchGroup = this._newEntity('researchGroup', {
+    const researchQueue = this._newEntity('researchQueue', {
       factionId: colony.factionId,
       colonyId: colony.id,
 
-
-      researchGroup: {
+      researchQueue: {
         structures,//describes what this group would like to use - what they get depends on what is available - groups are assigned structures based on order
-        projects//array of research projects IDs, to be performed in order
+        researchIds//array of research projects IDs, to be performed in order
       }
     });
 
-    return researchGroup;
+    return researchQueue;
   }
 
   createPopulation(factionId, colonyId, speciesId, quantity) {

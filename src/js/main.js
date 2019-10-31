@@ -26,6 +26,8 @@ import baseGameDefinition from '@/game/data/baseGameDefinition';//TEMP CODE
 //vars
 const title = 'React/Webpack testing';
 
+//import Test from '@/components/test/Test';
+
 
 var store;
 
@@ -50,6 +52,12 @@ polyfills.then(() => {
   //TEMP CODE
   const gameServer = GameEngine.startGame(baseGameDefinition, new Client('local', store, new LocalConnector())).then((client) => {
       console.log('[MAIN] render');
+
+
+      // ReactDOM.render(
+      //   <Test />,
+      //   document.getElementById('app')
+      // )
 
       ReactDOM.render(
         <Provider store={store}>
@@ -107,7 +115,10 @@ function OutputMeasuredPerformance(props) {
     }
   }
 
-  const avg = values.reduce((total, value) => {return total + value.duration}, 0) / values.length;
+  const avg = values.length > 0 ?
+    values.reduce((total, value) => {return total + value.duration}, 0) / values.length
+    :
+    '-';
 
   return <div style={{position: 'absolute', left: '10px', bottom: '50px', background: '#FFF', padding: '10px', color: '#000', width: '200px'}}>
     <p>{lastName}</p>

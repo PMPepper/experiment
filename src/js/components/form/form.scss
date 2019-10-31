@@ -248,6 +248,27 @@ $maxNumberOfCheckboxesColumns: 16;
   color: $formFocusTextColour;
 }
 
+//Buttons
+.button {
+  background: $grey30;
+  border: 0.1rem solid $borderCol;
+  padding: $formBaseSpacing/2;
+  border-radius: $basePadding/4;
+  font-size: 1.4rem;
+  color: $fontCol;
+  line-height: inherit;
+
+  @include blockInteraction($mouseBg: $grey35);
+}
+
+.container {
+  clear: left;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: baseline;
+  margin-bottom: $formBaseSpacing;
+}
+
 ///////////////////
 // General stuff //
 ///////////////////
@@ -299,7 +320,9 @@ $maxNumberOfCheckboxesColumns: 16;
   &.label,
   &.textarea,
   &.select,
-  &.input {
+  &.input,
+  &.button,
+  &.container {
     flex-basis: calc(#{$percentage} - #{$rowFieldHorizontalSpacing * 2});
     margin-left: $rowFieldHorizontalSpacing;
     margin-right: $rowFieldHorizontalSpacing;

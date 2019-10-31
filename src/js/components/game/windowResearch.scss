@@ -1,0 +1,15 @@
+@import '../../../css/shared';
+
+
+.researchQueueList {
+  @include panel();
+  margin-bottom: $basePadding;
+
+  > * {
+    margin-top: $basePadding/2;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+}

@@ -1,6 +1,7 @@
 @import 'vars';
 @import 'functions';
 @import 'mixins';
+@import 'placeholders';
 
 :global(.alignStart) {
   text-align: left;
@@ -24,23 +25,10 @@
   left: -9999px;
 }
 
-$columnSpace: $basePadding/2;
-$rowSpace: $basePadding/2;
+
 
 :global(.hspaceStart) {
-  display: flex;
-  flex-flow: row wrap;
-  margin-top: (-$rowSpace);
-  margin-left: (-$columnSpace);
-
-  > * {
-    margin-top: $rowSpace;
-    margin-left: $columnSpace;
-  }
-
-  :global(.rtl) & {
-    flex-flow: row-reverse wrap;
-  }
+  @extend %hspaceStart;
 }
 
 :global(.hspaceEnd) {
@@ -60,14 +48,10 @@ $rowSpace: $basePadding/2;
   }
 }
 
-:global(.vspaceStart) {
-  display: flex;
-  flex-flow: column nowrap;
-  margin-bottom: (-$rowSpace);
 
-  > * {
-    margin-bottom: $rowSpace;
-  }
+
+:global(.vspaceStart) {
+  @extend %vspaceStart;
 }
 
 :global(.vspaceEnd) {

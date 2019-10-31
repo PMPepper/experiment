@@ -32,6 +32,8 @@ import Textarea from './Textarea';
 import Select from './Select';
 import Checkboxes from './Checkboxes';
 import Label from './Label';
+import Button from './Button';
+import Container from './Container';
 
 //Helpers
 import css from '@/helpers/css/class-list-to-string';
@@ -43,7 +45,6 @@ import {StyleContext} from './contexts';
 
 //The component
 const Form = React.forwardRef(function Form({children, styles, ...rest}, ref) {
-
   return <StyleContext.Provider value={styles}>
     <form {...combineProps({className: styles.form}, rest)} ref={ref}>
       {children}
@@ -68,6 +69,8 @@ Form.Textarea = Textarea;
 Form.Select = Select;
 Form.Checkboxes = Checkboxes;
 Form.Label = Label;
+Form.Button = Button;
+Form.Container = Container;
 
 
-export {Group, Legend, Row, Column, Field, Input, Textarea, Select, Checkboxes, Label};
+export {Group, Legend, Row, Column, Field, Input, Textarea, Select, Checkboxes, Label, Button, Container};

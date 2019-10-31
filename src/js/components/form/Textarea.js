@@ -12,11 +12,11 @@ import {StyleContext} from './contexts';
 
 
 //The component
-const Textarea = React.forwardRef(function Textarea({inline, width, ...props}, ref) {
+const Textarea = React.forwardRef(function Textarea({inline, width, setValue, ...props}, ref) {
   const className = useGetLayoutClasses('textarea', 0, inline ? width : 0);
   const styles = useContext(StyleContext);
 
-  return <textarea {...combineProps(props, {className: css(className, inline && styles.inline)})} ref={ref} />
+  return <textarea {...combineProps(props, {className: css(className, inline && styles.inline), onChange: (e) => {setValue(e.target.value, e)}})} ref={ref} />
 });
 
 export default Textarea;
