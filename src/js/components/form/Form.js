@@ -34,6 +34,7 @@ import Checkboxes from './Checkboxes';
 import Label from './Label';
 import Button from './Button';
 import Container from './Container';
+import Output from './Output';
 
 //Helpers
 import css from '@/helpers/css/class-list-to-string';
@@ -71,6 +72,7 @@ Form.Checkboxes = Checkboxes;
 Form.Label = Label;
 Form.Button = Button;
 Form.Container = Container;
+Form.Output = Output;
 
 
-export {Group, Legend, Row, Column, Field, Input, Textarea, Select, Checkboxes, Label, Button, Container};
+export {Group, Legend, Row, Column, Field, Input, Textarea, Select, Checkboxes, Label, Button, Container, Output};

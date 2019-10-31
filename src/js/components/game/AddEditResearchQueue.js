@@ -15,10 +15,12 @@ import useI18n from '@/hooks/useI18n';
 //Helpers
 import mapToSortedArray from '@/helpers/object/map-to-sorted-array';
 import filter from '@/helpers/object/filter';
+import reduce from '@/helpers/object/reduce';
 import formatNumber from '@/helpers/string/format-number';
 
 //Other
 import {CloseModalContext} from '@/components/modal/Modal';
+import {DAY_ANNUAL_FRACTION} from '@/game/Consts';
 
 
 //The component
@@ -35,6 +37,16 @@ export default function AddEditResearchQueue({faction, colony, clientState, init
   }, [researchIds, setResearchIds, selectedResearchId])
 
   const gameConfig = clientState.initialGameState;
+
+  //calculate researchRate based on selected facilities
+  const researchRate = reduce(structures, (total, structureCount, structureId) => {
+    const structure = gameConfig.structures[structureId];
+
+    return total + (structureCount * structure.capabilities.research)
+  }, 0);
+
+  //used to keep track of ETAs of research projects in this queue
+  const currentDate = new Date(clientState.gameTimeDate)
 
   return <div>
     <Form>
@@ -65,6 +77,14 @@ export default function AddEditResearchQueue({faction, colony, clientState, init
           (a, b) => {return a.name > b.name ? -1 : 1},//TODO sort on translated text using locale (i18n.language),
           true
         )}
+        <Form.Row>
+          <Form.Field columns={6} inline>
+            <Form.Label width={2}>
+              <Trans>Total research rate</Trans>
+            </Form.Label>
+            <Form.Output width={1}>{researchRate}</Form.Output>
+          </Form.Field>
+        </Form.Row>
       </Form.Group>
 
       <Form.Group>
@@ -76,13 +96,23 @@ export default function AddEditResearchQueue({faction, colony, clientState, init
             rows={researchIds.map(researchId => {
               const research = gameConfig.research[researchId];
               //TODO progress
-              //TODO ETA
+
+              //ETA
+              if(researchRate > 0) {
+
+                const days = Math.ceil(research.cost / (researchRate * DAY_ANNUAL_FRACTION));
+
+                //now add days to 'current date'
+                currentDate.setDate(currentDate.getDate() + days)
+              }
 
               return {
-                ...research
+                ...research,
+                eta: researchRate > 0 ? new Date(currentDate) : '-'
               };
             })}
-            extras={{}}
+            extras={{
+            }}
           >
             <ResearchQueueProjects />
           </LocalTableState>

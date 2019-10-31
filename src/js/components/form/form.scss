@@ -166,12 +166,20 @@ $boxBorderRadius: 0.3rem;
 
 .input,
 .textarea,
-.select {
+.select,
+.output {
   @include formBoxStyle;
 
   font-size: $formFontSize;
   min-width: 0;
   cursor: text;
+}
+
+.output {
+  @include formBoxStyle;
+
+  font-size: $formFontSize;
+  min-width: 0;
 }
 
 .isCheckbox > .input {
@@ -321,6 +329,7 @@ $maxNumberOfCheckboxesColumns: 16;
   &.textarea,
   &.select,
   &.input,
+  &.output,
   &.button,
   &.container {
     flex-basis: calc(#{$percentage} - #{$rowFieldHorizontalSpacing * 2});
@@ -357,43 +366,3 @@ $maxColumns: 16;
     }
   }
 }
-
-//
-// $columns: (one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen);
-//
-//
-// @for $i from 1 through length($columns) {
-//   $column: nth($columns, $i);
-//
-//   .#{$column} {
-//     > * {
-//       $percentage: percentage(1/$i);
-//       $width: $percentage;
-//       flex: $width 0 1;
-//       min-width: 0;
-//
-//       &.grow {
-//         flex-grow: 1;
-//       }
-//
-//       @include paddedElements($percentage);
-//
-//
-//       @for $j from 1 through $i {
-//         $columnsWide: nth($columns, $j);
-//
-//         &.#{$columnsWide} {
-//           $percentage: percentage($j / $i);
-//           $value: $percentage;
-//           flex-basis: $value;
-//
-//           &.inline {
-//             flex-basis: $percentage;
-//           }
-//
-//           @include paddedElements($percentage);
-//         }
-//       }
-//     }
-//   }
-// }

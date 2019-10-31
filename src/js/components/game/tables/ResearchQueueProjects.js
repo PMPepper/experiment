@@ -3,6 +3,8 @@ import {Trans} from '@lingui/macro'
 
 import dataTableFactory from '@/components/datatable/DataTableFactory';
 
+//Components
+import FormatDate from '@/components/formatDate/FormatDate';
 
 
 export default dataTableFactory([
@@ -15,8 +17,8 @@ export default dataTableFactory([
   {
     name: 'progress',
     label: <Trans>Progress</Trans>,
-    format: function (...args) {
-      console.log(args);
+    format: function (value, column, row, props) {
+
 
       return '-';
     }
@@ -26,10 +28,11 @@ export default dataTableFactory([
   {
     name: 'eta',
     label: <Trans><abbr title="Estimated Time of Arrival">ETA</abbr></Trans>,
-    format: function (...args) {
-      console.log(args);
-
-      return '-';
+    format: function (value, column, row, props) {
+      return value instanceof Date ?
+        <FormatDate value={value} format="date" />
+        :
+        '-';
     }
   }
 ]);
