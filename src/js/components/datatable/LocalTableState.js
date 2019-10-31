@@ -14,6 +14,7 @@ const initialState = {
 };
 
 function reducer(state, action) {
+  console.log(action);
   switch(action.type) {
     case 'setSortColumn':
       return {
@@ -31,11 +32,11 @@ function reducer(state, action) {
     case 'setRowsExpanded':
       return modify(state, ['expandedRows'], {...state.expandedRows, ...action.expandedRows});
     case 'setRowSelected':
-      return modify(state, ['selectedRows', action.id], action.isExpanded);
+      return modify(state, ['selectedRows', action.id], action.isSelected);
     case 'setRowsSelected':
       return modify(state, ['selectedRows'], {...state.selectedRows, ...action.selectedRows});
     case 'setRowDisabled':
-      return modify(state, ['disabledRows', action.id], action.isExpanded);
+      return modify(state, ['disabledRows', action.id], action.isDisabled);
     case 'setRowsDisabled':
       return modify(state, ['disabledRows'], {...state.disabledRows, ...action.disabledRows});
 
@@ -45,16 +46,29 @@ function reducer(state, action) {
 }
 
 
-export default function LocalTableState({rows, children, initialPage, expandedRows, selectedRows, disabledRows, ...rest}) {
-  const [state, dispatch] = useReducer(reducer, initialState, initialState => ({
+export default function LocalTableState({
+  rows, children, initialPage,
+  initialExpandedRows, initialSelectedRows, initialDisabledRows,
+  expandedRows, selectedRows, disabledRows,
+  setRowExpanded, setRowsExpanded, setRowSelected, setRowsSelected, setRowDisabled, setRowsDisabled,
+  ...rest
+}) {
+  const [{
+    sortColumnName,
+    sortColumnDesc,
+    page,
+    expandedRows: stateExpandedRows,
+    selectedRows: stateSelectedRows,
+    disabledRows: stateDisabledRows
+  }, dispatch] = useReducer(reducer, initialState, initialState => ({
     //initialise the state
     ...initialState,
 
     page: initialPage || 1,
 
-    expandedRows: expandedRows ? {...expandedRows} : {},
-    selectedRows: selectedRows ? {...selectedRows} : {},
-    disabledRows: disabledRows ? {...disabledRows} : {},
+    expandedRows: initialExpandedRows ? {...initialExpandedRows} : {},
+    selectedRows: initialSelectedRows ? {...initialSelectedRows} : {},
+    disabledRows: initialDisabledRows ? {...initialDisabledRows} : {},
   }));
 
   const child = React.Children.only(children);
@@ -67,27 +81,27 @@ export default function LocalTableState({rows, children, initialPage, expandedRo
     dispatch({type: 'setPage', page});
   }, []);
 
-  const setRowExpanded = useCallback((id, isExpanded) => {
+  const stateSetRowExpanded = useCallback((id, isExpanded) => {
     dispatch({type: 'setRowExpanded', is, isExpanded});
   }, []);
 
-  const setRowsExpanded = useCallback((expandedRows) => {
+  const stateSetRowsExpanded = useCallback((expandedRows) => {
     dispatch({type: 'setRowsExpanded', expandedRows});
   }, []);
 
-  const setRowSelected = useCallback((id, isSelected) => {
+  const stateSetRowSelected = useCallback((id, isSelected) => {
     dispatch({type: 'setRowSelected', id, isSelected});
   }, []);
 
-  const setRowsSelected = useCallback((selectedRows) => {
+  const stateSetRowsSelected = useCallback((selectedRows) => {
     dispatch({type: 'setRowsSelected', selectedRows});
   }, []);
 
-  const setRowDisabled = useCallback((id, isDisabled) => {
+  const stateSetRowDisabled = useCallback((id, isDisabled) => {
     dispatch({type: 'setRowDisabled', id, isDisabled});
   }, []);
 
-  const setRowsDisabled = useCallback((disabledRows) => {
+  const stateSetRowsDisabled = useCallback((disabledRows) => {
     dispatch({type: 'setRowsDisabled', disabledRows});
   }, []);
 
@@ -96,10 +110,24 @@ export default function LocalTableState({rows, children, initialPage, expandedRo
     {
       rows,
       ...rest,//other props
-      ...state,///table state props
+
+      sortColumnName,
+      sortColumnDesc,
+      page,
+
+      expandedRows: expandedRows || stateExpandedRows,
+      selectedRows: selectedRows || stateSelectedRows,
+      disabledRows: disabledRows || stateDisabledRows,
+
       //handlers
-      setSortColumn, setPage, setRowExpanded, setRowsExpanded, setRowSelected,
-      setRowsSelected, setRowDisabled, setRowsDisabled
+      setSortColumn,
+      setPage,
+      setRowExpanded: setRowExpanded || stateSetRowsExpanded,
+      setRowsExpanded: setRowsExpanded || stateSetRowsExpanded,
+      setRowSelected: setRowSelected || stateSetRowSelected,
+      setRowsSelected: setRowsSelected || stateSetRowsSelected,
+      setRowDisabled: setRowDisabled || stateSetRowDisabled,
+      setRowsDisabled: setRowsDisabled || stateSetRowsDisabled
     }
   );
 }

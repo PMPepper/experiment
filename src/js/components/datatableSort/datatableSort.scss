@@ -1,0 +1,27 @@
+@import '../../../css/shared';
+
+
+.datatableSort {
+  display: flex;
+  width: 100%;
+}
+
+.table {
+  flex: auto 1 1;
+}
+
+.controls {
+  flex: 26px 0 0;
+  padding-left: $basePadding/2;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+
+  > *:first-child {
+    margin-bottom: $basePadding/2;
+  }
+
+  > *:last-child {
+    margin-top: $basePadding/2;
+  }
+}

@@ -5,9 +5,15 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 //Import icons and build library
-import {faChevronLeft, faChevronRight, faEllipsisH, faGlobe, faTimes, faPlay, faPause, faCaretRight} from '@fortawesome/free-solid-svg-icons'
+import {
+  faChevronLeft, faChevronRight, faEllipsisH, faGlobe, faTimes, faPlay, faPause,
+  faCaretRight, faSortUp, faSortDown, faTrashAlt
+} from '@fortawesome/free-solid-svg-icons'
 
-library.add(faChevronLeft, faChevronRight, faEllipsisH, faGlobe, faTimes, faPlay, faPause, faCaretRight)
+library.add(
+  faChevronLeft, faChevronRight, faEllipsisH, faGlobe, faTimes, faPlay, faPause,
+  faCaretRight, faSortUp, faSortDown, faTrashAlt
+);
 
 
 export default FontAwesomeIcon;

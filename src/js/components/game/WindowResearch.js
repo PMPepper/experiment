@@ -124,7 +124,7 @@ export default function WindowResearch({colonyId}) {
       </div>
     })*/}
     <Modal
-      title={<Trans>Create research project</Trans>}
+      title={<Trans>Add a research queue</Trans>}
       isOpen={isAddEditResearchQueueOpen}
       onRequestClose={onCloseAddResearchGroup}
     >

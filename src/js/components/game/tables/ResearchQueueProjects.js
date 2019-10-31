@@ -5,6 +5,7 @@ import dataTableFactory from '@/components/datatable/DataTableFactory';
 
 //Components
 import FormatDate from '@/components/formatDate/FormatDate';
+import FormatNumber from '@/components/formatNumber/FormatNumber';
 
 
 export default dataTableFactory([
@@ -18,9 +19,10 @@ export default dataTableFactory([
     name: 'progress',
     label: <Trans>Progress</Trans>,
     format: function (value, column, row, props) {
+      value = <FormatNumber value={value} />
+      const cost = <FormatNumber value={row.data.cost} />;
 
-
-      return '-';
+      return <Trans>{value} / {cost}</Trans>;
     }
     //valueType: 'number',
     //sort: true,

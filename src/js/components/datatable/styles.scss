@@ -42,6 +42,7 @@ $expandArrowHoverCol: $grey40;
   composes: responsive from "../../../css/generic.scss";
 
   color: $tableCol;
+  width: 100%;
 }
 
 .table {

@@ -7,6 +7,7 @@ import Button from '@/components/button/Button';
 import Buttons from '@/components/button/Buttons';
 import LocalTableState from '@/components/datatable/LocalTableState';
 import ResearchQueueProjects from '@/components/game/tables/ResearchQueueProjects';
+import DatatableSort from '@/components/datatableSort/DatatableSort';
 //import FormatNumber from '@/components/formatNumber/FormatNumber';
 
 //Hooks
@@ -31,6 +32,11 @@ export default function AddEditResearchQueue({faction, colony, clientState, init
   const [researchIds, setResearchIds] = useState([...initialResearchQueue.researchIds]);
 
   const [selectedResearchId, setSelectedResearchId] = useState('');
+  const [selectedQueuedResearchId, setSelectedQueuedResearchId] = useState(null)
+
+  const onQueuedResearchSelected = useCallback((researchId, isSelected) => {
+    setSelectedQueuedResearchId(isSelected ? researchId : null);
+  }, [setSelectedQueuedResearchId]);
 
   const addSelectedResearchToQueue = useCallback(() => {
     selectedResearchId && setResearchIds([...researchIds, selectedResearchId])
@@ -95,12 +101,11 @@ export default function AddEditResearchQueue({faction, colony, clientState, init
           <LocalTableState //TODO table sorting controls
             rows={researchIds.map(researchId => {
               const research = gameConfig.research[researchId];
-              //TODO progress
+              const progress = colony.colony.researchInProgress[researchId] || 0;
 
               //ETA
               if(researchRate > 0) {
-
-                const days = Math.ceil(research.cost / (researchRate * DAY_ANNUAL_FRACTION));
+                const days = Math.ceil((research.cost - progress) / (researchRate * DAY_ANNUAL_FRACTION));
 
                 //now add days to 'current date'
                 currentDate.setDate(currentDate.getDate() + days)
@@ -108,13 +113,17 @@ export default function AddEditResearchQueue({faction, colony, clientState, init
 
               return {
                 ...research,
+                progress,
                 eta: researchRate > 0 ? new Date(currentDate) : '-'
               };
             })}
-            extras={{
-            }}
+            setRowSelected={onQueuedResearchSelected}
+            selectedRows={selectedQueuedResearchId ? {[selectedQueuedResearchId]: true} : {}}
+            clickTogglesSelectedRows={true}
           >
-            <ResearchQueueProjects />
+            <DatatableSort>
+              <ResearchQueueProjects />
+            </DatatableSort>
           </LocalTableState>
         </Form.Container>
         <Form.Group>
