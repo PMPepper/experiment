@@ -2,7 +2,7 @@ import resolvePath, {normalisePath} from './resolve-path';
 
 //Immutably modify simple objects
 //Doesn't deal with functions, symbols - only really intended for primitives, objects and arrays
-export default function modify(obj, path, newValue) {
+export default function modify(obj, path, newValue, createFunc) {
   path = normalisePath(path);
 
   if(resolvePath(obj, path) !== newValue) {//newValue is not the same as the current value at that path. Object(s) need to change
@@ -16,7 +16,14 @@ export default function modify(obj, path, newValue) {
       if(index !== endIndex) {
         //clone objects on path, and modify them to reference their new cloned children as needed
         curObj[curPath] = clone(curObj[curPath]);
+
+        if(!curObj[curPath] && createFunc) {
+          curObj[curPath] = createFunc(index, path)
+        }
+
         curObj = curObj[curPath];
+
+
       } else {
         //At the end of the path, assign newValue
         curObj[curPath] = newValue;

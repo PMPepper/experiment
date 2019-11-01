@@ -17,6 +17,7 @@ import useI18n from '@/hooks/useI18n';
 import mapToSortedArray from '@/helpers/object/map-to-sorted-array';
 import filter from '@/helpers/object/filter';
 import reduce from '@/helpers/object/reduce';
+import modify from '@/helpers/object/modify';
 import add from '@/helpers/array/add';
 import formatNumber from '@/helpers/string/format-number';
 import getResearchProductionFromStructures from '@/helpers/app/getResearchProductionFromStructures';
@@ -107,16 +108,13 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
   //calculate researchRate based on selected facilities
   const gameConfig = clientState.initialGameState;
 
-  const researchRate = getResearchProductionFromStructures(structures, gameConfig, faction);
-
-  // reduce(structures, (total, structureCount, structureId) => {
-  //   const structure = gameConfig.structures[structureId];
-  //
-  //   return total + (structureCount * structure.capabilities.research)
-  // }, 0);
+  const researchRate = getResearchProductionFromStructures(structures, gameConfig, colony.colony.populationUnitCapabilityProduction);
 
   //used to keep track of ETAs of research projects in this queue
   const currentDate = new Date(clientState.gameTimeDate)
+
+  //{[populationId]: {[capability]: {[structureId]: quantity}}}
+
 
   return <div className="vspaceStart">
     <Form>
@@ -124,29 +122,57 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
         <Form.Legend>
           <Trans id="addEditResearchQueue.assignedResearchFacilities.legend">Assigned research facilities</Trans>
         </Form.Legend>
-        {mapToSortedArray(
-          colony.colony.structuresWithCapability.research,
-          (quantity, structureId) => {
-            const structure = gameConfig.structures[structureId];
-            const available = quantity;//TODO reduce by in-use facilities;
-            const value = structures[structureId] || 0;
+        {[0, ...colony.populationIds]
+          .filter(populationId => {
+            //filter out populations that can't do this capability
+            return colony.colony.populationCapabilityProductionTotals[populationId].research > 0
+          })
+          .map(populationId => {
+            //map to population object
+            return clientState.entities[populationId]
+          })
+          .sort((a, b) => {
+            //TODO translations
+            const aName = clientState.entities[a.speciesId].species.name;
+            const bName = clientState.entities[b.speciesId].species.name;
 
-            return <Form.Row key={structureId}>
-              <Form.Field columns={6} inline>
-                <Form.Label width={2}>{structure.name}</Form.Label>{/*TODO translation!?*/}
-                <Form.Input width={1} type="number" min={0} max={available} step={1} value={value} setValue={(newValue) => {
-                  setStructures({
-                    ...structures,
-                    [structureId]: +newValue
-                  });
-                }} />
-                / {available}
-              </Form.Field>
-            </Form.Row>;
-          },
-          (a, b) => {return a.name > b.name ? -1 : 1},//TODO sort on translated text using locale (i18n.language),
-          true
-        )}
+            //TODO sort using locale-aware natsort
+            return aName > bName ? -1 : 1
+          })
+          .map(population => {
+            const name = clientState.entities[population.speciesId].species.name;
+
+            return <Form.Group key={population.id}>
+              <Form.Legend>{name}</Form.Legend>
+              {mapToSortedArray(
+                colony.colony.populationStructuresWithCapability[population.id].research,
+                (quantity, structureId) => {
+                  const structure = gameConfig.structures[structureId];
+                  const available = quantity;//TODO reduce by in-use facilities;
+                  const value = (structures[population.id] && structures[population.id][structureId]) || 0;
+
+                  return <Form.Row key={structureId}>
+                    <Form.Field columns={6} inline>
+                      <Form.Label width={2}>{structure.name}</Form.Label>{/*TODO translation!?*/}
+                      <Form.Input width={1} type="number" min={0} max={available} step={1} value={value} setValue={(newValue) => {
+                        setStructures(modify(structures, [population.id, structureId], +newValue, (index, path) => {return {};}));
+                      }} />
+                      / {available}
+                    </Form.Field>
+                  </Form.Row>;
+                },
+                (a, b) => {
+                  //TODO translations
+                  const aName = gameConfig.structures[a].name;
+                  const bName = gameConfig.structures[b].name;
+
+                  //TODO sort using locale-aware natsort
+                  return aName > bName ? -1 : 1
+                }
+              )}
+            </Form.Group>
+          })
+        }
         <Form.Row>
           <Form.Field columns={12} inline>
             <Form.Label width={4}>

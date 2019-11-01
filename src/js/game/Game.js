@@ -35,8 +35,8 @@ export function startGame(gameDefinition, client) {
 
 
 function doFakeDevStuff(client) {
-  client.createResearchQueue(899, {"5":3}, ["m1","pe"]);
+  client.createResearchQueue(899, {"900":{"5":3}}, ["m1","pe"]);
 }
 
 //TODO add fake stuff to help development - e.g. a research queue:
-//{"structures":{"5":3},"researchIds":["m1","pe"]}
+//{"structures":{"900":{"5":3}},"researchIds":["m1","pe"]}

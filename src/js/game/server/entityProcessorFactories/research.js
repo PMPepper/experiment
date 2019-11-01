@@ -2,6 +2,7 @@ import EntityProcessor from '@/game/server/EntityProcessor';
 
 //Helpers
 import forEach from '@/helpers/object/forEach';
+import map from '@/helpers/object/map';
 import getResearchProductionFromStructures from '@/helpers/app/getResearchProductionFromStructures';
 
 import {DAY_ANNUAL_FRACTION} from '@/game/Consts';
@@ -25,8 +26,11 @@ function researchFactory(lastTime, time, init, full) {
         return false;//no need to do anything for a colony that does not produce any research, or has none queued
       }
 
-      //colony.colony.researchInProgress
-      const availableStructures = {...colony.colony.structuresWithCapability.research};
+      //map into {[populationId]: {[structureId]: quantity}}
+      //colony.colony.populationStructuresWithCapability[populationId][capability][structureId] = quantity;
+      const availableStructures = map(colony.colony.populationStructuresWithCapability, ({research}) => {
+        return {...research};
+      })
 
       colony.researchQueueIds.forEach(researchQueueId => {
         const researchQueue = entities[researchQueueId];
@@ -40,29 +44,39 @@ function researchFactory(lastTime, time, init, full) {
         const desiredStructures = researchQueue.researchQueue.structures;
         let assignedStructures = {};
 
-        forEach(desiredStructures, (quantity, structureTypeId) => {
-          //none available of this type
-          if(!availableStructures[structureTypeId]) {
-            return;
-          }
+        forEach(desiredStructures, (populationStructures, populationId) => {
+          forEach(populationStructures, (quantity, structureTypeId) => {
+            //none available of this type
+            if(!availableStructures[populationId][structureTypeId]) {
+              return;
+            }
 
-          //not enough available
-          if(availableStructures[structureTypeId] < quantity) {
-            //take what there is
-            assignedStructures[structureTypeId] = availableStructures[structureTypeId];
-            //and mark as gone
-            availableStructures[structureTypeId] = 0;
+            //not enough available
+            if(availableStructures[populationId][structureTypeId] < quantity) {
+              if(!assignedStructures[populationId]) {
+                assignedStructures[populationId] = {};
+              }
 
-            return;
-          }
+              //take what there is
+              assignedStructures[populationId][structureTypeId] = availableStructures[populationId][structureTypeId];
+              //and mark as gone
+              availableStructures[populationId][structureTypeId] = 0;
+
+              return;
+            }
 
             //otherwise assign them & update available
-            assignedStructures[structureTypeId] = quantity;
-            availableStructures[structureTypeId] -= quantity;
+            if(!assignedStructures[populationId]) {
+              assignedStructures[populationId] = {};
+            }
+
+            assignedStructures[populationId][structureTypeId] = quantity;
+            availableStructures[populationId][structureTypeId] -= quantity;
+          });
         });
 
         //now work out how much reserach that produces
-        const researchProduction = getResearchProductionFromStructures(assignedStructures, gameConfig, faction) * DAY_ANNUAL_FRACTION;
+        const researchProduction = getResearchProductionFromStructures(assignedStructures, gameConfig, colony.colony.populationUnitCapabilityProduction) * DAY_ANNUAL_FRACTION;
 
         //update current research project
         const currentResearchProjectId = researchQueue.researchQueue.researchIds[0];

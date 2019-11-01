@@ -504,7 +504,7 @@ export default class Server {
       colonyId: colony.id,
 
       researchQueue: {
-        structures,//describes what this group would like to use - what they get depends on what is available - groups are assigned structures based on order
+        structures,//describes what population/structures this queue would like to use - what they get depends on what is available - groups are assigned structures based on order
         researchIds//array of research projects IDs, to be performed in order
       }
     });
