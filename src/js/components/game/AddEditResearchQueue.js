@@ -19,6 +19,7 @@ import filter from '@/helpers/object/filter';
 import reduce from '@/helpers/object/reduce';
 import add from '@/helpers/array/add';
 import formatNumber from '@/helpers/string/format-number';
+import getResearchProductionFromStructures from '@/helpers/app/getResearchProductionFromStructures';
 
 //Other
 import {CloseModalContext} from '@/components/modal/Modal';
@@ -106,11 +107,13 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
   //calculate researchRate based on selected facilities
   const gameConfig = clientState.initialGameState;
 
-  const researchRate = reduce(structures, (total, structureCount, structureId) => {
-    const structure = gameConfig.structures[structureId];
+  const researchRate = getResearchProductionFromStructures(structures, gameConfig, faction);
 
-    return total + (structureCount * structure.capabilities.research)
-  }, 0);
+  // reduce(structures, (total, structureCount, structureId) => {
+  //   const structure = gameConfig.structures[structureId];
+  //
+  //   return total + (structureCount * structure.capabilities.research)
+  // }, 0);
 
   //used to keep track of ETAs of research projects in this queue
   const currentDate = new Date(clientState.gameTimeDate)
@@ -145,11 +148,11 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
           true
         )}
         <Form.Row>
-          <Form.Field columns={6} inline>
-            <Form.Label width={2}>
+          <Form.Field columns={12} inline>
+            <Form.Label width={4}>
               <Trans>Total research rate</Trans>
             </Form.Label>
-            <Form.Output width={1}>{researchRate}</Form.Output>
+            <Form.Output width={3}>{researchRate} <Trans>RP per year</Trans></Form.Output>
           </Form.Field>
         </Form.Row>
       </Form.Group>
@@ -164,6 +167,10 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
               const research = gameConfig.research[researchId];
               const progress = colony.colony.researchInProgress[researchId] || 0;
 
+              if(faction.faction.research[researchId]) {
+                return obj;//this project is complete - do not show in table
+              }
+
               //ETA
               if(researchRate > 0) {
                 const days = Math.ceil((research.cost - progress) / (researchRate * DAY_ANNUAL_FRACTION));
@@ -176,7 +183,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
                 ...research,
                 progress,
                 eta: researchRate > 0 ? new Date(currentDate) : '-',
-                index: index + 1
+                index: Object.keys(obj).length + 1
               };
 
               return obj;

@@ -25,7 +25,7 @@ export default dataTableFactory([
     name: 'progress',
     label: <Trans>Progress</Trans>,
     format: function (value, column, row, props) {
-      value = <FormatNumber value={value} />
+      value = <FormatNumber value={Math.floor(value||0)} />
       const cost = <FormatNumber value={row.data.cost} />;
 
       return <Trans>{value} / {cost}</Trans>;

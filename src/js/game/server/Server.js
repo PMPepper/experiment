@@ -19,9 +19,10 @@ import populationGrowthFactory from './entityProcessorFactories/populationGrowth
 import miningFactory from './entityProcessorFactories/mining';
 import mineralExtractionFactory from './entityProcessorFactories/mineralExtraction';
 import researchFactory from './entityProcessorFactories/research';
+import factionCompletedResearch from './entityProcessorFactories/factionCompletedResearch';
+import updateResearchQueue from './entityProcessorFactories/updateResearchQueue';
 import constructionFactory from './entityProcessorFactories/construction';
 import shipBuildingFactory from './entityProcessorFactories/shipBuilding';
-
 
 import calculatePopulationWorkers from '@/game/server/entityProcessorFactories/colony/calculatePopulationWorkers';
 
@@ -71,6 +72,8 @@ export default class Server {
     miningFactory(),//-done
     mineralExtractionFactory(),//-done
     researchFactory(),
+    factionCompletedResearch(),
+    updateResearchQueue(),
     shipBuildingFactory()
   ];
 
