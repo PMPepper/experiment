@@ -148,7 +148,22 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
                 colony.colony.populationStructuresWithCapability[population.id].research,
                 (quantity, structureId) => {
                   const structure = gameConfig.structures[structureId];
-                  const available = quantity;//TODO reduce by in-use facilities;
+
+                  //how may of this population/structure are in use by another research queue on this colony?
+                  const inUse = colony.researchQueueIds.reduce((total, researchQueueId) => {
+                    const currentResearchQueue = clientState.entities[researchQueueId];
+
+                    if(currentResearchQueue !== researchQueue) {
+                      total += currentResearchQueue.researchQueue.structures[population.id] ?
+                        currentResearchQueue.researchQueue.structures[population.id][structureId] || 0
+                        :
+                        0;
+                    }
+
+                    return total;
+                  }, 0);
+
+                  const available = quantity - inUse;//TODO reduce by in-use facilities;
                   const value = (structures[population.id] && structures[population.id][structureId]) || 0;
 
                   return <Form.Row key={structureId}>
