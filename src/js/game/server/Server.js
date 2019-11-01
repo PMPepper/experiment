@@ -60,6 +60,7 @@ export default class Server {
   entityId = null;//used to keep track of assigned entity IDs - increments after each entity is created
   entityIds = null;
   entitiesLastUpdated = null;
+  entitiesRemoved = null;
 
   entityProcessors = [
     orbitProcessorFactory(),//-done
@@ -100,6 +101,7 @@ export default class Server {
     this.entityIds = [];
     this.clientLastUpdatedTime = {};
     this.entitiesLastUpdated = {};
+    this.entitiesRemoved = {};
     createWorldFromDefinition(this, definition);
 
     this.gameConfig = {
@@ -690,6 +692,8 @@ export default class Server {
   }
 
   _getClientState(clientId, full = false) {
+    clientId = clientId.toString();
+
     const gameTime = this.gameTime;
     const entities = this.entities;
     const entitiesLastUpdated = this.entitiesLastUpdated;
@@ -718,11 +722,32 @@ export default class Server {
       }
     }
 
+    //removed entities
+    const removedEntities = [];
+
+    for(var removedEntityId in this.entitiesRemoved) {
+      const removedEntityClientsToInformSet = this.entitiesRemoved[removedEntityId];
+
+      //If this client hasn't been told about this entity being removed, do so now
+      if(removedEntityClientsToInformSet.has(clientId)) {
+        //add to update data
+        removedEntities.push(removedEntityId);
+
+        //remove this client form list to be informed
+        removedEntityClientsToInformSet.delete(clientId)
+
+        if(removedEntityClientsToInformSet.count === 0) {
+          //everyone told about this, remove from list
+          delete this.entitiesRemoved[removedEntityId];
+        }
+      }
+    }
+
     //record last updated time
     this.clientLastUpdatedTime[clientId] = gameTime;
 
     //output state to client
-    return {entities: clientEntities, gameTime, gameSpeed: this.gameSpeed, desiredGameSpeed: client.gameSpeed, isPaused: this.isPaused, factionId: client.factionId};
+    return {entities: clientEntities, removedEntities, gameTime, gameSpeed: this.gameSpeed, desiredGameSpeed: client.gameSpeed, isPaused: this.isPaused, factionId: client.factionId};
   }
 
   _newEntity(type, props) {
@@ -796,19 +821,53 @@ export default class Server {
   }
 
   _removeEntity(entity) {
-    if(typeof(entity) === 'object') {
-      entity = entity.id;
+    if(typeof(entity) !== 'object') {
+      entity = this.entities[entity];
     }
 
-    if(this.entities[entity]) {
+    const entityId = entity.id;
+
+    if(this.entities[entityId]) {
       this.entityIds.splice(this.entityIds.indexOf(entity), 1);
 
-      delete this.entities[entity];
+      delete this.entities[entityId];
+      delete this.entitiesLastUpdated[entityId];
 
-      //TODO remove any linked entities?
+      const modifiedEntities = new Set();
+
+      //remove any links with other entities
+      for(let i = 0; i < linkedEntityIdProps.length; i++) {
+        const prop = linkedEntityIdProps[i];
+
+        if(prop in entity) {
+
+          //unlink entity
+          const linkedEntity = this.entities[entity[prop]]
+
+          if(linkedEntity) {
+            const linkedProp = entity.type + 'Ids';
+
+            if(linkedEntity[linkedProp]) {
+              const linkIndex = linkedEntity[linkedProp].indexOf(entityId);
+
+              if(linkIndex !== -1) {
+                linkedEntity[linkedProp].splice(linkIndex, 1);
+                modifiedEntities.add(linkedEntity);
+              }
+            }
+          }
+        }
+      }
 
       //remove from entityProcessors
-      this.entityProcessors.forEach(entityProcessor => entityProcessor.removeEntity(entity));
+      this.entityProcessors.forEach(entityProcessor => entityProcessor.removeEntity(entityId));
+
+      //mark as removed
+      //TODO only add relevent clients to inform set
+      this.entitiesRemoved[entityId] = new Set(Object.keys(this.clients));
+
+      //update modified entities
+      modifiedEntities.forEach(entity => (this._alteredEntity(entity)))
     }
   }
 
@@ -826,4 +885,4 @@ export default class Server {
 }
 
 
-const linkedEntityIdProps = ['factionId', 'speciesId', 'systemBodyId', 'systemId', 'speciesId', 'factionSystemId', 'factionSystemBodyId', 'colonyId'];
+const linkedEntityIdProps = ['factionId', 'speciesId', 'systemBodyId', 'systemId', 'speciesId', 'factionSystemId', 'factionSystemBodyId', 'colonyId', 'researchQueueId'];

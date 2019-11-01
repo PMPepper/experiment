@@ -210,6 +210,7 @@ export default class ClientState {
     const entities = newData.entities;
     const stateEntities = oldState.entities;
 
+    //added/altered entities
     for(let i = 0, keys = Object.keys(stateEntities), l = keys.length; i < l; ++i) {
       let key = keys[i];
 
@@ -218,8 +219,12 @@ export default class ClientState {
       }
     }
 
+    //removed entities
+    for(let i = 0, l = newData.removedEntities.length; i < l; i++) {
+      delete entities[newData.removedEntities[i]]
+    }
 
-
+    //update client state props
     clientState.initialGameState = oldState.initialGameState;
     clientState.factionId = newData.factionId;
     clientState.entities = entities;
