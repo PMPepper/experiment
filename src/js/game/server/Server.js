@@ -344,13 +344,14 @@ export default class Server {
     }
 
     this._checkValidClient(clientId);
-    this._clientOwnsEntity(researchQueueId);
+    this._clientOwnsEntity(clientId, researchQueueId);
 
     const researchQueue = this.entities[researchQueueId];
 
-    //TODO check that this is a valid research queue
-    console.log(researchQueue);
-    debugger;
+    //check that this is a valid research queue
+    if(!researchQueue.researchQueue) {
+      throw new Error('Not a valid research queue');
+    }
 
     //remove this entity
     this._removeEntity(researchQueueId);
@@ -358,19 +359,26 @@ export default class Server {
     return Promise.resolve(researchQueue.id);
   }
 
-  message_updateResearchQueue(researchQueueId, structures, researchIds, clientId) {
+  message_updateResearchQueue({researchQueueId, structures, researchIds}, clientId) {
     if(this.phase !== RUNNING) {
       throw new Error('Can only remove research group while server is in "running" phase');
     }
 
     this._checkValidClient(clientId);
-    this._clientOwnsEntity(researchQueueId);
+    this._clientOwnsEntity(clientId, researchQueueId);
 
     const researchQueue = this.entities[researchQueueId];
 
-    //TODO check that this is a valid research queue
-    console.log(researchQueue);
-    debugger;
+    //check that this is a valid research queue
+    if(!researchQueue.researchQueue) {
+      throw new Error('Not a valid research queue');
+    }
+
+    //Alter entity
+    researchQueue.researchQueue.structures = structures;
+    researchQueue.researchQueue.researchIds = researchIds;
+
+    this._alteredEntity(researchQueue);
 
     return Promise.resolve(researchQueue.id);
   }
@@ -386,7 +394,7 @@ export default class Server {
       throw new Error('Entity not found');
     }
 
-    if(this.clients[clientId].factionId !== factionId) {
+    if(this.clients[clientId].factionId !== entity.factionId) {
       throw new Error('Client does not control this entity');
     }
   }
@@ -473,7 +481,8 @@ export default class Server {
 
     //update faction
     faction.faction.colonyIds.push(colony.id);
-    this.entitiesLastUpdated[factionId] = this.gameTime + 1;//mark faction as updated
+    //this.entitiesLastUpdated[factionId] = this.gameTime + 1;//mark faction as updated
+    this._alteredEntity(factionId);
 
     return colony;
   }
@@ -540,8 +549,11 @@ export default class Server {
     population.colonyId = colony.id;
 
     //mark as updated
-    this.entitiesLastUpdated[colonyId] = this.gameTime + 1;//mark faction as updated
-    this.entitiesLastUpdated[populationId] = this.gameTime + 1;//mark faction as updated
+    //this.entitiesLastUpdated[colonyId] = this.gameTime + 1;//mark faction as updated
+    //this.entitiesLastUpdated[populationId] = this.gameTime + 1;//mark faction as updated
+
+    this._alteredEntity(colonyId);
+    this._alteredEntity(populationId);
   }
 
   addStructuresToColony(colonyId, populationId, structures) {
@@ -570,7 +582,9 @@ export default class Server {
       currentStructures[structureId] = Math.max(0, currentStructures[structureId]);
     });
 
-    this.entitiesLastUpdated[colonyId] = this.gameTime + 1;//mark as updated
+    this._alteredEntity(colonyId);
+
+    //this.entitiesLastUpdated[colonyId] = this.gameTime + 1;//mark as updated
   }
 
 
@@ -724,11 +738,11 @@ export default class Server {
 
     //automatically add ref to this entity in linked entities
     //-props to check for links
-    const idProps = ['factionId', 'speciesId', 'systemBodyId', 'systemId', 'speciesId', 'factionSystemId', 'factionSystemBodyId', 'colonyId'];
+
     const allModifiedEntities = new Set();
 
-    for(let i = 0; i < idProps.length; i++) {
-      const prop = idProps[i];
+    for(let i = 0; i < linkedEntityIdProps.length; i++) {
+      const prop = linkedEntityIdProps[i];
 
       if(prop in props) {
         const linkedEntityId = props[prop];
@@ -744,8 +758,9 @@ export default class Server {
 
           //record ref to this entity...
           linkedEntity[linkedIdsProp].push(newEntity.id);
+
           //...and update last updated time
-          this.entitiesLastUpdated[linkedEntity.id] = this.gameTime + 1;
+          //this.entitiesLastUpdated[linkedEntity.id] = this.gameTime + 1;//this is done by altered entity method later
 
           //Record that an entity has been modified
           allModifiedEntities.add(linkedEntity);
@@ -753,21 +768,28 @@ export default class Server {
       }
     }
 
-    //add to entityProcessors
+    //add new entity to entityProcessors
     this.entityProcessors.forEach(entityProcessor => {
       entityProcessor.addEntity(newEntity);
+    });
 
-      allModifiedEntities.forEach(modifiedEntity => {
-        entityProcessor.updateEntity(modifiedEntity);
-      });
+    //..and mark linked entities as modified
+    allModifiedEntities.forEach(modifiedEntity => {
+      this._alteredEntity(modifiedEntity);
     });
 
     return newEntity;
   }
 
   _alteredEntity = (entity) => {
+    if(typeof(entity) !== 'object') {
+      entity = this.entities[entity];
+    }
+
     //record that entity has been updated
-    this.entitiesLastUpdated[entity.id] = this.gameTime;
+    this.entitiesLastUpdated[entity.id] = this.gameTime+1;//The +1 is to ensure that all clients are told about this right away
+
+    //TODO mark entity as dirty and only perform this step at the start of the next tick
 
     //Check if this entity needs to be added/removed to/from any processors
     this.entityProcessors.forEach(entityProcessor => entityProcessor.updateEntity(entity));
@@ -782,6 +804,8 @@ export default class Server {
       this.entityIds.splice(this.entityIds.indexOf(entity), 1);
 
       delete this.entities[entity];
+
+      //TODO remove any linked entities?
 
       //remove from entityProcessors
       this.entityProcessors.forEach(entityProcessor => entityProcessor.removeEntity(entity));
@@ -800,3 +824,6 @@ export default class Server {
     }, [])
   }
 }
+
+
+const linkedEntityIdProps = ['factionId', 'speciesId', 'systemBodyId', 'systemId', 'speciesId', 'factionSystemId', 'factionSystemBodyId', 'colonyId'];

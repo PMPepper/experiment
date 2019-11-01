@@ -78,6 +78,16 @@ export default class Client {
     return this.connector.sendMessageToServer('createResearchQueue', {colonyId, structures, researchIds})
   }
 
+  //facilities: {[structureId]: [number assigned]}
+  //researchIds: array with order of projects to perform
+  updateResearchQueue = (researchQueueId, structures = {}, researchIds = []) => {
+    return this.connector.sendMessageToServer('updateResearchQueue', {researchQueueId, structures, researchIds})
+  }
+
+  removeResearchQueue = (researchQueueId) => {
+    return this.connector.sendMessageToServer('removeResearchQueue', researchQueueId)
+  }
+
   ///////////////////////////////////////
   // Server -> Client message handlers //
   ///////////////////////////////////////

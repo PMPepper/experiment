@@ -14,6 +14,7 @@ import ReduxDataTableState from '@/components/datatable/ReduxDataTableState';
 import AvailableResearchProjects from '@/components/game/tables/AvailableResearchProjects';
 import Modal from '@/components/modal/Modal';
 import AddEditResearchQueue from '@/components/game/AddEditResearchQueue';
+import ResearchQueueOverview from '@/components/game/ResearchQueueOverview';
 
 //Hooks
 import useI18n from '@/hooks/useI18n';
@@ -38,8 +39,27 @@ export default function WindowResearch({colonyId}) {
 
   const i18n = useI18n();
   const [isAddEditResearchQueueOpen, setIsAddEditResearchQueueOpen] = useState(false);
-  const onClickOpenAddResearchGroup = useCallback(() => {setIsAddEditResearchQueueOpen(true)}, [setIsAddEditResearchQueueOpen]);
-  const onCloseAddResearchGroup = useCallback(() => {setIsAddEditResearchQueueOpen(false)}, [setIsAddEditResearchQueueOpen]);
+  const [editResearchGroupId, setEditResearchGroupId] = useState(null);
+
+  const onClickAddResearchGroup = useCallback(() => {
+    setEditResearchGroupId(null);
+    setIsAddEditResearchQueueOpen(true);
+  }, [setIsAddEditResearchQueueOpen, setEditResearchGroupId]);
+
+  const onCloseAddResearchGroup = useCallback(() => {
+    setIsAddEditResearchQueueOpen(false);
+  }, [setIsAddEditResearchQueueOpen]);
+
+  const onClickEditResearchGroup = useCallback((researchGroupId) => {
+    setEditResearchGroupId(researchGroupId);
+    setIsAddEditResearchQueueOpen(true);
+  }, [setEditResearchGroupId, setIsAddEditResearchQueueOpen]);
+
+  const onClickRemoveResearchGroup = useCallback(researchGroupId => {
+    client.removeResearchQueue(researchGroupId).then(result => {
+      //research queue removed
+    })
+  }, []);
 
   const initialGameState = clientState.initialGameState;
   const researchAreas = initialGameState.researchAreas;
@@ -61,21 +81,17 @@ export default function WindowResearch({colonyId}) {
         const researchQueue = clientState.entities[researchQueueId];
 
         return <li key={researchQueueId}>
-          <p>TODO research queue overview</p>
-          <Buttons>
-            <Button onClick={null}><Trans id="windowResearch.groups.edit">Edit</Trans></Button>
-            <Button onClick={null}><Trans id="windowResearch.groups.remove">Remove</Trans></Button>
-          </Buttons>
+          <ResearchQueueOverview researchQueue={researchQueue} onEditClick={onClickEditResearchGroup} onRemoveClick={onClickRemoveResearchGroup} />
         </li>
       })}
     </ul>
     <div>
       <Buttons>
-        <Button onClick={onClickOpenAddResearchGroup}><Trans id="windowResearch.groups.create">Create</Trans></Button>
+        <Button onClick={onClickAddResearchGroup}><Trans id="windowResearch.groups.create">Create</Trans></Button>
       </Buttons>
     </div>
     <Modal
-      title={<Trans>Add research queue</Trans>}//TODO edit
+      title={editResearchGroupId ? <Trans>Edit research queue</Trans> : <Trans>Add research queue</Trans>}
       isOpen={isAddEditResearchQueueOpen}
       onRequestClose={onCloseAddResearchGroup}
     >
@@ -83,12 +99,21 @@ export default function WindowResearch({colonyId}) {
         faction={faction}
         colony={colony}
         clientState={clientState}
-        initialResearchQueue={undefined}//TODO edit
+        researchQueue={editResearchGroupId ? clientState.entities[editResearchGroupId] : null}
         onComplete={(structures, researchIds) => {
-          client.createResearchQueue(colony.id, structures, researchIds).then(result => {
-            //research queue added
-            onCloseAddResearchGroup();
-          });
+          if(editResearchGroupId) {
+            ///Edit queue
+            client.updateResearchQueue(editResearchGroupId, structures, researchIds).then(result => {
+              //research queue updated
+              onCloseAddResearchGroup();
+            })
+          } else {
+            //Add new queue
+            client.createResearchQueue(colony.id, structures, researchIds).then(result => {
+              //research queue added
+              onCloseAddResearchGroup();
+            });
+          }
         }}
       />
     </Modal>

@@ -58,7 +58,9 @@ function Game({
     //expose methods of client to rest of the UI
     return {
       createColony: client.createColony,
-      createResearchQueue: client.createResearchQueue
+      createResearchQueue: client.createResearchQueue,
+      updateResearchQueue: client.updateResearchQueue,
+      removeResearchQueue: client.removeResearchQueue,
     }
   }, [client]);
 

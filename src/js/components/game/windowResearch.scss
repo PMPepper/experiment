@@ -3,13 +3,16 @@
 
 .researchQueueList {
   @include panel();
-  margin-bottom: $basePadding;
+  margin: 0 0 $basePadding;
+  padding: $basePadding / 2;
+  list-style: none;
+  background: $grey20;
 
   > * {
-    margin-top: $basePadding/2;
+    margin: 0 0 $basePadding/2;
 
-    &:first-child {
-      margin-top: 0;
+    &:last-child {
+      margin-bottom: 0;
     }
   }
 }

@@ -17,22 +17,21 @@ import useI18n from '@/hooks/useI18n';
 import mapToSortedArray from '@/helpers/object/map-to-sorted-array';
 import filter from '@/helpers/object/filter';
 import reduce from '@/helpers/object/reduce';
+import add from '@/helpers/array/add';
 import formatNumber from '@/helpers/string/format-number';
 
 //Other
 import {CloseModalContext} from '@/components/modal/Modal';
 import {DAY_ANNUAL_FRACTION} from '@/game/Consts';
 
-const blankReserchQueue = {structures: {}, researchIds: []};
-
 
 //The component
-export default function AddEditResearchQueue({faction, colony, clientState, onComplete, initialResearchQueue = blankReserchQueue}) {
+export default function AddEditResearchQueue({faction, colony, clientState, onComplete, researchQueue}) {
   const i18n = useI18n();
   const close = useContext(CloseModalContext);
-  const [structures, setStructures] = useState({...initialResearchQueue.structures});
-  const [researchIds, setResearchIds] = useState([...initialResearchQueue.researchIds]);
-  const [isEditing] = useState(initialResearchQueue !== blankReserchQueue);
+  const [structures, setStructures] = useState(researchQueue ? {...researchQueue.researchQueue.structures} : {});
+  const [researchIds, setResearchIds] = useState(researchQueue ? [...researchQueue.researchQueue.researchIds] : []);
+  const [isEditing] = useState(!!researchQueue);
 
   const [selectedAvailableResearchId, setSelectedAvailableResearchId] = useState('');
   const [selectedQueuedResearchId, setSelectedQueuedResearchId] = useState(null)
@@ -91,9 +90,22 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
     }
   }, [researchIds, setResearchIds, selectedQueuedResearchId]);
 
-  const gameConfig = clientState.initialGameState;
+  //research projects that can't be added to the queue:
+  //...things in this queue already
+  const excludeResearchIds = [...researchIds];
+
+  //...things already in another queue
+  colony.researchQueueIds.forEach(researchQueueId => {
+    const currentResearchQueue = clientState.entities[researchQueueId];
+
+    if(currentResearchQueue !== researchQueue) {
+      add(excludeResearchIds, currentResearchQueue.researchQueue.researchIds);
+    }
+  })
 
   //calculate researchRate based on selected facilities
+  const gameConfig = clientState.initialGameState;
+
   const researchRate = reduce(structures, (total, structureCount, structureId) => {
     const structure = gameConfig.structures[structureId];
 
@@ -195,7 +207,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
               <Form.Select
                 width={6}
                 placeholder={i18n._('select.placeholder', null, {defaults: '- - Select - -'})}
-                options={getResearchOptions(i18n, faction, gameConfig, researchIds, colony.colony.researchInProgress)}
+                options={getResearchOptions(i18n, faction, gameConfig, excludeResearchIds, colony.colony.researchInProgress)}
                 value={selectedAvailableResearchId}
                 setValue={setSelectedAvailableResearchId}
               />
