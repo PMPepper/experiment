@@ -27,7 +27,6 @@ function researchFactory(lastTime, time, init, full) {
       }
 
       //map into {[populationId]: {[structureId]: quantity}}
-      //colony.colony.populationStructuresWithCapability[populationId][capability][structureId] = quantity;
       const availableStructures = map(colony.colony.populationStructuresWithCapability, ({research}) => {
         return {...research};
       })
@@ -92,6 +91,5 @@ function researchFactory(lastTime, time, init, full) {
 
   return null;
 }
-
 
 export default () => (new EntityProcessor(researchTest, researchFactory));

@@ -1,0 +1,227 @@
+@import '../../../css/shared';
+
+@mixin barStyle() {
+  background: $grey0;
+  border: 0.1rem solid $grey50;
+  border-radius: $basePadding/2;
+}
+
+@mixin valueStyle() {
+  background: rgba($grey80, 0.2);
+
+  $cStripe1: rgba($grey80, 0.2);
+  $cStripe2: rgba($grey80, 0.4);
+
+  background-image: linear-gradient(135deg, $cStripe1 25%, $cStripe2 25%, $cStripe2 50%, $cStripe1 50%, $cStripe1 75%, $cStripe2 75%, $cStripe2 100%);
+  background-size: 56.57px 56.57px;
+
+  @at-root {
+    // .colour_orange#{&} {
+    //   background: rgba($pallet28, 0.2);
+    //   border-bottom: 0.1rem solid $pallet28;
+    // }
+  }
+}
+
+.progress {
+  width: 100%;
+  height: 3rem;
+
+  vertical-align: top;
+  appearance: none;
+  -webkit-appearance: none;
+
+  //needed for firefox
+  background: transparent;
+  border: none;
+
+  &::-webkit-progress-bar {
+    @include barStyle();
+  }
+
+  &::-moz-progress-bar {
+    @include valueStyle();
+  }
+
+  border-radius: 0;
+  overflow: hidden;
+
+  //Fallback style
+  color: rgba($grey50, 0.2);
+}
+
+::-webkit-progress-value {
+  @include valueStyle();
+}
+
+.gauge {
+  @include barStyle();
+}
+
+.bar {
+  @include valueStyle();
+}
+
+.full {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+
+//////////////////////
+
+//
+// @import '../../../css/shared';
+//
+// @mixin meterBase() {
+//   background: none; // Required to get rid of the default background prop.
+//   background-color: $pallet0;
+// }
+//
+// @mixin meterBar() {
+//   background: $pallet11;
+//   overflow: hidden;
+//   line-height: 99em;
+//   display: inline-block;
+//   box-sizing: border-box;
+// }
+//
+// .meter {
+//   @include meterBase();
+//
+//   display: block;
+//   overflow: hidden;
+//   margin: 0 auto;
+//   text-align: left;
+//
+//   width: 100%;
+//   height: 1rem;
+//
+//   appearance: none;
+//
+//   border: 1px solid $pallet6;
+//
+//   //the base?
+//   &::-webkit-meter-bar {
+//     @include meterBase();
+//   }
+//
+//   &::-webkit-meter-inner-element {
+//     @include meterBase();
+//   }
+//
+//   &::-moz-meter-bar {
+//     @include meterBar();
+//   }
+//
+//   //needed for iPad
+//   &::-webkit-meter-even-less-good-value {
+//     @include meterBar();
+//   }
+//
+//   &::-webkit-meter-suboptimum-value {
+//     @include meterBar();
+//   }
+//
+//   &::-webkit-meter-optimum-value {
+//     @include meterBar();
+//   }
+//
+//   &::-webkit-meter-optimum-value {
+//     @include meterBar();
+//   }
+//
+// }
+//
+// //the bar
+// .bar {
+//   @include meterBar();
+// }
+//
+//
+// .full {
+//   position: absolute;
+//   z-index: 1;
+//   top: 0;
+//   right: 0;
+//   bottom: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
+//
+//
+//   @mixin fullMeterBase() {
+//     background: none; // Required to get rid of the default background prop.
+//     border: 0;
+//   }
+//
+//   @mixin fullMeterBar() {
+//     background: rgba($pallet27, 0.2);
+//     overflow: hidden;
+//     line-height: 99em;
+//     display: inline-block;
+//     border: 0;
+//     border-bottom: 0.1rem solid $pallet27;
+//
+//     &.colour_orange {
+//       background: rgba($pallet28, 0.2);
+//       border-bottom: 0.1rem solid $pallet28;
+//     }
+//
+//     &.colour_blue {
+//       background: rgba($pallet29, 0.2);
+//       border-bottom: 0.1rem solid $pallet29;
+//     }
+//   }
+//
+//   @include fullMeterBase();
+//
+//   //the base?
+//
+//   &::-webkit-meter-bar {
+//     @include fullMeterBase();
+//   }
+//
+//   &::-webkit-meter-inner-element {
+//     @include fullMeterBase();
+//   }
+//
+//   &.gauge {
+//     position: absolute;
+//     top: 0;
+//     right: 0;
+//     bottom: 0;
+//     left: 0;
+//     display: flex;
+//   }
+//
+//   //the bar
+//   &.bar {
+//     @include fullMeterBar();
+//   }
+//
+//   &::-moz-meter-bar {
+//     @include fullMeterBar();
+//   }
+//
+//   //needed for iPad
+//   &::-webkit-meter-even-less-good-value {
+//     @include fullMeterBar();
+//   }
+//
+//   &::-webkit-meter-suboptimum-value {
+//     @include fullMeterBar();
+//   }
+//
+//   &::-webkit-meter-optimum-value {
+//     @include fullMeterBar();
+//   }
+//
+//   &::-webkit-meter-optimum-value {
+//     @include fullMeterBar();
+//   }
+// }

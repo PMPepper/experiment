@@ -1,0 +1,80 @@
+@import '../../../css/shared';
+
+$regularTermWidth: 15rem;
+$wideTermWidth: -15rem;
+$wideDefinitionTermWidth: -17rem;
+
+$padding: $basePadding/4;
+$totalPadding: $padding * 2;
+
+
+@mixin dlTerm($termWidth) {
+  @if(strip-unit($termWidth) < 0) {
+    flex-basis: calc(100% - #{- $termWidth});
+  } @else {
+    flex-basis: $termWidth;
+  }
+}
+
+@mixin dlDefinition($termWidth) {
+  @if(strip-unit($termWidth) < 0) {
+    flex-basis: - $termWidth;
+  } @else {
+    flex-basis: calc(100% - #{$termWidth});
+  }
+}
+
+.dl {
+  font-size: 1.3rem;
+  display: flex;
+  flex-flow: row wrap;
+  overflow: hidden;
+  border: 0.1rem solid $grey60;
+  align-items: stretch;
+  text-align: left;
+}
+
+.term {
+  @include wordBreak;
+  background: $grey10;
+  padding: $padding;
+
+  &:nth-of-type(2n) {
+    background: $grey0;
+  }
+
+  &.regular {
+    @include dlTerm($regularTermWidth);
+  }
+
+  &.wide {
+    @include dlTerm($wideTermWidth);
+  }
+
+  .wideDefinition > & {
+    @include dlTerm($wideDefinitionTermWidth);
+  }
+}
+
+.definition {
+  @include wordBreak;
+  background: $grey10;
+  padding: $padding;
+  font-weight: bold;
+
+  &:nth-of-type(2n) {
+    background: $grey0;
+  }
+
+  &.regular {
+    @include dlDefinition($regularTermWidth);
+  }
+
+  &.wide {
+    @include dlDefinition($wideTermWidth);
+  }
+
+  .wideDefinition > & {
+    @include dlDefinition($wideDefinitionTermWidth);
+  }
+}

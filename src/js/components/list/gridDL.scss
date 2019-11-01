@@ -1,0 +1,58 @@
+@import '../../../css/shared';
+
+$cBG: $grey0;
+$cAltBG: $grey20;//$pallet25;
+$cBorder: $grey50;//$pallet26;
+$borderWidth: 0.1rem;
+$border: $borderWidth solid $cBorder;
+$padding: $basePadding/4;
+$colSpace: $basePadding/4;
+
+.dl {
+  font-size: 1.3rem;
+  background: $cBG;
+  display: grid;
+	grid-template: auto / auto auto;//firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1341507
+	grid-template: auto / repeat(auto-fill, minmax(5rem, 15rem) minmax(11rem, 1fr));
+  margin-right: -$colSpace;
+  padding-bottom: $borderWidth;
+
+  &.wideTerm {
+    grid-template: auto / repeat(auto-fill, minmax(10rem, 20rem) minmax(11rem, 1fr));
+  }
+
+  &.veryWideTerm {
+    grid-template: auto / repeat(auto-fill, minmax(15rem, 25rem) minmax(11rem, 1fr));
+  }
+
+  &.wide {
+    grid-template: auto / repeat(auto-fill, minmax(5rem, 15rem) minmax(15rem, 1fr));
+  }
+
+  &.wide.wideTerm {
+    grid-template: auto / repeat(auto-fill, minmax(10rem, 20rem) minmax(15rem, 1fr));
+  }
+
+  &.wide.veryWideTerm {
+    grid-template: auto / repeat(auto-fill, minmax(15rem, 25rem) minmax(25rem, 1fr));
+  }
+}
+
+.dt {
+  margin: 0 0 (-$borderWidth) 0;
+	padding: $padding;
+  border: $border;
+  border-width: $borderWidth 0 $borderWidth $borderWidth;
+  background: $cAltBG;
+
+  @include wordBreak;
+}
+
+.dd{
+  margin: 0 $colSpace (-$borderWidth) 0;
+	padding: $padding;
+  border: $border;
+  font-weight: bold;
+
+  @include wordBreak;
+}

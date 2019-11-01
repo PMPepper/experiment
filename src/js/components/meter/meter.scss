@@ -1,0 +1,138 @@
+@import '../../../css/shared';
+
+@mixin meterBase() {
+  background: none; // Required to get rid of the default background prop.
+  background-color: $grey0;
+}
+
+@mixin meterBar() {
+  background: $grey30;
+  overflow: hidden;
+  line-height: 99em;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+.meter {
+  @include meterBase();
+
+  display: block;
+  overflow: hidden;
+  margin: 0 auto;
+  text-align: left;
+
+  width: 100%;
+  height: 1rem;
+
+  appearance: none;
+
+  border: 1px solid $grey50;
+
+  //the base?
+  &::-webkit-meter-bar {
+    @include meterBase();
+  }
+
+  &::-webkit-meter-inner-element {
+    @include meterBase();
+  }
+
+  &::-moz-meter-bar {
+    @include meterBar();
+  }
+
+  //needed for iPad
+  &::-webkit-meter-even-less-good-value {
+    @include meterBar();
+  }
+
+  &::-webkit-meter-suboptimum-value {
+    @include meterBar();
+  }
+
+  &::-webkit-meter-optimum-value {
+    @include meterBar();
+  }
+
+  &::-webkit-meter-optimum-value {
+    @include meterBar();
+  }
+
+}
+
+//the bar
+.bar {
+  @include meterBar();
+}
+
+.full {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  @mixin fullMeterBase() {
+    background: none; // Required to get rid of the default background prop.
+    border: 0;
+  }
+
+  @mixin fullMeterBar() {
+    background: rgba($grey50, 0.2);
+    overflow: hidden;
+    line-height: 99em;
+    display: inline-block;
+    border: 0;
+    border-bottom: 0.1rem solid $grey50;
+  }
+
+  @include fullMeterBase();
+
+  //the base?
+
+  &::-webkit-meter-bar {
+    @include fullMeterBase();
+  }
+
+  &::-webkit-meter-inner-element {
+    @include fullMeterBase();
+  }
+
+  &.gauge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+  }
+
+  //the bar
+  &.bar {
+    @include fullMeterBar();
+  }
+
+  &::-moz-meter-bar {
+    @include fullMeterBar();
+  }
+
+  //needed for iPad
+  &::-webkit-meter-even-less-good-value {
+    @include fullMeterBar();
+  }
+
+  &::-webkit-meter-suboptimum-value {
+    @include fullMeterBar();
+  }
+
+  &::-webkit-meter-optimum-value {
+    @include fullMeterBar();
+  }
+
+  &::-webkit-meter-optimum-value {
+    @include fullMeterBar();
+  }
+}

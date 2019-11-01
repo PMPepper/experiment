@@ -1,0 +1,191 @@
+// general purpose methods
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+
+  @return $number;
+}
+
+
+
+
+
+
+////////////////////
+// string methods //
+////////////////////
+
+//TODO make work with multi-character separators
+@function strSplit($string, $separator) {
+  // empty array/list
+  $split-arr: ();
+  // first index of separator in string
+  $index : str-index($string, $separator);
+  // loop through string
+  @while $index != null {
+    // get the substring from the first character to the separator
+    $item: str-slice($string, 1, $index - 1);
+    // push item to array
+    $split-arr: append($split-arr, $item);
+    // remove item and separator from string
+    $string: str-slice($string, $index + 1);
+    // find new index of separator
+    $index : str-index($string, $separator);
+  }
+  // add the remaining string to list (the last item)
+  $split-arr: append($split-arr, $string);
+
+  @return $split-arr;
+}
+
+@function strSplit($string, $separator: null, $limit: null) {
+  $string: unquote($string);
+
+  @if type-of($string) != "string" {
+    @error "`str-split` function expecting a string for $string; #{type-of($string)} given.";
+  }
+
+  $result: zip(());
+
+  @if not $separator {
+    @return ($string,);
+  }
+
+  @if $separator == "" {
+    @for $i from 1 through str-length($string) {
+      $result: append($result, str-slice($string, $i, $i));
+    }
+
+    @return $result;
+  }
+
+  $running: true;
+  $progress: $string;
+  $length: str-length($separator);
+
+  @while $running {
+    $index: str-index($progress, $separator);
+    @if $index {
+      $result: append($result, str-slice($progress, 1, ($index - 1)));
+      $progress: str-slice($progress, ($index + $length));
+    } @else {
+      $running: false;
+    }
+  }
+
+  $result: append($result, $progress);
+
+  @if $limit and $limit > 0 {
+    $limit: if($limit > length($result), length($result), $limit);
+    $return: ();
+    @for $i from 1 through $limit {
+      $return: append($return, nth($result, $i));
+    }
+
+    @return $return;
+  }
+
+  @return $result;
+}
+
+/*@function strSplit($string, $separator) {
+  // empty array/list
+  $split-arr: ();
+  // first index of separator in string
+  $index : str-index($string, $separator);
+  // loop through string
+  @while $index != null {
+    // get the substring from the first character to the separator
+    $item: str-slice($string, 1, $index - 1);
+    // push item to array
+    $split-arr: append($split-arr, $item);
+    // remove item and separator from string
+    $string: str-slice($string, $index + 1);
+    // find new index of separator
+    $index : str-index($string, $separator);
+  }
+  // add the remaining string to list (the last item)
+  $split-arr: append($split-arr, $string);
+
+  @return $split-arr;
+}*/
+
+//////////////////
+// list methods //
+//////////////////
+
+
+@function listContains($list, $value) {
+  @return type-of(index($list, $value)) == 'number';
+}
+
+// Based on method here: https://gist.github.com/myakura/9433723
+@function listSlice($list, $start: 1, $stop: length($list) + 1, $separator: null) {
+    $length: length($list);
+    $result: ();
+
+    // for supporting negative index we need to resolve indices
+    @if not listContains((space comma), $separator) {
+        $separator_orig: separator($list);
+        @if listContains((space comma), $separator_orig) {
+            $separator: $separator_orig;
+        }
+        @else {
+            $separator: space;
+        }
+    }
+
+    // start index
+    @if $start < 0 {
+        $start: $length + 1 + $start;
+    }
+    @if $start > $length {
+        @return $result;
+    }
+    @if $start == null {
+        $start: 1;
+    }
+
+    // stop index
+    @if $stop < 0 {
+        $stop: $length + 1 + $stop;
+    }
+    @if $stop > $length {
+        $stop: $length + 1;
+    }
+    @if $stop == null {
+        $stop: $length + 1;
+    }
+
+    //
+    @if($stop <= $start) {
+      @return $result;
+    }
+
+    // now take slice
+    $i: $start;
+
+    @while $i < $stop {
+        $result: append($result, nth($list, $i), $separator);
+        $i: $i + 1;
+    }
+
+    @return $result;
+}
+
+@function listJoin($list, $separator) {
+  $str:unquote('');
+  $first: true;
+
+  @each $val in $list {
+    @if($first != true) {
+      $str: $str#{$separator};
+    }
+
+    $str: $str#{$val};
+    $first: false;
+  }
+
+  @return $str;
+}

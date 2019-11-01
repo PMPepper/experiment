@@ -1,6 +1,4 @@
 import React, {useMemo, useContext} from 'react';
-import {compose} from 'recompose';
-import {connect} from 'react-redux';
 import {Trans} from '@lingui/macro'
 
 import styles from './styles.scss';
@@ -20,8 +18,9 @@ import FPSStats from '@/components/dev/FPSStats';
 //import Icon from '@/components/icon/Icon';
 import Test from './Test';
 
-
-
+//Hooks
+import useShallowEqualSelector from '@/hooks/useShallowEqualSelector';
+import useActions from '@/hooks/useActions';
 
 //helpers
 import cloneOmittingProps from '@/helpers/react/clone-omitting-props';
@@ -41,16 +40,39 @@ export function useClient() {
   return useContext(ClientContext);
 }
 
+const actions = {
+  open,
+  close,
+  setSystemMapFollowing,
+  setSystemMapOptions,
+  setSelectedSystemId,
+  setSelectedColonyId,
+};
 
 //The component
-function Game({
-  coloniesWindow, fleetsWindow, shipDesignWindow,
-  clientState, client,
-  systemMap, setSystemMapFollowing, setSystemMapOptions,
-  selectedSystemId, setSelectedSystemId,
-  setSelectedColonyId,
-  open, close
-}) {
+export default function Game({client}) {
+  const {
+    coloniesWindow, fleetsWindow, shipDesignWindow, clientState, systemMap,
+    selectedSystemId
+  } = useShallowEqualSelector(state => ({
+    coloniesWindow: state.coloniesWindow,
+    fleetsWindow: state.fleetsWindow,
+    shipDesignWindow: state.shipDesignWindow,
+    clientState: state.game,
+
+    systemMap: state.systemMap,
+    selectedSystemId: state.selectedSystemId,
+  }));
+
+  const {
+    open,
+    close,
+    setSystemMapFollowing,
+    setSystemMapOptions,
+    setSelectedSystemId,
+    setSelectedColonyId,
+  } = useActions(actions);
+
   const entities = clientState.entities;
   const entityIds = clientState.entityIds;
 
@@ -230,24 +252,3 @@ function Game({
     </div>
   </ClientContext.Provider>
 }
-
-export default compose(
-  connect(state => {
-    return {
-      coloniesWindow: state.coloniesWindow,
-      fleetsWindow: state.fleetsWindow,
-      shipDesignWindow: state.shipDesignWindow,
-      clientState: state.game,
-
-      systemMap: state.systemMap,
-      selectedSystemId: state.selectedSystemId,
-    }
-  }, {
-    open,
-    close,
-    setSystemMapFollowing,
-    setSystemMapOptions,
-    setSelectedSystemId,
-    setSelectedColonyId,
-  })
-)(Game);
