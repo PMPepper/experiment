@@ -15,6 +15,8 @@ import AvailableResearchProjects from '@/components/game/tables/AvailableResearc
 import Modal from '@/components/modal/Modal';
 import AddEditResearchQueue from '@/components/game/AddEditResearchQueue';
 import ResearchQueueOverview from '@/components/game/ResearchQueueOverview';
+import Table from '@/components/table/Table';
+import FormatNumber from '@/components/formatNumber/FormatNumber';
 
 //Hooks
 import useI18n from '@/hooks/useI18n';
@@ -24,6 +26,10 @@ import {useClient} from '@/components/game/Game';
 
 //Helpers
 import filter from '@/helpers/object/filter';
+import reduce from '@/helpers/object/reduce';
+import forEach from '@/helpers/object/forEach';
+import getCapabilityProductionForColonyPopulationStructure from '@/helpers/app/getCapabilityProductionForColonyPopulationStructure';
+import getColonyAssignedResearchStructures from '@/helpers/app/getColonyAssignedResearchStructures';
 
 //reducers
 import {setResearchSelectedArea} from '@/redux/reducers/coloniesWindow';
@@ -61,32 +67,87 @@ export default function WindowResearch({colonyId}) {
     })
   }, []);
 
-  const initialGameState = clientState.initialGameState;
-  const researchAreas = initialGameState.researchAreas;
+  const gameConfig = clientState.initialGameState;
+  const researchAreas = gameConfig.researchAreas;
   const colony = clientState.entities[colonyId];
   const faction = clientState.entities[clientState.factionId];
 
   const selectedResearchProjectId = Object.keys(coloniesWindow.availableResearchTable.selectedRows).pop() || null;
-  const selectedResearchProject = initialGameState.research[selectedResearchProjectId] && initialGameState.research[selectedResearchProjectId].area == coloniesWindow.researchSelectedArea ? initialGameState.research[selectedResearchProjectId] : null;
+  const selectedResearchProject = gameConfig.research[selectedResearchProjectId] && gameConfig.research[selectedResearchProjectId].area == coloniesWindow.researchSelectedArea ? gameConfig.research[selectedResearchProjectId] : null;
 
   const totalNumResearchFacilities = Object.values(colony.colony.structuresWithCapability.research).reduce((sum, add) => {return sum + add;}, 0);
 
   const client = useClient();
 
+  const colonyResearchStructures = reduce(colony.colony.populationStructuresWithCapability, (output, {research}, populationId) => {
+    research && forEach(research, (quantity, structureId) => {
+      output.push({
+        populationId,
+        structureId,
+        quantity
+      });
+    });
+
+    return output
+  }, []);
+
+  const totalColonyResearchFormatted = <FormatNumber value={colony.colony.capabilityProductionTotals.research} />;
+
+  const assignedStructures = getColonyAssignedResearchStructures(colony);
+
   return <div className="vspaceStart">
-    <div><Trans>Total research facilities: {totalNumResearchFacilities}</Trans></div>
-    <div>TODO show breakdown of total/available reserach facilities</div>
+    <h2 className={styles.title}><Trans>Colony research facilities</Trans></h2>
+    <div className={styles.structures}>
+      <Table>
+        <Table.THead>
+          <Table.Row>
+            <Table.TH><Trans>Structure</Trans></Table.TH>
+            <Table.TH><Trans>Species</Trans></Table.TH>
+            <Table.TH><Trans># available/total</Trans></Table.TH>
+            <Table.TH><Trans>RP/facility</Trans></Table.TH>
+          </Table.Row>
+        </Table.THead>
+        <Table.TBody>
+          {colonyResearchStructures
+            .sort()//TODO sort on what?
+            .map(({populationId, structureId, quantity}) => {
+              const assigned = (assignedStructures[populationId] && assignedStructures[populationId][structureId]) || 0;
+              const available = quantity - assigned;
+              const availableFormatted = <FormatNumber value={available} />
+              const totalFormatted = <FormatNumber value={quantity} />
+              const rps = getCapabilityProductionForColonyPopulationStructure(colony, 'research', populationId, structureId);
+
+              return <Table.Row key={`${populationId}-${structureId}`}>
+                <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
+                <Table.TD>{clientState.entities[clientState.entities[populationId].speciesId].species.name}</Table.TD>
+                <Table.TD><Trans>{availableFormatted} / {totalFormatted}</Trans></Table.TD>
+                <Table.TD><FormatNumber value={rps} /></Table.TD>
+              </Table.Row>
+            })
+          }
+        </Table.TBody>
+        <Table.TFoot>
+          <Table.Row>
+            <Table.TD colSpan="4">
+              <div className="alignEnd"><Trans>Colony total RP: {totalColonyResearchFormatted}</Trans></div>
+            </Table.TD>
+          </Table.Row>
+        </Table.TFoot>
+      </Table>
+    </div>
+
+    <h2 className={styles.title}><Trans>Research queues</Trans></h2>
     <ul className={styles.researchQueueList}>
       {colony.researchQueueIds.map(researchQueueId => {
         const researchQueue = clientState.entities[researchQueueId];
 
         return <li key={researchQueueId}>
-          <ResearchQueueOverview colony={colony} researchQueue={researchQueue} gameTimeDate={clientState.gameTimeDate} gameConfig={clientState.initialGameState} entities={clientState.entities} onEditClick={onClickEditResearchGroup} onRemoveClick={onClickRemoveResearchGroup} />
+          <ResearchQueueOverview colony={colony} researchQueue={researchQueue} gameTimeDate={clientState.gameTimeDate} gameConfig={gameConfig} entities={clientState.entities} onEditClick={onClickEditResearchGroup} onRemoveClick={onClickRemoveResearchGroup} />
         </li>
       })}
     </ul>
     <div>
-      <Buttons>
+      <Buttons position="right">
         <Button onClick={onClickAddResearchGroup}><Trans id="windowResearch.groups.create">Create</Trans></Button>
       </Buttons>
     </div>

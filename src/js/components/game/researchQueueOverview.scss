@@ -1,8 +1,50 @@
 @import '../../../css/shared';
 
-
 .researchQueueOverview {
   @include panel();
-  
+
   padding: $basePadding / 2;
+}
+
+.overview {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.title {
+  margin-top: 0;
+}
+
+.structures {
+  //opacity: 1;
+  flex: 60% 0 0;
+  padding-right: $basePadding/2;
+}
+
+.research {
+  //opacity: 1;
+  flex: 40% 0 0;
+}
+
+.currentProjectDesc {
+  font-size: $fontSize;
+  display: block;
+}
+
+.currentProjectName {
+  font-size: $fontSize;
+  display: inline;
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+}
+
+.otherResearch {
+  font-size: $fontSize;
+  margin: $basePadding/4 0 0;
+}
+
+.noResearch {
+  font-size: $fontSize;
+  margin: 0;
 }

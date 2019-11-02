@@ -43,57 +43,58 @@ const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({c
   const etaFormatted = <FormatDate value={eta} format="date" />;
 
   return <div ref={ref} className={styles.researchQueueOverview}>
-    <div className={styles.structures}>
-      <h3 className={styles.researchTitle}><Trans>Assigned structures</Trans></h3>
-      <Table>
-        <Table.THead>
-          <Table.Row>
-            <Table.TH><Trans>Structure</Trans></Table.TH>
-            <Table.TH><Trans>Species</Trans></Table.TH>
-            <Table.TH><Trans># requested/assigned</Trans></Table.TH>
-            <Table.TH><Trans>RP</Trans></Table.TH>
-          </Table.Row>
-        </Table.THead>
-        <Table.TBody>
-          {researchStructuresToArray(researchQueue.researchQueue.structures)
-            .sort()//TODO sort on what?
-            .map(({populationId, structureId, quantity}) => {
-              const species = entities[entities[populationId].speciesId];
-              const quantityRequestedFormatted = <FormatNumber value={quantity} />;
-              const quantityAssigned = (assignedStructures[populationId] && assignedStructures[populationId][structureId]) || 0;
-              const quantityAssignedFormatted = <FormatNumber value={quantityAssigned} />;
+    <div className={styles.overview}>
+      <div className={styles.structures}>
+        <h3 className={styles.title}><Trans>Assigned structures</Trans></h3>
+        <Table>
+          <Table.THead>
+            <Table.Row>
+              <Table.TH><Trans>Structure</Trans></Table.TH>
+              <Table.TH><Trans>Species</Trans></Table.TH>
+              <Table.TH><Trans># requested/assigned</Trans></Table.TH>
+              <Table.TH><Trans>RP/facility</Trans></Table.TH>
+            </Table.Row>
+          </Table.THead>
+          <Table.TBody>
+            {researchStructuresToArray(researchQueue.researchQueue.structures)
+              .sort()//TODO sort on what?
+              .map(({populationId, structureId, quantity}) => {
+                const species = entities[entities[populationId].speciesId];
+                const quantityRequestedFormatted = <FormatNumber value={quantity} />;
+                const quantityAssigned = (assignedStructures[populationId] && assignedStructures[populationId][structureId]) || 0;
+                const quantityAssignedFormatted = <FormatNumber value={quantityAssigned} />;
 
-              return <Table.Row key={`${populationId}-${structureId}`}>
-                <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
-                <Table.TD>{species.species.name}</Table.TD>
-                <Table.TD><Trans>{quantityRequestedFormatted} / {quantityAssignedFormatted}</Trans></Table.TD>
-                <Table.TD><FormatNumber value={getCapabilityProductionForColonyPopulationStructure(colony, 'research', populationId, structureId) * quantityAssigned} /></Table.TD>
-              </Table.Row >
-            })
-          }
-        </Table.TBody>
-        <Table.TFoot>
-          <Table.Row>
-            <Table.TD colSpan="4">
-              <Trans>Total RP: {totalRPsFormatted}</Trans>
-            </Table.TD>
-          </Table.Row>
-        </Table.TFoot>
-      </Table>
+                return <Table.Row key={`${populationId}-${structureId}`}>
+                  <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
+                  <Table.TD>{species.species.name}</Table.TD>
+                  <Table.TD><Trans>{quantityRequestedFormatted} / {quantityAssignedFormatted}</Trans></Table.TD>
+                  <Table.TD><FormatNumber value={getCapabilityProductionForColonyPopulationStructure(colony, 'research', populationId, structureId) * quantityAssigned} /></Table.TD>
+                </Table.Row >
+              })
+            }
+          </Table.TBody>
+          <Table.TFoot>
+            <Table.Row>
+              <Table.TD colSpan="4">
+                <div className="alignEnd"><Trans>Total RP: {totalRPsFormatted}</Trans></div>
+              </Table.TD>
+            </Table.Row>
+          </Table.TFoot>
+        </Table>
 
-    </div>
-    <div className={styles.research}>
-      <h3 className={styles.researchTitle}><Trans>Current research</Trans></h3>
-      {currentResearchProject ?
-        <>
-          <h4>{currentResearchProject.name}</h4>
-          <p><Trans>ETA: {etaFormatted}</Trans></p>
-          <Progress value={currentResearchProgress} max={currentResearchProject.cost} showValues />
-          {researchQueue.researchQueue.researchIds.length > 1 && <p><Trans>+ {researchQueue.researchQueue.researchIds.length - 1} more</Trans></p>}
-        </>
-        :
-        <p className="bodyCopy"><Trans>No research queued</Trans></p>
-      }
+      </div>
+      <div className={styles.research}>
+        <h3 className={styles.title}><Trans>Current research</Trans></h3>
+        {currentResearchProject ?
+          <>
+            <p className={styles.currentProjectDesc}><h4 className={styles.currentProjectName}>{currentResearchProject.name}</h4> <Trans>ETA: {etaFormatted}</Trans></p>
+            <Progress value={currentResearchProgress} max={currentResearchProject.cost} showValues />
+            {researchQueue.researchQueue.researchIds.length > 1 && <p className={styles.otherResearch}><Trans>+ {researchQueue.researchQueue.researchIds.length - 1} more</Trans></p>}
+          </>
+          :
+          <p className={styles.noResearch}><Trans>No research queued</Trans></p>
+        }
+      </div>
     </div>
     <Buttons position="right">
       {onEditClick && <Button onClick={() => {onEditClick(researchQueue.id);}}><Trans id="researchQueueOverview.edit">Edit</Trans></Button>}

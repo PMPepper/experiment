@@ -1,5 +1,15 @@
 @import '../../../css/shared';
 
+.structures {
+  margin-top: 0;
+  //@include panel();
+
+  //padding: $basePadding/2;
+}
+
+.title {
+  margin-top: 0;
+}
 
 .researchQueueList {
   @include panel();
