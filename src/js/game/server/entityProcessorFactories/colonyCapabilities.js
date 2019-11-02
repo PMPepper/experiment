@@ -17,7 +17,7 @@ function colonyCapabilitiesFactory(lastTime, time, init, full) {
       let i, l, totalPopulation = 0, totalEffectiveWorkers = 0, totalSupportWorkers = 0;
 
       const faction = entities[colony.factionId];
-      const technologyModifiers = calculateTechnologyModifiers(faction.faction.technology);
+      const technologyModifiers = calculateTechnologyModifiers(faction.faction.technology, gameConfig.technology);
       const structureDefinitions = gameConfig.structures;
 
       const capabilityProductionTotals = {};//the total procution this colony is capable of for each capability (mining, research, etc)

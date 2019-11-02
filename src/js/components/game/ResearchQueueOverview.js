@@ -87,7 +87,7 @@ const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({c
         <h3 className={styles.title}><Trans>Current research</Trans></h3>
         {currentResearchProject ?
           <>
-            <p className={styles.currentProjectDesc}><h4 className={styles.currentProjectName}>{currentResearchProject.name}</h4> <Trans>ETA: {etaFormatted}</Trans></p>
+            <div className={styles.currentProjectDesc}><h4 className={styles.currentProjectName}>{currentResearchProject.name}</h4> <Trans>ETA: {etaFormatted}</Trans></div>
             <Progress value={currentResearchProgress} max={currentResearchProject.cost} showValues />
             {researchQueue.researchQueue.researchIds.length > 1 && <p className={styles.otherResearch}><Trans>+ {researchQueue.researchQueue.researchIds.length - 1} more</Trans></p>}
           </>

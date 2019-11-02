@@ -26,6 +26,13 @@ function researchFactory(lastTime, time, init, full) {
         return false;//no need to do anything for a colony that does not produce any research, or has none queued
       }
 
+      //Tidy up completed resaeach
+      forEach(colony.colony.researchInProgress, (progress, researchId) => {
+        if(faction.faction.research[researchId]) {//this research has been completed
+          delete colony.colony.researchInProgress[researchId];//remove from list of research in progress
+        }
+      });
+
       //map into {[populationId]: {[structureId]: quantity}}
       const availableStructures = map(colony.colony.populationStructuresWithCapability, ({research}) => {
         return {...research};

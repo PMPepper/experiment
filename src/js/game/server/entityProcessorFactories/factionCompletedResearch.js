@@ -29,10 +29,6 @@ function factionCompletedResearchFactory(lastTime, time, init, full) {
               faction.faction.technology[technologyId] = true;
             });
           }
-
-          if(faction.faction.research[researchId]) {//this research has been completed
-            delete colony.colony.researchInProgress[researchId];//remove from list of research in progress
-          }
         });
       })
 
