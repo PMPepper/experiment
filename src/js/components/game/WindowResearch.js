@@ -81,7 +81,7 @@ export default function WindowResearch({colonyId}) {
         const researchQueue = clientState.entities[researchQueueId];
 
         return <li key={researchQueueId}>
-          <ResearchQueueOverview colony={colony} researchQueue={researchQueue} gameConfig={clientState.initialGameState} entities={clientState.entities} onEditClick={onClickEditResearchGroup} onRemoveClick={onClickRemoveResearchGroup} />
+          <ResearchQueueOverview colony={colony} researchQueue={researchQueue} gameTimeDate={clientState.gameTimeDate} gameConfig={clientState.initialGameState} entities={clientState.entities} onEditClick={onClickEditResearchGroup} onRemoveClick={onClickRemoveResearchGroup} />
         </li>
       })}
     </ul>

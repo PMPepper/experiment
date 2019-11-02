@@ -35,6 +35,30 @@
   background: transparent;
   border: none;
 
+  &.showValues {
+    position: relative;
+
+    &::after {
+      content: attr(data-progress-values);
+
+      margin: auto;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+
+      height: 1em;
+      line-height: 1;
+
+      text-align: center;
+
+      color: $fontCol;
+      font-weight: bold;
+      font-size: $fontSize;
+    }
+  }
+
   &::-webkit-progress-bar {
     @include barStyle();
   }

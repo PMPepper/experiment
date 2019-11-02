@@ -3,7 +3,7 @@ import systems from './systems';
 const worldDefinition = {
   type: 'new',
   gameName: 'flobble',
-  startDate: '2000-01-01T00:00:00',
+  startDate: '2000-01-01T00:00:00Z',
   systems: systems,
   species: {
     Humans: {name: 'Humans', growthRate: 1.05, miningRate: 1, researchRate: 1, constructionRate: 1}

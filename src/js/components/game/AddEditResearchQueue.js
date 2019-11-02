@@ -22,6 +22,7 @@ import modify from '@/helpers/object/modify';
 import add from '@/helpers/array/add';
 import formatNumber from '@/helpers/string/format-number';
 import getResearchProductionFromStructures from '@/helpers/app/getResearchProductionFromStructures';
+import getResearchETA from '@/helpers/app/getResearchETA';
 
 //Other
 import {CloseModalContext} from '@/components/modal/Modal';
@@ -113,7 +114,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
   const researchRate = getResearchProductionFromStructures(structures, colony);
 
   //used to keep track of ETAs of research projects in this queue
-  const currentDate = new Date(clientState.gameTimeDate)
+  let currentDate = new Date(clientState.gameTimeDate)
 
 
   return <div className="vspaceStart">
@@ -163,7 +164,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
                     return total;
                   }, 0);
 
-                  const available = quantity - inUse;//TODO reduce by in-use facilities;
+                  const available = quantity - inUse;//reduce by in-use facilities;
                   const value = (structures[population.id] && structures[population.id][structureId]) || 0;
 
                   const rpPerFacility = colony.colony.populationUnitCapabilityProduction[population.id].research[structureId];
@@ -216,19 +217,17 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
               }
 
               //ETA
-              if(researchRate > 0) {
-                const days = Math.ceil((research.cost - progress) / (researchRate * DAY_ANNUAL_FRACTION));
-
-                //now add days to 'current date'
-                currentDate.setDate(currentDate.getDate() + days)
-              }
+              const researchETA = getResearchETA(currentDate, research.cost, progress, researchRate)
 
               obj[researchId] = {
                 ...research,
                 progress,
-                eta: researchRate > 0 ? new Date(currentDate) : '-',
+                eta: researchETA || '-',
                 index: Object.keys(obj).length + 1
               };
+
+              //update current date
+              currentDate = new Date(researchETA);
 
               return obj;
             }, {})}

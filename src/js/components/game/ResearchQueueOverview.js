@@ -10,16 +10,18 @@ import Progress from '@/components/progress/Progress';
 import DL from '@/components/list/DL';
 import Table from '@/components/table/Table';
 import FormatNumber from '@/components/formatNumber/FormatNumber';
+import FormatDate from '@/components/formatDate/FormatDate';
 
 //Helpers
 import map from '@/helpers/object/map';
 import researchStructuresToArray from '@/helpers/app/researchStructuresToArray';
 import getResearchProductionFromStructures from '@/helpers/app/getResearchProductionFromStructures';
 import getCapabilityProductionForColonyPopulationStructure from '@/helpers/app/getCapabilityProductionForColonyPopulationStructure';
+import getResearchETA from '@/helpers/app/getResearchETA';
 
 
 //The component
-const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({colony, researchQueue, gameConfig, entities, onEditClick, onRemoveClick}, ref) {
+const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({colony, gameTimeDate, researchQueue, gameConfig, entities, onEditClick, onRemoveClick}, ref) {
   const currentResearchId = researchQueue.researchQueue.researchIds[0]
   const currentResearchProject = currentResearchId ?
     gameConfig.research[currentResearchId]
@@ -36,6 +38,9 @@ const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({c
   //now work out how much research that produces
   const totalRPs = getResearchProductionFromStructures(assignedStructures, colony);
   const totalRPsFormatted = <FormatNumber value={totalRPs} />
+
+  const eta = currentResearchProject ? getResearchETA(gameTimeDate, currentResearchProject.cost, currentResearchProgress, totalRPs) : null
+  const etaFormatted = <FormatDate value={eta} format="date" />;
 
   return <div ref={ref} className={styles.researchQueueOverview}>
     <div className={styles.structures}>
@@ -82,7 +87,8 @@ const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({c
       {currentResearchProject ?
         <>
           <h4>{currentResearchProject.name}</h4>
-          <Progress value={currentResearchProgress} max={currentResearchProject.cost} />
+          <p><Trans>ETA: {etaFormatted}</Trans></p>
+          <Progress value={currentResearchProgress} max={currentResearchProject.cost} showValues />
           {researchQueue.researchQueue.researchIds.length > 1 && <p><Trans>+ {researchQueue.researchQueue.researchIds.length - 1} more</Trans></p>}
         </>
         :

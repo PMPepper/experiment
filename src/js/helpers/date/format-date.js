@@ -1,11 +1,11 @@
 import defaultLocale from '@/helpers/browser/user-locale';
 
-export default function formatDate(date, langCode, format = null) {
+export default function formatDate(date, langCode, format = null, timeZone = null) {
   date = date instanceof Date ? date : new Date(date);
   let options = null;
 
   if(typeof(format) === 'object') {
-    options = format;
+    options = {...format};
   } else {
     switch(format) {
       case 'long':
@@ -78,11 +78,15 @@ export default function formatDate(date, langCode, format = null) {
         };
         break;
       case null:
-        options = null;
+        options = {};
         break;
       default:
         throw new Error('formatDate:: invalid format: ' + format);
     }
+  }
+
+  if(timeZone) {
+    options.timeZone = timeZone;
   }
 
   return date.toLocaleString(langCode || defaultLocale, options || undefined)
