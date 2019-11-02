@@ -1,0 +1,91 @@
+@import '../../../css/shared';
+
+
+//Overall table vars
+$tableCol: $fontCol;
+$tableBorderCol: $borderCol;
+$tableBasePadding: $basePadding;
+
+//thead vars
+$theadCol: null;
+$theadBg: $grey20;
+
+//tbody vars
+$tbodyCol: null;
+$tbodyBg: $grey0;
+$tbodyBgAlt: $grey10;
+
+//tfoot vars
+$tfootCol: null;
+$tfootBg: $grey30;
+
+
+.table {
+  width: 100%;
+  border: 0.1rem solid $tableBorderCol;
+  border-top: none;
+  border-spacing: 0;
+  border-collapse: separate;
+}
+
+.thead {
+  font-weight: bold;
+  color: $theadCol;
+
+  > .tr {
+    background: $theadBg;
+  }
+}
+
+.th {
+  font-size: 1.4rem;
+  vertical-align: middle;
+  padding: 0;
+  border-left: 0.1rem solid $tableBorderCol;
+  border-top: 0.1rem solid $tableBorderCol;
+  text-align: center;
+  white-space: nowrap;
+  padding: $tableBasePadding/4 $tableBasePadding/2;
+
+  &:first-child {
+    border-left: 0;
+  }
+}
+
+.tbody {
+  color: $tbodyCol;
+
+  > .tr {
+    background: $tbodyBg;
+
+    &:nth-child(odd) {
+      background: $tbodyBgAlt;
+    }
+  }
+}
+
+.td {
+  font-size: 1.4rem;
+  line-height: 1.0;
+  border-left: 0.1rem solid $tableBorderCol;
+  border-top: 0.1rem solid $tableBorderCol;
+  vertical-align: top;
+  padding: $tableBasePadding/4 $tableBasePadding/2;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:first-child {
+    border-left: 0;
+  }
+}
+
+.tfoot {
+  font-weight: bold;
+  color: $tfootCol;
+
+  > .tr {
+    background: $tfootBg;
+  }
+}

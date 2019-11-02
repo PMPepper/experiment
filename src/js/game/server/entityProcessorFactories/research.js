@@ -22,7 +22,7 @@ function researchFactory(lastTime, time, init, full) {
 
       const colonyResearchProduction = colony.colony.capabilityProductionTotals.research;
 
-      if(colonyResearchProduction <= 0 || colony.researchQueueIds.length === 0 || colony.researchQueueIds.every(researchQueueId => (entities[researchQueueId].researchQueue.researchIds.length === 0))) {
+      if(colonyResearchProduction <= 0 || colony.researchQueueIds.length === 0) {
         return false;//no need to do anything for a colony that does not produce any research, or has none queued
       }
 
@@ -30,6 +30,8 @@ function researchFactory(lastTime, time, init, full) {
       const availableStructures = map(colony.colony.populationStructuresWithCapability, ({research}) => {
         return {...research};
       })
+
+      colony.colony.assignedResearchStructures = {};
 
       colony.researchQueueIds.forEach(researchQueueId => {
         const researchQueue = entities[researchQueueId];
@@ -74,8 +76,8 @@ function researchFactory(lastTime, time, init, full) {
           });
         });
 
-        //now work out how much reserach that produces
-        const researchProduction = getResearchProductionFromStructures(assignedStructures, gameConfig, colony.colony.populationUnitCapabilityProduction) * DAY_ANNUAL_FRACTION;
+        //now work out how much research that produces
+        const researchProduction = getResearchProductionFromStructures(assignedStructures, colony) * DAY_ANNUAL_FRACTION;
 
         //update current research project
         const currentResearchProjectId = researchQueue.researchQueue.researchIds[0];
@@ -83,6 +85,7 @@ function researchFactory(lastTime, time, init, full) {
 
         //increment research in progress
         colony.colony.researchInProgress[currentResearchProjectId] = Math.min(currentResearchProject.cost, (colony.colony.researchInProgress[currentResearchProjectId] || 0) + researchProduction)
+        colony.colony.assignedResearchStructures[researchQueueId] = assignedStructures
       });
 
       return true;

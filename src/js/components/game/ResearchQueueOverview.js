@@ -8,18 +8,86 @@ import Button from '@/components/button/Button';
 import Buttons from '@/components/button/Buttons';
 import Progress from '@/components/progress/Progress';
 import DL from '@/components/list/DL';
+import Table from '@/components/table/Table';
+import FormatNumber from '@/components/formatNumber/FormatNumber';
+
+//Helpers
+import map from '@/helpers/object/map';
+import researchStructuresToArray from '@/helpers/app/researchStructuresToArray';
+import getResearchProductionFromStructures from '@/helpers/app/getResearchProductionFromStructures';
+import getCapabilityProductionForColonyPopulationStructure from '@/helpers/app/getCapabilityProductionForColonyPopulationStructure';
 
 
 //The component
-const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({researchQueue, onEditClick, onRemoveClick}, ref) {
+const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({colony, researchQueue, gameConfig, entities, onEditClick, onRemoveClick}, ref) {
+  const currentResearchId = researchQueue.researchQueue.researchIds[0]
+  const currentResearchProject = currentResearchId ?
+    gameConfig.research[currentResearchId]
+    :
+    null;
+  const currentResearchProgress = currentResearchProject ?
+    colony.colony.researchInProgress[currentResearchId]
+    :
+    null
+
+  //get the actually assigned structures
+  const assignedStructures = colony.colony.assignedResearchStructures[researchQueue.id] || {};
+
+  //now work out how much research that produces
+  const totalRPs = getResearchProductionFromStructures(assignedStructures, colony);
+  const totalRPsFormatted = <FormatNumber value={totalRPs} />
+
   return <div ref={ref} className={styles.researchQueueOverview}>
     <div className={styles.structures}>
-      <DL>
+      <h3 className={styles.researchTitle}><Trans>Assigned structures</Trans></h3>
+      <Table>
+        <Table.THead>
+          <Table.Row>
+            <Table.TH><Trans>Structure</Trans></Table.TH>
+            <Table.TH><Trans>Species</Trans></Table.TH>
+            <Table.TH><Trans># requested/assigned</Trans></Table.TH>
+            <Table.TH><Trans>RP</Trans></Table.TH>
+          </Table.Row>
+        </Table.THead>
+        <Table.TBody>
+          {researchStructuresToArray(researchQueue.researchQueue.structures)
+            .sort()//TODO sort on what?
+            .map(({populationId, structureId, quantity}) => {
+              const species = entities[entities[populationId].speciesId];
+              const quantityRequestedFormatted = <FormatNumber value={quantity} />;
+              const quantityAssigned = (assignedStructures[populationId] && assignedStructures[populationId][structureId]) || 0;
+              const quantityAssignedFormatted = <FormatNumber value={quantityAssigned} />;
 
-      </DL>
+              return <Table.Row key={`${populationId}-${structureId}`}>
+                <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
+                <Table.TD>{species.species.name}</Table.TD>
+                <Table.TD><Trans>{quantityRequestedFormatted} / {quantityAssignedFormatted}</Trans></Table.TD>
+                <Table.TD><FormatNumber value={getCapabilityProductionForColonyPopulationStructure(colony, 'research', populationId, structureId) * quantityAssigned} /></Table.TD>
+              </Table.Row >
+            })
+          }
+        </Table.TBody>
+        <Table.TFoot>
+          <Table.Row>
+            <Table.TD colSpan="4">
+              <Trans>Total RP: {totalRPsFormatted}</Trans>
+            </Table.TD>
+          </Table.Row>
+        </Table.TFoot>
+      </Table>
+
     </div>
     <div className={styles.research}>
-      <Progress value={50} max={100} />
+      <h3 className={styles.researchTitle}><Trans>Current research</Trans></h3>
+      {currentResearchProject ?
+        <>
+          <h4>{currentResearchProject.name}</h4>
+          <Progress value={currentResearchProgress} max={currentResearchProject.cost} />
+          {researchQueue.researchQueue.researchIds.length > 1 && <p><Trans>+ {researchQueue.researchQueue.researchIds.length - 1} more</Trans></p>}
+        </>
+        :
+        <p className="bodyCopy"><Trans>No research queued</Trans></p>
+      }
     </div>
     <Buttons position="right">
       {onEditClick && <Button onClick={() => {onEditClick(researchQueue.id);}}><Trans id="researchQueueOverview.edit">Edit</Trans></Button>}

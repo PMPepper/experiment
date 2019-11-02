@@ -9,6 +9,7 @@ import LocalTableState from '@/components/datatable/LocalTableState';
 import ResearchQueueProjects from '@/components/game/tables/ResearchQueueProjects';
 import DatatableSort from '@/components/datatableSort/DatatableSort';
 import ExpandedRowContent from '@/components/datatable/ExpandedRowContent';
+import FormatNumber from '@/components/formatNumber/FormatNumber';
 
 //Hooks
 import useI18n from '@/hooks/useI18n';
@@ -108,12 +109,11 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
   //calculate researchRate based on selected facilities
   const gameConfig = clientState.initialGameState;
 
-  const researchRate = getResearchProductionFromStructures(structures, gameConfig, colony.colony.populationUnitCapabilityProduction);
+  //{[populationId]: {[capability]: {[structureId]: quantity}}}
+  const researchRate = getResearchProductionFromStructures(structures, colony);
 
   //used to keep track of ETAs of research projects in this queue
   const currentDate = new Date(clientState.gameTimeDate)
-
-  //{[populationId]: {[capability]: {[structureId]: quantity}}}
 
 
   return <div className="vspaceStart">
@@ -166,9 +166,12 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
                   const available = quantity - inUse;//TODO reduce by in-use facilities;
                   const value = (structures[population.id] && structures[population.id][structureId]) || 0;
 
+                  const rpPerFacility = colony.colony.populationUnitCapabilityProduction[population.id].research[structureId];
+                  const rpPerFacilityFormatted = <FormatNumber value={rpPerFacility} />
+
                   return <Form.Row key={structureId}>
                     <Form.Field columns={6} inline>
-                      <Form.Label width={2}>{structure.name}</Form.Label>{/*TODO translation!?*/}
+                      <Form.Label width={2}>{structure.name} ({rpPerFacilityFormatted}RP)</Form.Label>{/*TODO translation!?*/}
                       <Form.Input width={1} type="number" min={0} max={available} step={1} value={value} setValue={(newValue) => {
                         setStructures(modify(structures, [population.id, structureId], +newValue, (index, path) => {return {};}));
                       }} />

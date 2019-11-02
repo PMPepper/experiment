@@ -474,6 +474,7 @@ export default class Server {
         structures,
         minerals,
         researchInProgress: {},//progress on research projects on this colony
+        assignedResearchStructures: {},
 
         buildQueue: [],
         capabilityProductionTotals: {},
