@@ -130,7 +130,7 @@ export default {
       bp: 1000,
       minerals: {},
       capabilities: {
-        mining: 0.1
+        mining: 0.01
       },
       upgrade: [4],
       requireTechnologyIds: [],
@@ -160,7 +160,7 @@ export default {
         "1": 30,
       },
       capabilities: {
-        mining: 1
+        mining: 0.1
       },
       requireTechnologyIds: ['pe'],
     },

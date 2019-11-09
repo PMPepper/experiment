@@ -34,6 +34,8 @@ export default function WindowIndustry({colonyId}) {
   const colony = clientState.entities[colonyId];
   const faction = clientState.entities[clientState.factionId];
 
+  const hasMultiplePopulations = colony.populationIds.length > 1;
+
   const colonyConstructionStructures = getColonyStructuresCapabilities(colony, 'construction');
 
   const totalColonyConstructionFormatted = <FormatNumber value={colony.colony.capabilityProductionTotals.construction} />;
@@ -45,7 +47,7 @@ export default function WindowIndustry({colonyId}) {
         <Table.THead>
           <Table.Row>
             <Table.TH><Trans>Structure</Trans></Table.TH>
-            <Table.TH><Trans>Species</Trans></Table.TH>
+            {hasMultiplePopulations && <Table.TH><Trans>Species</Trans></Table.TH>}
             <Table.TH><Trans>#</Trans></Table.TH>
             <Table.TH><Trans>Production/facility</Trans></Table.TH>
           </Table.Row>
@@ -59,7 +61,7 @@ export default function WindowIndustry({colonyId}) {
 
               return <Table.Row key={`${populationId}-${structureId}`}>
                 <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
-                <Table.TD>{clientState.entities[clientState.entities[populationId].speciesId].species.name}</Table.TD>
+                {hasMultiplePopulations && <Table.TD>{clientState.entities[clientState.entities[populationId].speciesId].species.name}</Table.TD>}
                 <Table.TD><Trans>{availableFormatted}</Trans></Table.TD>
                 <Table.TD><FormatNumber value={rps} /></Table.TD>
               </Table.Row>
@@ -68,7 +70,7 @@ export default function WindowIndustry({colonyId}) {
         </Table.TBody>
         <Table.TFoot>
           <Table.Row>
-            <Table.TD colSpan="4">
+            <Table.TD colSpan={hasMultiplePopulations ? 4 : 3}>
               <div className="alignEnd"><Trans>Colony total RP: {totalColonyConstructionFormatted}</Trans></div>
             </Table.TD>
           </Table.Row>
@@ -82,6 +84,7 @@ export default function WindowIndustry({colonyId}) {
       <Table.THead>
         <Table.Row>
           <Table.TH><Trans>Structure</Trans></Table.TH>
+          {hasMultiplePopulations && <Table.TH><Trans>Population</Trans></Table.TH>}
           <Table.TH><Trans>Built</Trans></Table.TH>
           <Table.TH><Trans>Total</Trans></Table.TH>
           <Table.TH><Trans>Progress</Trans></Table.TH>
@@ -92,7 +95,8 @@ export default function WindowIndustry({colonyId}) {
         {colony.colony.buildQueue.map(buildQueueItem => {
           return <Table.Row key={buildQueueItem.id}>
             <Table.TD>{gameConfig.structures[buildQueueItem.structureId].name}</Table.TD>
-            <Table.TD>TODO</Table.TD>
+            {hasMultiplePopulations && <Table.TD>{clientState.entities[clientState.entities[buildQueueItem.populationId].speciesId].species.name}</Table.TD>}
+            <Table.TD><FormatNumber value={buildQueueItem.completed} /></Table.TD>
             <Table.TD><FormatNumber value={buildQueueItem.total} /></Table.TD>
             <Table.TD>TODO</Table.TD>
             <Table.TD>TODO</Table.TD>
@@ -101,7 +105,7 @@ export default function WindowIndustry({colonyId}) {
       </Table.TBody>
       <Table.TFoot>
         <Table.Row>
-          <Table.TD colSpan="5">
+          <Table.TD colSpan={hasMultiplePopulations ? 6 : 5}>
             <div className="alignEnd"><Trans>ETA: TODO</Trans></div>
           </Table.TD>
         </Table.Row>

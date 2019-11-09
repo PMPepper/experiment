@@ -362,7 +362,7 @@ export default class Server {
     return Promise.resolve(researchQueue.id);
   }
 
-  message_addBuildQueueItem({colonyId, structureId, total}, clientId) {
+  message_addBuildQueueItem({colonyId, populationId, structureId, total}, clientId) {
     this._checkPhase(RUNNING);
     this._checkValidClient(clientId);
     this._clientOwnsEntity(clientId, colonyId);
@@ -380,7 +380,8 @@ export default class Server {
       id: newId,//re-using entity ID, even though it's not an entity - is that a problem?
       total,
       completed: 0,
-      structureId
+      structureId,
+      populationId
     })
 
     this._alteredEntity(colony);
@@ -440,7 +441,7 @@ export default class Server {
     return Promise.resolve(colony.colony.buildQueue);
   }
 
-  message_updateBuildQueueItem({colonyId, id, newTotal}, clientId) {
+  message_updateBuildQueueItem({colonyId, id, populationId, newTotal}, clientId) {
     this._checkPhase(RUNNING);
     this._checkValidClient(clientId);
     this._clientOwnsEntity(clientId, colonyId);
@@ -459,6 +460,7 @@ export default class Server {
 
     //everthing is valid, update build queue item
     colony.colony.buildQueue[buildQueueItemIndex].total = newTotal;
+    colony.colony.buildQueue[buildQueueItemIndex].populationId = populationId;
 
     this._alteredEntity(colony);
 

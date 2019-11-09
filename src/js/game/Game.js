@@ -39,7 +39,7 @@ function doFakeDevStuff(client) {
   client.createResearchQueue(899, {"900":{"5":3}}, ["m1","pe"]);
 
   //construction
-  client.addBuildQueueItem(899, '1', 10);
+  client.addBuildQueueItem(899, 900, '1', 10);
 }
 
 //TODO add fake stuff to help development - e.g. a research queue:
