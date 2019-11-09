@@ -94,8 +94,8 @@ export default class Client {
   }
 
   // Construction
-  addBuildQueueItem = (colonyId, populationId, structureId, total) => {
-    return this.connector.sendMessageToServer('addBuildQueueItem', {colonyId, populationId, structureId, total})
+  addBuildQueueItem = (colonyId, constructionProjectId, total, assignToPopulationId, takeFromPopulationId = null) => {
+    return this.connector.sendMessageToServer('addBuildQueueItem', {colonyId, constructionProjectId, total, assignToPopulationId, takeFromPopulationId})
   }
 
   removeBuildQueueItem = (colonyId, id) => {
@@ -106,10 +106,10 @@ export default class Client {
     return this.connector.sendMessageToServer('reorderBuildQueueItem', {colonyId, id, newIndex})
   }
 
-  updateBuildQueueItem = (colonyId, id, populationId, newTotal) => {
-    return this.connector.sendMessageToServer('updateBuildQueueItem', {colonyId, id, populationId, newTotal})
+  updateBuildQueueItem = (colonyId, id, total, assignToPopulationId, takeFromPopulationId = null) => {
+    return this.connector.sendMessageToServer('updateBuildQueueItem', {colonyId, id, total, assignToPopulationId, takeFromPopulationId})
   }
-  //[{structureId, total, completed, id}]
+  //[{constructionProjectId, total, completed, id}]
 
   ///////////////////////////////////////
   // Server -> Client message handlers //

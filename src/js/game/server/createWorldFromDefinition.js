@@ -1,6 +1,8 @@
 import orbitPeriod from '@/helpers/physics/orbit-period';
 import map from '@/helpers/object/map';
 import find from '@/helpers/object/find';
+import forEach from '@/helpers/object/forEach';
+
 import roundTo from '@/helpers/math/round-to';
 import defaultGameDefinition from '../data/defaultGameDefinition';
 
@@ -15,6 +17,27 @@ export default function createWorldFromDefinition(server, definition) {
   server.research = JSON.parse(JSON.stringify(definition.research));
   server.technology = JSON.parse(JSON.stringify(definition.technology));
   server.systemBodyTypeMineralAbundance = JSON.parse(JSON.stringify(definition.systemBodyTypeMineralAbundance));
+
+  //Parse structures for construction projects
+  server.constructionProjects = JSON.parse(JSON.stringify(definition.constructionProjects || {}));
+  forEach(definition.structures, (structure, structureId) => {
+    if(structure.canBuild) {
+      //add construction project
+      server.constructionProjects[structureId] = {
+        name: structure.name,
+        bp: structure.bp,
+        minerals: structure.minerals,
+        requiredStructures: {},
+        producedStructures: {
+          [structureId]: 1
+        }
+      }
+
+      //not actually really a part of a structure definition
+      delete structure.canBuild;
+    }
+
+  });
 
   //internal lookup hashes
   const systemsByDefinitionId = {};//[systemDefinitionId] = system entity

@@ -7,7 +7,7 @@ import Button from '@/components/button/Button';
 import Buttons from '@/components/button/Buttons';
 import LocalTableState from '@/components/datatable/LocalTableState';
 import ResearchQueueProjects from '@/components/game/tables/ResearchQueueProjects';
-import DatatableSort from '@/components/datatableSort/DatatableSort';
+import Reorder from '@/components/reorder/Reorder';
 import ExpandedRowContent from '@/components/datatable/ExpandedRowContent';
 import FormatNumber from '@/components/formatNumber/FormatNumber';
 
@@ -240,10 +240,10 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
             moveDown={onMoveDownSelectedResearch}
             remove={onRemoveSelectedResearch}
           >
-            <DatatableSort>
+            <Reorder>
               <ResearchQueueProjects addExpandRowColumn={true} getExpandedRowContents={(row) => {return <ExpandedRowContent>{row.data.description}</ExpandedRowContent>}} />
               {researchIds.length === 0 && <p className="alignCenter bodyCopy"><Trans>No research in queue</Trans></p>}
-            </DatatableSort>
+            </Reorder>
           </LocalTableState>
         </Form.Container>
         <Form.Group>

@@ -115,46 +115,49 @@ export default {
       name: 'Conventional industry',
       mass: 25e6,
       workers: 50000,
-      bp: 1000,
-      minerals: {},
       capabilities: {
         construction: 1
       },
-      upgrade: [3],
       requireTechnologyIds: [],
+
+      canBuild: true,
+      bp: 1000,
+      minerals: {},
     },
     "2": {
       name: 'Conventional mine',
       mass: 25e6,
       workers: 50000,
-      bp: 1000,
-      minerals: {},
       capabilities: {
         mining: 0.01
       },
-      upgrade: [4],
       requireTechnologyIds: [],
+
+      canBuild: true,
+      bp: 1000,
+      minerals: {},
     },
     "3": {
       name: 'PE Industry',
       mass: 25e6,
       workers: 50000,
+      capabilities: {
+        construction: 10
+      },
+      requireTechnologyIds: ['pe'],
+
+      canBuild: true,
       bp: 1200,
       minerals: {
         "4": 60,
         "3": 30,
         "2": 30,
       },
-      capabilities: {
-        construction: 10
-      },
-      requireTechnologyIds: ['pe'],
     },
     "4": {
       name: 'PE mine',
       mass: 25e6,
       workers: 50000,
-      bp: 1200,
       minerals: {
         "4": 60,
         "1": 30,
@@ -163,32 +166,87 @@ export default {
         mining: 0.1
       },
       requireTechnologyIds: ['pe'],
+
+      canBuild: true,
+      bp: 1200,
+      minerals: {
+        "4": 60,
+        "1": 30,
+      },
     },
     "5": {
       name: 'Conventional research facility',
       mass: 5e8,
       workers: 1000000,
-      bp: 20000,
-      minerals: {},
       capabilities: {
         research: 1
       },
-      upgrade: [6],
       requireTechnologyIds: [],
+
+      canBuild: true,
+      bp: 20000,
+      minerals: {},
     },
     "6": {
       name: 'PE research facility',
       mass: 5e8,
       workers: 1000000,
+      capabilities: {
+        research: 10
+      },
+      requireTechnologyIds: ['pe'],
+
+      canBuild: true,
       bp: 24000,
       minerals: {
         "4": 1200,
         "9": 1200,
       },
-      capabilities: {
-        research: 10
+    },
+  },
+  constructionProjects: {
+    "1u3": {
+      name: 'Upgrade conventional industry to PE industry',
+      bp: 600,
+      minerals: {
+        "4": 60,
+        "3": 30,
+        "2": 30,
       },
-      requireTechnologyIds: ['pe'],
+      requiredStructures: {
+        "1": 1
+      },
+      producedStructures: {
+        "3": 1
+      }
+    },
+    "2u4": {
+      name: 'Upgrade conventional mine to PE mine',
+      bp: 600,
+      minerals: {
+        "4": 60,
+        "1": 30,
+      },
+      requiredStructures: {
+        "2": 1
+      },
+      producedStructures: {
+        "4": 1
+      }
+    },
+    "5u6": {
+      name: 'Upgrade conventional research facility to PE research facility',
+      bp: 12000,
+      minerals: {
+        "4": 1200,
+        "9": 1200,
+      },
+      requiredStructures: {
+        "5": 1
+      },
+      producedStructures: {
+        "6": 1
+      }
     },
   },
   researchAreas: {

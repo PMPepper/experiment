@@ -16,4 +16,12 @@
 
 .queue {
   margin-top: 0;
+
+
+}
+
+.add {
+  @include panel;
+
+  padding: $basePadding/2;
 }

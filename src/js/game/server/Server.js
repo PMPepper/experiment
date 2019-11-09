@@ -51,6 +51,7 @@ export default class Server {
   clients;//a client is a player connected to a faction by a connector method with a permissions e.g. Bob spectating Martians on clientId 1
   minerals;
   structures;
+  constructionProjects;
   research;
   researchAreas;
   technology;
@@ -111,6 +112,7 @@ export default class Server {
     this.gameConfig = {
       minerals: this.minerals,
       structures: this.structures,
+      constructionProjects: this.constructionProjects,
       researchAreas: this.researchAreas,
       research: this.research,
       technology: this.technology,
@@ -155,6 +157,7 @@ export default class Server {
       factions: this.factions,
       clients: this.clients,
       minerals: this.minerals,
+      constructionProjects: this.constructionProjects,
       structures: this.structures,
       research: this.research,
       researchAreas: this.researchAreas,
@@ -362,15 +365,23 @@ export default class Server {
     return Promise.resolve(researchQueue.id);
   }
 
-  message_addBuildQueueItem({colonyId, populationId, structureId, total}, clientId) {
+  message_addBuildQueueItem({colonyId, constructionProjectId, total, assignToPopulationId, takeFromPopulationId}, clientId) {
     this._checkPhase(RUNNING);
     this._checkValidClient(clientId);
     this._clientOwnsEntity(clientId, colonyId);
+    this._clientOwnsEntity(clientId, assignToPopulationId);
+    takeFromPopulationId && this._clientOwnsEntity(clientId, takeFromPopulationId);
 
     const colony = this.getEntityById(colonyId);
 
     if(!colony.colony) {
       throw new Error('Not a valid colony');
+    }
+
+    const constructionProject = this.constructionProjects[constructionProjectId];
+
+    if(!constructionProject) {
+      throw new Error('Unknown constructionProjectId: '+ constructionProjectId);
     }
 
     //Add the construction queue
@@ -380,8 +391,19 @@ export default class Server {
       id: newId,//re-using entity ID, even though it's not an entity - is that a problem?
       total,
       completed: 0,
-      structureId,
-      populationId
+      constructionProjectId,
+      assignToPopulationId, takeFromPopulationId
+    })
+
+    //make sure colony props are valid
+    if(!colony.colony.structures[assignToPopulationId]) {
+      colony.colony.structures[assignToPopulationId] = {};
+    }
+
+    forEach(constructionProject.producedStructures, (quantity, structureId) => {
+      if(!colony.colony.structures[assignToPopulationId][constructionProjectId]) {
+        colony.colony.structures[assignToPopulationId][constructionProjectId] = 0;
+      }
     })
 
     this._alteredEntity(colony);
@@ -441,10 +463,12 @@ export default class Server {
     return Promise.resolve(colony.colony.buildQueue);
   }
 
-  message_updateBuildQueueItem({colonyId, id, populationId, newTotal}, clientId) {
+  message_updateBuildQueueItem({colonyId, id, total, assignToPopulationId, takeFromPopulationId}, clientId) {
     this._checkPhase(RUNNING);
     this._checkValidClient(clientId);
     this._clientOwnsEntity(clientId, colonyId);
+    this._clientOwnsEntity(clientId, assignToPopulationId);
+    takeFromPopulationId && this._clientOwnsEntity(clientId, takeFromPopulationId);
 
     const colony = this.getEntityById(colonyId);
 
@@ -458,9 +482,25 @@ export default class Server {
       return Promise.resolve(false);
     }
 
+    const buildQueueItem = colony.colony.buildQueue[buildQueueItemIndex];
+
+    //make sure colony props are valid
+    if(!colony.colony.structures[assignToPopulationId]) {
+      colony.colony.structures[assignToPopulationId] = {};
+    }
+
+    const constructionProject = this.constructionProjects[buildQueueItem.constructionProjectId];
+
+    forEach(constructionProject.producedStructures, (quantity, structureId) => {
+      if(!colony.colony.structures[assignToPopulationId][buildQueueItem.constructionProjectId]) {
+        colony.colony.structures[assignToPopulationId][buildQueueItem.constructionProjectId] = 0;
+      }
+    })
+
     //everthing is valid, update build queue item
-    colony.colony.buildQueue[buildQueueItemIndex].total = newTotal;
-    colony.colony.buildQueue[buildQueueItemIndex].populationId = populationId;
+    buildQueueItem.total = total;
+    buildQueueItem.assignToPopulationId = assignToPopulationId;
+    buildQueueItem.takeFromPopulationId = takeFromPopulationId;
 
     this._alteredEntity(colony);
 
@@ -566,7 +606,7 @@ export default class Server {
 
         //construction
         buildQueue: [],
-        buildInProgress: {},//progress on building: {[structureId]: PP}
+        buildInProgress: {},//progress on building: {[constructionProjectId]: PP}
 
         //capabilities
         capabilityProductionTotals: {},
