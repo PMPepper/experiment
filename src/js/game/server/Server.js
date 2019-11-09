@@ -6,6 +6,7 @@ import resolvePath from '@/helpers/object/resolve-path';
 import map from '@/helpers/object/map';
 import forEach from '@/helpers/object/forEach';
 import isEmpty from '@/helpers/object/isEmpty';
+import inPlaceReorder from '@/helpers/array/in-place-reorder';
 import getFactionSystemBodyFromFactionAndSystemBody from '@/helpers/app/getFactionSystemBodyFromFactionAndSystemBody';
 
 import createWorldFromDefinition from './createWorldFromDefinition';
@@ -130,9 +131,7 @@ export default class Server {
   }
 
   message_connectClient({name}, clientId) {
-    if(this.phase !== CONNECTING) {
-      throw new Error('Can only connect player while Server is in "connecting" phase');
-    }
+    this._checkPhase(CONNECTING);
 
     if(this.clients[clientId]) {
       throw new Error('Each client can only connect once');
@@ -164,10 +163,7 @@ export default class Server {
   }
 
   message_setClientSettings({name, factions, factionId, ready}, clientId) {
-    if(this.phase !== CONNECTING) {
-      throw new Error('Can only set connected player settings while Server is in "connecting" phase');
-    }
-
+    this._checkPhase(CONNECTING);
     this._checkValidClient(clientId);
     this._checkValidClientName(name, clientId);
 
@@ -211,9 +207,7 @@ export default class Server {
   }
 
   message_startGame(data, clientId) {
-    if(this.phase !== CONNECTING) {
-      throw new Error('Can only start game while Server is in "connecting" phase');
-    }
+    this._checkPhase(CONNECTING);
 
     this._checkValidClient(clientId);
 
@@ -283,40 +277,28 @@ export default class Server {
 
   //-in game
   message_getClientState(lastUpdateTime, clientId) {
-    if(this.phase !== RUNNING) {
-      throw new Error('Can only get client state while server is in "running" phase');
-    }
-
+    this._checkPhase(RUNNING);
     this._checkValidClient(clientId);
 
     return Promise.resolve(this._getClientState(clientId, true))
   }
 
   message_setDesiredSpeed(newDesiredSpeed, clientId) {
-    if(this.phase !== RUNNING) {
-      throw new Error('Can only set desired speed while server is in "running" phase');
-    }
-
+    this._checkPhase(RUNNING);
     this._checkValidClient(clientId);
 
     this.clients[clientId].gameSpeed = Math.max(1, Math.min(5, newDesiredSpeed|0))
   }
 
   message_setIsPaused(newIsPaused, clientId) {
-    if(this.phase !== RUNNING) {
-      throw new Error('Can only set is paused while server is in "running" phase');
-    }
-
+    this._checkPhase(RUNNING);
     this._checkValidClient(clientId);
 
     this.clients[clientId].isPaused = !!newIsPaused;
   }
 
   message_createColony(systemBodyId, clientId) {
-    if(this.phase !== RUNNING) {
-      throw new Error('Can only create colony while server is in "running" phase');
-    }
-
+    this._checkPhase(RUNNING);
     this._checkValidClient(clientId);
 
     const colony = this.createColony(systemBodyId, this.clients[clientId].factionId);
@@ -324,18 +306,16 @@ export default class Server {
     return Promise.resolve(colony.id);
   }
 
+  //Research
   message_createResearchQueue({colonyId, structures, researchIds}, clientId) {
-    if(this.phase !== RUNNING) {
-      throw new Error('Can only add research group while server is in "running" phase');
-    }
-
+    this._checkPhase(RUNNING);
     this._checkValidClient(clientId);
+    this._clientOwnsEntity(clientId, colonyId);
 
-    const factionId = this.clients[clientId].factionId;
     const colony = this.getEntityById(colonyId);
 
-    if(!colony || colony.factionId !== factionId) {
-      throw new Error('Cannot add researchQueue, invalid colony');
+    if(!colony.colony) {
+      throw new Error('Not a valid colony');
     }
 
     const researchQueue = this.createResearchQueue(colonyId, structures || {}, researchIds || []);
@@ -344,10 +324,7 @@ export default class Server {
   }
 
   message_removeResearchQueue(researchQueueId, clientId) {
-    if(this.phase !== RUNNING) {
-      throw new Error('Can only remove research group while server is in "running" phase');
-    }
-
+    this._checkPhase(RUNNING);
     this._checkValidClient(clientId);
     this._clientOwnsEntity(clientId, researchQueueId);
 
@@ -365,10 +342,7 @@ export default class Server {
   }
 
   message_updateResearchQueue({researchQueueId, structures, researchIds}, clientId) {
-    if(this.phase !== RUNNING) {
-      throw new Error('Can only remove research group while server is in "running" phase');
-    }
-
+    this._checkPhase(RUNNING);
     this._checkValidClient(clientId);
     this._clientOwnsEntity(clientId, researchQueueId);
 
@@ -386,6 +360,110 @@ export default class Server {
     this._alteredEntity(researchQueue);
 
     return Promise.resolve(researchQueue.id);
+  }
+
+  message_addBuildQueueItem({colonyId, structureId, total}, clientId) {
+    this._checkPhase(RUNNING);
+    this._checkValidClient(clientId);
+    this._clientOwnsEntity(clientId, colonyId);
+
+    const colony = this.getEntityById(colonyId);
+
+    if(!colony.colony) {
+      throw new Error('Not a valid colony');
+    }
+
+    //Add the construction queue
+    const newId = this.entityId++;
+
+    colony.colony.buildQueue.push({
+      id: newId,//re-using entity ID, even though it's not an entity - is that a problem?
+      total,
+      completed: 0,
+      structureId
+    })
+
+    this._alteredEntity(colony);
+
+    return Promise.resolve(newId);
+  }
+
+  message_removeBuildQueueItem({colonyId, id}, clientId) {
+    this._checkPhase(RUNNING);
+    this._checkValidClient(clientId);
+    this._clientOwnsEntity(clientId, colonyId);
+
+    const colony = this.getEntityById(colonyId);
+
+    if(!colony.colony) {
+      throw new Error('Not a valid colony');
+    }
+
+    const buildQueueItemIndex = colony.colony.buildQueue.findIndex(item => item.id === id);
+
+    if(buildQueueItemIndex === -1) {
+      return Promise.resolve(false);
+    }
+
+    //everything is valid, remove build queue item
+    colony.colony.buildQueue.splice(buildQueueItemIndex, 1);
+
+    this._alteredEntity(colony);
+
+    //return new build queue
+    return Promise.resolve(colony.colony.buildQueue);
+  }
+
+  message_reorderBuildQueueItem({colonyId, id, newIndex}, clientId) {
+    this._checkPhase(RUNNING);
+    this._checkValidClient(clientId);
+    this._clientOwnsEntity(clientId, colonyId);
+
+    const colony = this.getEntityById(colonyId);
+
+    if(!colony.colony) {
+      throw new Error('Not a valid colony');
+    }
+
+    const buildQueueItemIndex = colony.colony.buildQueue.findIndex(item => item.id === id);
+
+    if(buildQueueItemIndex === -1) {
+      return Promise.resolve(false);
+    }
+
+    //everything is valid, reorder build queue
+    inPlaceReorder(colony.colony.buildQueue, buildQueueItemIndex, newIndex);
+
+    this._alteredEntity(colony);
+
+    //return new build queue
+    return Promise.resolve(colony.colony.buildQueue);
+  }
+
+  message_updateBuildQueueItem({colonyId, id, newTotal}, clientId) {
+    this._checkPhase(RUNNING);
+    this._checkValidClient(clientId);
+    this._clientOwnsEntity(clientId, colonyId);
+
+    const colony = this.getEntityById(colonyId);
+
+    if(!colony.colony) {
+      throw new Error('Not a valid colony');
+    }
+
+    const buildQueueItemIndex = colony.colony.buildQueue.findIndex(item => item.id === id);
+
+    if(buildQueueItemIndex === -1) {
+      return Promise.resolve(false);
+    }
+
+    //everthing is valid, update build queue item
+    colony.colony.buildQueue[buildQueueItemIndex].total = newTotal;
+
+    this._alteredEntity(colony);
+
+    //return new build queue
+    return Promise.resolve(colony.colony.buildQueue);
   }
 
 
@@ -419,6 +497,12 @@ export default class Server {
   _checkValidClient(clientId) {
     if(!this.clients[clientId]) {
       throw new Error('Unknown client');
+    }
+  }
+
+  _checkPhase(phase, msg = null) {
+    if(this.phase !== phase) {
+      throw new Error(msg || `Incorrect phase, was: ${this.phase}, required: ${phase}`);
     }
   }
 
@@ -473,10 +557,16 @@ export default class Server {
       colony: {
         structures,
         minerals,
+
+        //research
         researchInProgress: {},//progress on research projects on this colony
         assignedResearchStructures: {},
 
+        //construction
         buildQueue: [],
+        buildInProgress: {},//progress on building: {[structureId]: PP}
+
+        //capabilities
         capabilityProductionTotals: {},
         structuresWithCapability: {},
         populationCapabilityProductionTotals: {},
@@ -655,11 +745,8 @@ export default class Server {
     performance.mark('advanceTime');
 
     const entities = this.entities;
-
     const entityIds = this.entityIds;
-
     const numEntities = entityIds.length;
-
 
     if(step === null) {
       //initial entity initialisation
@@ -683,7 +770,6 @@ export default class Server {
         alteredEntities.forEach(this._alteredEntity);
       });
     }
-
 
     // Measure performance and store results
     performance.measure('advanceTime execution time step = '+step, 'advanceTime');

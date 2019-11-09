@@ -13,6 +13,7 @@ import Tab from '@/components/tabs/Tab';
 import ReduxDataTableState from '@/components/datatable/ReduxDataTableState';
 import FormatNumber from '@/components/formatNumber/FormatNumber';
 
+import WindowIndustry from './WindowIndustry';
 import WindowResearch from './WindowResearch';
 
 //Helpers
@@ -62,7 +63,7 @@ export default class ColonyInfo extends React.Component {
           <p>Total effective workers: <FormatNumber value={colony.colony.totalEffectiveWorkers} /></p>
         </Tab>
         <Tab key="industry" tab-title={<Trans>Industry</Trans>}>
-          Industry!
+          <WindowIndustry colonyId={this.props.colonyId} />
         </Tab>
         <Tab key="mining" tab-title={<Trans>Mining</Trans>}>
           {colony.colony.structuresWithCapability.mining && <p>{mapToSortedArray(colony.colony.structuresWithCapability.mining, (quantity, structureId) => {

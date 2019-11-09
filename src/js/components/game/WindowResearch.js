@@ -30,6 +30,7 @@ import reduce from '@/helpers/object/reduce';
 import forEach from '@/helpers/object/forEach';
 import getCapabilityProductionForColonyPopulationStructure from '@/helpers/app/getCapabilityProductionForColonyPopulationStructure';
 import getColonyAssignedResearchStructures from '@/helpers/app/getColonyAssignedResearchStructures';
+import getColonyStructuresCapabilities from '@/helpers/app/getColonyStructuresCapabilities';
 
 //reducers
 import {setResearchSelectedArea} from '@/redux/reducers/coloniesWindow';
@@ -79,17 +80,19 @@ export default function WindowResearch({colonyId}) {
 
   const client = useClient();
 
-  const colonyResearchStructures = reduce(colony.colony.populationStructuresWithCapability, (output, {research}, populationId) => {
-    research && forEach(research, (quantity, structureId) => {
-      output.push({
-        populationId,
-        structureId,
-        quantity
-      });
-    });
+  const colonyResearchStructures = getColonyStructuresCapabilities(colony, 'research');
 
-    return output
-  }, []);
+  // reduce(colony.colony.populationStructuresWithCapability, (output, {research}, populationId) => {
+  //   research && forEach(research, (quantity, structureId) => {
+  //     output.push({
+  //       populationId,
+  //       structureId,
+  //       quantity
+  //     });
+  //   });
+  //
+  //   return output
+  // }, []);
 
   const totalColonyResearchFormatted = <FormatNumber value={colony.colony.capabilityProductionTotals.research} />;
 

@@ -57,7 +57,10 @@ export default class Client {
     return this.connector.sendMessageToServer('startGame', null)
   }
 
-  //in game messages
+  //////////////////////
+  // in game messages //
+  //////////////////////
+
   setDesiredSpeed(speed) {
     //c/onsole.log('[CLIENT] setDesiredSpeed: ', speed);
 
@@ -71,6 +74,8 @@ export default class Client {
   createColony = (bodyId) => {
     return this.connector.sendMessageToServer('createColony', bodyId)
   }
+
+  // Research
 
   //facilities: {[structureId]: [number assigned]}
   //researchIds: array with order of projects to perform
@@ -87,6 +92,24 @@ export default class Client {
   removeResearchQueue = (researchQueueId) => {
     return this.connector.sendMessageToServer('removeResearchQueue', researchQueueId)
   }
+
+  // Construction
+  addBuildQueueItem = (colonyId, structureId, total) => {
+    return this.connector.sendMessageToServer('addBuildQueueItem', {colonyId, structureId, total})
+  }
+
+  removeBuildQueueItem = (colonyId, id) => {
+    return this.connector.sendMessageToServer('removeBuildQueueItem', {colonyId, id})
+  }
+
+  reorderBuildQueueItem = (colonyId, id, newIndex) => {
+    return this.connector.sendMessageToServer('reorderBuildQueueItem', {colonyId, id, newIndex})
+  }
+
+  updateBuildQueueItem = (colonyId, id, newTotal) => {
+    return this.connector.sendMessageToServer('updateBuildQueueItem', {colonyId, id, newTotal})
+  }
+  //[{structureId, total, completed, id}]
 
   ///////////////////////////////////////
   // Server -> Client message handlers //
