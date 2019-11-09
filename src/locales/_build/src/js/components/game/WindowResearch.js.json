@@ -1,50 +1,90 @@
 {
-  "Total research facilities: {totalNumResearchFacilities}": {
+  "Colony research facilities": {
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        50
+        102
+      ]
+    ]
+  },
+  "Structure": {
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        107
+      ]
+    ]
+  },
+  "Species": {
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        108
+      ]
+    ]
+  },
+  "# available/total": {
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        109
+      ]
+    ]
+  },
+  "RP/facility": {
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        110
+      ]
+    ]
+  },
+  "{availableFormatted} / {totalFormatted}": {
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        126
+      ]
+    ]
+  },
+  "Colony total RP: {totalColonyResearchFormatted}": {
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        135
+      ]
+    ]
+  },
+  "Research queues": {
+    "origin": [
+      [
+        "src/js/components/game/WindowResearch.js",
+        142
       ]
     ]
   },
   "windowResearch.groups.create": {
+    "defaults": "Create",
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        53
+        154
       ]
     ]
   },
-  "windowResearch.groups.edit": {
+  "Edit research queue": {
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        54
+        158
       ]
     ]
   },
-  "windowResearch.groups.remove": {
+  "Add research queue": {
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        55
-      ]
-    ]
-  },
-  "windowResearch.area.select": {
-    "defaults": "- - Select - -",
-    "origin": [
-      [
-        "src/js/components/game/WindowResearch.js",
-        61
-      ]
-    ]
-  },
-  "Create research project": {
-    "origin": [
-      [
-        "src/js/components/game/WindowResearch.js",
-        111
+        158
       ]
     ]
   }

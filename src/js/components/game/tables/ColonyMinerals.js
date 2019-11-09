@@ -26,7 +26,7 @@ export default dataTableFactory([
   },
   {
     name: 'production',
-    label: <Trans>Annual production</Trans>,
+    label: <Trans>Daily production</Trans>,
     valueType: 'number',
     sort: true
   },

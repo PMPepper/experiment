@@ -3,8 +3,6 @@ import EntityProcessor from '@/game/server/EntityProcessor';
 import calculateSystemBodyGlobalMiningRate from '@/game/server/entityProcessorFactories/colony/calculateSystemBodyGlobalMiningRate';
 import forEach from '@/helpers/object/forEach';
 
-import {DAY_ANNUAL_FRACTION} from '@/game/Consts';
-
 function mineralExtractionTest(entity) {
   return !!entity.availableMinerals && entity.colonyIds && entity.colonyIds.length > 0;
 }
@@ -26,7 +24,7 @@ function mineralExtractionFactory(lastTime, time, init, full) {
         const systemBodyMinerals = systemBody.availableMinerals[mineralId];
 
         //total production across all colonies
-        const globalDailyProduction = totalSystemBodyMiningRate * systemBodyMinerals.access * DAY_ANNUAL_FRACTION;
+        const globalDailyProduction = totalSystemBodyMiningRate * systemBodyMinerals.access;
 
         //reduce available minerals (clamp at 0)
         systemBody.availableMinerals[mineralId].quantity = Math.max(0, systemBody.availableMinerals[mineralId].quantity - globalDailyProduction);

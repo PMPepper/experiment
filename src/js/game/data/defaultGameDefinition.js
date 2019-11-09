@@ -115,7 +115,7 @@ export default {
       name: 'Conventional industry',
       mass: 25e6,
       workers: 50000,
-      bp: 100,
+      bp: 1000,
       minerals: {},
       capabilities: {
         construction: 1
@@ -127,10 +127,10 @@ export default {
       name: 'Conventional mine',
       mass: 25e6,
       workers: 50000,
-      bp: 100,
+      bp: 1000,
       minerals: {},
       capabilities: {
-        mining: 1
+        mining: 0.1
       },
       upgrade: [4],
       requireTechnologyIds: [],
@@ -139,7 +139,7 @@ export default {
       name: 'PE Industry',
       mass: 25e6,
       workers: 50000,
-      bp: 120,
+      bp: 1200,
       minerals: {
         "4": 60,
         "3": 30,
@@ -154,13 +154,13 @@ export default {
       name: 'PE mine',
       mass: 25e6,
       workers: 50000,
-      bp: 120,
+      bp: 1200,
       minerals: {
         "4": 60,
         "1": 30,
       },
       capabilities: {
-        mining: 10
+        mining: 1
       },
       requireTechnologyIds: ['pe'],
     },
@@ -168,10 +168,10 @@ export default {
       name: 'Conventional research facility',
       mass: 5e8,
       workers: 1000000,
-      bp: 2000,
+      bp: 20000,
       minerals: {},
       capabilities: {
-        research: 10
+        research: 1
       },
       upgrade: [6],
       requireTechnologyIds: [],
@@ -180,13 +180,13 @@ export default {
       name: 'PE research facility',
       mass: 5e8,
       workers: 1000000,
-      bp: 2400,
+      bp: 24000,
       minerals: {
         "4": 1200,
         "9": 1200,
       },
       capabilities: {
-        research: 100
+        research: 10
       },
       requireTechnologyIds: ['pe'],
     },
@@ -206,7 +206,7 @@ export default {
     "m1": {
       name: "Mining rate 1",
       description: "Increase mining production by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: [],
       unlockTechnologyIds: ['m1']
@@ -214,7 +214,7 @@ export default {
     "m2": {
       name: "Mining rate 2",
       description: "Increase mining production by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: ['m1'],
       unlockTechnologyIds: ['m2']
@@ -222,7 +222,7 @@ export default {
     "m3": {
       name: "Mining rate 3",
       description: "Increase mining production by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: ['m2'],
       unlockTechnologyIds: ['m3']
@@ -230,7 +230,7 @@ export default {
     "m4": {
       name: "Mining rate 4",
       description: "Increase mining production by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: ['m3'],
       unlockTechnologyIds: ['m4']
@@ -238,7 +238,7 @@ export default {
     "m5": {
       name: "Mining rate 5",
       description: "Increase mining production by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: ['m4'],
       unlockTechnologyIds: ['m5']
@@ -246,7 +246,7 @@ export default {
     "c1": {
       name: "Construction rate 1",
       description: "Increase construction rate by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: [],
       unlockTechnologyIds: ['c1']
@@ -254,7 +254,7 @@ export default {
     "c2": {
       name: "Construction rate 2",
       description: "Increase construction rate by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: ['c1'],
       unlockTechnologyIds: ['c2']
@@ -262,7 +262,7 @@ export default {
     "c3": {
       name: "Construction rate 3",
       description: "Increase construction rate by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: ['c2'],
       unlockTechnologyIds: ['c3']
@@ -270,7 +270,7 @@ export default {
     "c4": {
       name: "Construction rate 4",
       description: "Increase construction rate by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: ['c3'],
       unlockTechnologyIds: ['c4']
@@ -278,7 +278,7 @@ export default {
     "c5": {
       name: "Construction rate 5",
       description: "Increase construction rate by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: ['c4'],
       unlockTechnologyIds: ['c5']
@@ -286,7 +286,7 @@ export default {
     "r1": {
       name: "Research rate 1",
       description: "Increase research speed by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: [],
       unlockTechnologyIds: ['r1']
@@ -294,7 +294,7 @@ export default {
     "r2": {
       name: "Research rate 2",
       description: "Increase research speed by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: ['r1'],
       unlockTechnologyIds: ['r2']
@@ -302,7 +302,7 @@ export default {
     "r3": {
       name: "Research rate 3",
       description: "Increase research speed by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: ['r2'],
       unlockTechnologyIds: ['r3']
@@ -310,7 +310,7 @@ export default {
     "r4": {
       name: "Research rate 4",
       description: "Increase research speed by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: ['r3'],
       unlockTechnologyIds: ['r4']
@@ -318,7 +318,7 @@ export default {
     "r5": {
       name: "Research rate 5",
       description: "Increase research speed by 20%",
-      cost: 100,
+      cost: 1000,
       area: 2,
       requireResearchIds: ['r4'],
       unlockTechnologyIds: ['r5']
@@ -326,7 +326,7 @@ export default {
     "pe": {
       name: 'Post-Einstein technology',
       description: "Unlock the potential of Post-Einsteinium (PE) physics to create technology vastly superior to anything previously thought possible.",
-      cost: 5000,
+      cost: 50000,
       area: 2,
       requireResearchIds: [],
       unlockTechnologyIds: ['pe']
@@ -334,7 +334,7 @@ export default {
     "test1": {
       name: 'Test 1',
       description: "A test technology.",
-      cost: 5000,
+      cost: 50000,
       area: 2,
       requireResearchIds: [],
       unlockTechnologyIds: []
@@ -342,7 +342,7 @@ export default {
     "test2": {
       name: 'Test 2',
       description: "Another test technology.",
-      cost: 5000,
+      cost: 20000,
       area: 2,
       requireResearchIds: [],
       unlockTechnologyIds: []
@@ -350,7 +350,7 @@ export default {
     "e1": {
       name: "PE Drive",
       description: "Utilise PE physics to create a fundamentally new form of propulsion and gain access to the far reaches of our solar system",
-      cost: 500,
+      cost: 5000,
       area: 8,
       requireResearchIds: ['pe'],
       unlockTechnologyIds: ['e1', 'fe1']

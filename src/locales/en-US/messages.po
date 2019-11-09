@@ -6,46 +6,148 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
 "Language: en-US\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#: src/js/components/game/WindowIndustry.js:49
+msgid "#"
+msgstr ""
+
+#: src/js/components/game/WindowResearch.js:109
+msgid "# available/total"
+msgstr ""
+
+#: src/js/components/game/ResearchQueueOverview.js:54
+msgid "# requested/assigned"
+msgstr ""
+
+#: src/js/components/game/ResearchQueueOverview.js:92
+msgid "+ {0} more"
+msgstr ""
+
+#: src/js/components/game/tables/ResearchQueueProjects.js:38
+msgid "<0>ETA</0>"
+msgstr ""
 
 #: src/js/components/game/tables/ColonyMinerals.js:23
 msgid "Access"
 msgstr ""
 
-#: src/js/components/game/AddEditResearchGroup.js:74
-msgid "Add/Edit"
+#: src/js/components/game/AddEditResearchQueue.js:265
+#: src/js/components/game/AddEditResearchQueue.js:283
+msgid "Add"
 msgstr ""
+
+#: src/js/components/game/AddEditResearchQueue.js:251
+msgid "Add research project to queue"
+msgstr ""
+
+#: src/js/components/game/WindowResearch.js:158
+msgid "Add research queue"
+msgstr ""
+
+#: src/js/components/game/AddEditResearchGroup.js:74
+#~ msgid "Add/Edit"
+#~ msgstr ""
 
 #: src/js/components/game/tables/ColonyMinerals.js:29
 msgid "Annual production"
 msgstr ""
 
-#: src/js/components/game/Game.js:125
+#: src/js/components/game/ResearchQueueOverview.js:48
+msgid "Assigned structures"
+msgstr ""
+
+#: src/js/components/game/AddEditResearchQueue.js:255
+msgid "Available research projects"
+msgstr ""
+
+#: src/js/components/game/Game.js:168
 msgid "Body info"
 msgstr ""
 
-#: src/js/components/game/AddEditResearchGroup.js:77
+#: src/js/components/game/WindowIndustry.js:85
+msgid "Built"
+msgstr ""
+
+#: src/js/components/game/AddEditResearchQueue.js:287
 #: src/js/components/game/AddResearchModal.js:45
 msgid "Cancel"
+msgstr ""
+
+#: src/js/components/datatable/DataTable.js:293
+msgid "Click to expand/collapse row"
 msgstr ""
 
 #: src/js/components/window/Window.js:72
 msgid "Close"
 msgstr ""
 
+#: src/js/components/game/WindowIndustry.js:42
+msgid "Colony construction facilities"
+msgstr ""
+
+#: src/js/components/game/WindowIndustry.js:79
+msgid "Colony construction queue"
+msgstr ""
+
+#: src/js/components/game/WindowResearch.js:102
+msgid "Colony research facilities"
+msgstr ""
+
+#: src/js/components/game/WindowIndustry.js:72
+msgid "Colony total RP: {totalColonyConstructionFormatted}"
+msgstr ""
+
+#: src/js/components/game/WindowResearch.js:135
+msgid "Colony total RP: {totalColonyResearchFormatted}"
+msgstr ""
+
 #: src/js/components/game/AddResearchModal.js:44
 msgid "Create"
 msgstr ""
 
-#: src/js/components/game/Game.js:114
+#: src/js/components/game/Game.js:157
 msgid "Create colony"
 msgstr ""
 
 #: src/js/components/game/Test.js:28
-#: src/js/components/game/WindowResearch.js:111
 msgid "Create research project"
 msgstr ""
 
-#: src/js/components/game/ColonyInfo.js:64
+#: src/js/components/game/ResearchQueueOverview.js:87
+msgid "Current research"
+msgstr ""
+
+#: src/js/components/game/AddEditResearchQueue.js:270
+msgid "Description"
+msgstr ""
+
+#: src/js/components/game/WindowIndustry.js:88
+msgid "ETA"
+msgstr ""
+
+#: src/js/components/game/WindowIndustry.js:105
+msgid "ETA: TODO"
+msgstr ""
+
+#: src/js/components/game/ResearchQueueOverview.js:90
+msgid "ETA: {etaFormatted}"
+msgstr ""
+
+#: src/js/components/game/AddEditResearchQueue.js:281
+msgid "Edit"
+msgstr ""
+
+#: src/js/components/game/WindowResearch.js:158
+msgid "Edit research queue"
+msgstr ""
+
+#: src/js/components/game/ColonyInfo.js:65
 msgid "Industry"
 msgstr ""
 
@@ -53,8 +155,33 @@ msgstr ""
 msgid "Mineral"
 msgstr ""
 
-#: src/js/components/game/ColonyInfo.js:67
+#: src/js/components/game/ColonyInfo.js:68
 msgid "Mining"
+msgstr ""
+
+#: src/js/components/game/tables/ResearchQueueProjects.js:20
+msgid "Name"
+msgstr ""
+
+#: src/js/components/game/AddEditResearchQueue.js:245
+msgid "No research in queue"
+msgstr ""
+
+#: src/js/components/game/ResearchQueueOverview.js:95
+msgid "No research queued"
+msgstr ""
+
+#: src/js/components/game/tables/ResearchQueueProjects.js:14
+msgid "Order"
+msgstr ""
+
+#: src/js/components/game/WindowIndustry.js:50
+msgid "Production/facility"
+msgstr ""
+
+#: src/js/components/game/tables/ResearchQueueProjects.js:26
+#: src/js/components/game/WindowIndustry.js:87
+msgid "Progress"
 msgstr ""
 
 #: src/js/components/game/tables/AvailableResearchProjects.js:11
@@ -65,28 +192,66 @@ msgstr ""
 msgid "Quantity"
 msgstr ""
 
+#: src/js/components/game/AddEditResearchQueue.js:199
+msgid "RP per year"
+msgstr ""
+
+#: src/js/components/game/ResearchQueueOverview.js:55
+#: src/js/components/game/WindowResearch.js:110
+msgid "RP/facility"
+msgstr ""
+
 #: src/js/components/game/tables/AvailableResearchProjects.js:17
 msgid "RPs"
 msgstr ""
 
-#: src/js/components/game/ColonyInfo.js:83
+#: src/js/components/game/ColonyInfo.js:84
 msgid "Research"
+msgstr ""
+
+#: src/js/components/game/WindowResearch.js:142
+msgid "Research queues"
+msgstr ""
+
+#: src/js/components/game/ResearchQueueOverview.js:53
+#: src/js/components/game/WindowIndustry.js:48
+#: src/js/components/game/WindowResearch.js:108
+msgid "Species"
 msgstr ""
 
 #: src/js/components/game/tables/ColonyMinerals.js:41
 msgid "Stockpile"
 msgstr ""
 
-#: src/js/components/game/ColonyInfo.js:59
+#: src/js/components/game/ResearchQueueOverview.js:52
+#: src/js/components/game/WindowIndustry.js:47
+#: src/js/components/game/WindowIndustry.js:84
+#: src/js/components/game/WindowResearch.js:107
+msgid "Structure"
+msgstr ""
+
+#: src/js/components/game/ColonyInfo.js:60
 msgid "Summary"
 msgstr ""
 
-#: src/js/components/game/ColonyInfo.js:80
+#: src/js/components/game/ColonyInfo.js:81
 msgid "System body not surveyed"
 msgstr ""
 
+#: src/js/components/game/WindowIndustry.js:86
+msgid "Total"
+msgstr ""
+
+#: src/js/components/game/ResearchQueueOverview.js:79
+msgid "Total RP: {totalRPsFormatted}"
+msgstr ""
+
 #: src/js/components/game/WindowResearch.js:50
-msgid "Total research facilities: {totalNumResearchFacilities}"
+#~ msgid "Total research facilities: {totalNumResearchFacilities}"
+#~ msgstr ""
+
+#: src/js/components/game/AddEditResearchQueue.js:197
+msgid "Total research rate"
 msgstr ""
 
 #: src/js/components/game/tables/ColonyMinerals.js:35
@@ -94,18 +259,26 @@ msgid "Years to depletion"
 msgstr ""
 
 #: src/js/components/game/AddEditResearchGroup.js:54
-msgid "addEditResearchGroup.assignedResearchFacilities.legend"
-msgstr ""
+#~ msgid "addEditResearchGroup.assignedResearchFacilities.legend"
+#~ msgstr ""
 
 #: src/js/components/game/AddEditResearchGroup.js:48
-msgid "addEditResearchGroup.researchArea.label"
-msgstr ""
+#~ msgid "addEditResearchGroup.researchArea.label"
+#~ msgstr ""
 
 #: src/js/components/game/AddEditResearchGroup.js:49
-msgid "addEditResearchGroup.researchArea.placeholder"
+#~ msgid "addEditResearchGroup.researchArea.placeholder"
+#~ msgstr ""
+
+#: src/js/components/game/AddEditResearchQueue.js:123
+msgid "addEditResearchQueue.assignedResearchFacilities.legend"
 msgstr ""
 
-#: src/js/components/game/Game.js:278
+#: src/js/components/game/AddEditResearchQueue.js:206
+msgid "addEditResearchQueue.researchProjects.legend"
+msgstr ""
+
+#: src/js/components/game/Game.js:244
 msgid "coloniesWindow.title"
 msgstr ""
 
@@ -126,71 +299,119 @@ msgstr ""
 msgid "errorboundary-title"
 msgstr ""
 
-#: src/js/components/game/Game.js:281
+#: src/js/components/game/Game.js:247
 msgid "fleetsWindow.title"
+msgstr ""
+
+#: src/js/components/formatDate/FormatDate.js:12
+msgid "formatDate.invalid"
 msgstr ""
 
 #: src/js/components/formatNumber/FormatNumber.js:10
 msgid "formatNumber.isNaN"
 msgstr ""
 
+#: src/js/components/meter/Meter.js:31
+msgid "meter.fallbackFormat"
+msgstr ""
+
 #: src/js/components/modal/Modal.js:78
 msgid "modal-close"
 msgstr ""
 
-#: src/js/components/game/Game.js:275
+#: src/js/components/game/Game.js:241
 msgid "optionsPanel.title"
 msgstr ""
 
-#: src/js/components/game/Game.js:282
+#: src/js/components/progress/Progress.js:56
+msgid "progress.fallback.format"
+msgstr ""
+
+#: src/js/components/progress/Progress.js:54
+msgid "progress.fallback.valuesFormat"
+msgstr ""
+
+#: src/js/components/progress/Progress.js:37
+msgid "progress.values"
+msgstr ""
+
+#: src/js/components/game/ResearchQueueOverview.js:100
+msgid "researchQueueOverview.edit"
+msgstr ""
+
+#: src/js/components/game/ResearchQueueOverview.js:101
+msgid "researchQueueOverview.remove"
+msgstr ""
+
+#: src/js/components/game/AddEditResearchQueue.js:258
+msgid "select.placeholder"
+msgstr ""
+
+#: src/js/components/game/Game.js:248
 msgid "shipDesignWindow.title"
 msgstr ""
 
-#: src/js/components/game/Game.js:216
+#: src/js/components/game/Game.js:182
 msgid "toolbar.colonies"
 msgstr ""
 
-#: src/js/components/game/Game.js:217
+#: src/js/components/game/Game.js:183
 msgid "toolbar.fleets"
 msgstr ""
 
-#: src/js/components/game/Game.js:231
+#: src/js/components/game/Game.js:197
 msgid "toolbar.realTime"
 msgstr ""
 
-#: src/js/components/game/Game.js:218
+#: src/js/components/game/Game.js:184
 msgid "toolbar.shipDesign"
 msgstr ""
 
-#: src/js/components/game/Game.js:226
+#: src/js/components/game/Game.js:192
 msgid "toolbar.togglePaused"
 msgstr ""
 
-#: src/js/components/game/Game.js:242
+#: src/js/components/game/Game.js:208
 msgid "toolbar.x3600"
 msgstr ""
 
-#: src/js/components/game/Game.js:236
+#: src/js/components/game/Game.js:202
 msgid "toolbar.x60"
 msgstr ""
 
-#: src/js/components/game/Game.js:249
-#: src/js/components/game/Game.js:257
+#: src/js/components/game/Game.js:215
+#: src/js/components/game/Game.js:223
 msgid "toolbar.x86400"
 msgstr ""
 
 #: src/js/components/game/WindowResearch.js:61
-msgid "windowResearch.area.select"
-msgstr ""
+#~ msgid "windowResearch.area.select"
+#~ msgstr ""
 
-#: src/js/components/game/WindowResearch.js:53
+#: src/js/components/game/WindowResearch.js:154
 msgid "windowResearch.groups.create"
 msgstr ""
 
 #: src/js/components/game/WindowResearch.js:54
-msgid "windowResearch.groups.edit"
-msgstr ""
+#~ msgid "windowResearch.groups.edit"
+#~ msgstr ""
 
 #: src/js/components/game/WindowResearch.js:55
-msgid "windowResearch.groups.remove"
+#~ msgid "windowResearch.groups.remove"
+#~ msgstr ""
+
+#: src/js/components/game/WindowIndustry.js:63
+msgid "{availableFormatted}"
+msgstr ""
+
+#: src/js/components/game/WindowResearch.js:126
+msgid "{availableFormatted} / {totalFormatted}"
+msgstr ""
+
+#: src/js/components/game/ResearchQueueOverview.js:70
+msgid "{quantityRequestedFormatted} / {quantityAssignedFormatted}"
+msgstr ""
+
+#: src/js/components/game/tables/ResearchQueueProjects.js:31
+msgid "{value} / {cost}"
 msgstr ""

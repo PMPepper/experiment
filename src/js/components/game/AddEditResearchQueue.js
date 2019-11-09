@@ -26,7 +26,6 @@ import getResearchETA from '@/helpers/app/getResearchETA';
 
 //Other
 import {CloseModalContext} from '@/components/modal/Modal';
-import {DAY_ANNUAL_FRACTION} from '@/game/Consts';
 
 
 //The component

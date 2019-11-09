@@ -1,12 +1,10 @@
-import {DAY_ANNUAL_FRACTION} from '@/game/Consts';
-
 //still a little wobble in ETAs
 export default function getResearchETA(fromDate, cost, progress, researchRate) {
   if(researchRate <= 0 || (cost - progress) <= 0) {
     return null;//research will never complete
   }
 
-  const days = Math.ceil((cost - progress) / (researchRate * DAY_ANNUAL_FRACTION));
+  const days = Math.ceil((cost - progress) / researchRate);
 
   //now add days to 'current date'
   const date = new Date(fromDate);

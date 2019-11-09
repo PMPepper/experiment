@@ -5,8 +5,6 @@ import forEach from '@/helpers/object/forEach';
 import map from '@/helpers/object/map';
 import getResearchProductionFromStructures from '@/helpers/app/getResearchProductionFromStructures';
 
-import {DAY_ANNUAL_FRACTION} from '@/game/Consts';
-
 function researchTest(entity) {
   return entity.type === 'colony';
 }
@@ -84,7 +82,7 @@ function researchFactory(lastTime, time, init, full) {
         });
 
         //now work out how much research that produces
-        const researchProduction = getResearchProductionFromStructures(assignedStructures, colony) * DAY_ANNUAL_FRACTION;
+        const researchProduction = getResearchProductionFromStructures(assignedStructures, colony);
 
         //update current research project
         const currentResearchProjectId = researchQueue.researchQueue.researchIds[0];
