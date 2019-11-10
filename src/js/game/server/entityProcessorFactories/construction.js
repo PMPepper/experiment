@@ -103,7 +103,10 @@ function constructionFactory(lastTime, time, init, full) {
 
       //reduce colony minerals
       forEach(usedMinerals, (quantity, mineral) => {
-        colony.colony.minerals[mineral] = Math.ceil(0, colony.colony.minerals[mineral] - quantity);
+        const currentMinerals = colony.colony.minerals[mineral];
+        const newMinerals = currentMinerals - quantity;
+
+        colony.colony.minerals[mineral] = Math.max(0, newMinerals);
       })
 
       //now update construction
