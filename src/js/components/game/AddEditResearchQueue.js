@@ -22,7 +22,7 @@ import modify from '@/helpers/object/modify';
 import add from '@/helpers/array/add';
 import formatNumber from '@/helpers/string/format-number';
 import getResearchProductionFromStructures from '@/helpers/app/getResearchProductionFromStructures';
-import getResearchETA from '@/helpers/app/getResearchETA';
+import getETA from '@/helpers/app-ui/get-eta';
 import sortAlphabeticalOnMappedProp from '@/helpers/sorting/sort-alphabetical-on-mapped-prop';
 
 //Other
@@ -215,7 +215,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
               }
 
               //ETA
-              const researchETA = getResearchETA(currentDate, research.cost, progress, researchRate)
+              const researchETA = getETA(currentDate, research.cost, progress, researchRate)
 
               obj[researchId] = {
                 ...research,

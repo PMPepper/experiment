@@ -9,6 +9,7 @@ import Button from '@/components/button/Button';
 import Buttons from '@/components/button/Buttons';
 import Table from '@/components/table/Table';
 import FormatNumber from '@/components/formatNumber/FormatNumber';
+import FormatDate from '@/components/formatDate/FormatDate';
 import Reorder from '@/components/reorder/Reorder';
 import Progress from '@/components/progress/Progress';
 import Form from '@/components/form/Form';
@@ -25,6 +26,7 @@ import isEmpty from '@/helpers/object/isEmpty';
 import sortAlphabeticalOnObjPath from '@/helpers/sorting/sort-alphabetical-on-obj-path';
 import getColonyStructuresCapabilities from '@/helpers/app/getColonyStructuresCapabilities';
 import getCapabilityProductionForColonyPopulationStructure from '@/helpers/app/getCapabilityProductionForColonyPopulationStructure';
+import getETA from '@/helpers/app-ui/get-eta';
 import sortStructuresByNameAndSpecies from '@/helpers/app-ui/sort-structures-by-name-and-species';
 
 
@@ -89,6 +91,8 @@ export default function WindowIndustry({colonyId}) {
     });
   }
 
+  let etaDate = new Date(clientState.gameTimeDate)
+
   return <div className="vspaceStart">
     <h2 className={styles.title}><Trans>Colony construction facilities</Trans></h2>
     <div className={styles.structures}>
@@ -152,7 +156,15 @@ export default function WindowIndustry({colonyId}) {
             {colony.colony.buildQueue.map((buildQueueItem, index) => {
               const currentConstructionProject = gameConfig.constructionProjects[buildQueueItem.constructionProjectId];
               const isFirstOfType = !colony.colony.buildQueue.slice(0, index).some(currentBuildQueueItem => (currentBuildQueueItem.constructionProjectId === buildQueueItem.constructionProjectId));
-              const progress = +buildQueueItem.completed + (isFirstOfType ? colony.colony.buildInProgress[buildQueueItem.constructionProjectId] / currentConstructionProject.bp : 0);
+              const progress = +buildQueueItem.completed + (isFirstOfType ? (colony.colony.buildInProgress[buildQueueItem.constructionProjectId] || 0) / currentConstructionProject.bp : 0);
+
+              //fromDate, cost, progress, rate
+              etaDate = getETA(
+                etaDate,
+                currentConstructionProject.bp * buildQueueItem.total,
+                currentConstructionProject.bp * progress,
+                colony.colony.capabilityProductionTotals.construction
+              );
 
               return <Table.Row key={buildQueueItem.id} highlighted={selectedBuildQueueItemId === buildQueueItem.id} className={styles.selectable} onClick={() => {setSelectedBuildQueueItemId(buildQueueItem.id)}}>
                 <Table.TD>{currentConstructionProject.name}</Table.TD>
@@ -160,7 +172,7 @@ export default function WindowIndustry({colonyId}) {
                 <Table.TD><FormatNumber value={+buildQueueItem.completed} /></Table.TD>
                 <Table.TD><FormatNumber value={+buildQueueItem.total} /></Table.TD>
                 <Table.TD><Progress value={progress} max={+buildQueueItem.total} thin /></Table.TD>
-                <Table.TD>TODO</Table.TD>
+                <Table.TD><FormatDate value={etaDate} format="date" /></Table.TD>
               </Table.Row>
             })}
           </Table.TBody>

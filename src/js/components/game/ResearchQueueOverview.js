@@ -17,7 +17,7 @@ import map from '@/helpers/object/map';
 import researchStructuresToArray from '@/helpers/app/researchStructuresToArray';
 import getResearchProductionFromStructures from '@/helpers/app/getResearchProductionFromStructures';
 import getCapabilityProductionForColonyPopulationStructure from '@/helpers/app/getCapabilityProductionForColonyPopulationStructure';
-import getResearchETA from '@/helpers/app/getResearchETA';
+import getETA from '@/helpers/app-ui/get-eta';
 
 
 //The component
@@ -39,7 +39,7 @@ const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({c
   const totalRPs = getResearchProductionFromStructures(assignedStructures, colony);
   const totalRPsFormatted = <FormatNumber value={totalRPs} />
 
-  const eta = currentResearchProject ? getResearchETA(gameTimeDate, currentResearchProject.cost, currentResearchProgress, totalRPs) : null
+  const eta = currentResearchProject ? getETA(gameTimeDate, currentResearchProject.cost, currentResearchProgress, totalRPs) : null
   const etaFormatted = <FormatDate value={eta} format="date" />;
 
   return <div ref={ref} className={styles.researchQueueOverview}>
