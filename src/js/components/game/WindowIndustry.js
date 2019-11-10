@@ -10,6 +10,7 @@ import Buttons from '@/components/button/Buttons';
 import Table from '@/components/table/Table';
 import FormatNumber from '@/components/formatNumber/FormatNumber';
 import Reorder from '@/components/reorder/Reorder';
+import Progress from '@/components/progress/Progress';
 import Form from '@/components/form/Form';
 
 //Hooks
@@ -119,13 +120,17 @@ export default function WindowIndustry({colonyId}) {
             </Table.Row>
           </Table.THead>
           <Table.TBody>
-            {colony.colony.buildQueue.map(buildQueueItem => {
+            {colony.colony.buildQueue.map((buildQueueItem, index) => {
+              const currentConstructionProject = gameConfig.constructionProjects[buildQueueItem.constructionProjectId];
+              const isFirstOfType = !colony.colony.buildQueue.slice(0, index).some(currentBuildQueueItem => (currentBuildQueueItem.constructionProjectId === buildQueueItem.constructionProjectId));
+              const progress = +buildQueueItem.completed + (isFirstOfType ? colony.colony.buildInProgress[buildQueueItem.constructionProjectId] / currentConstructionProject.bp : 0);
+
               return <Table.Row key={buildQueueItem.id}>
-                <Table.TD>{gameConfig.constructionProjects[buildQueueItem.constructionProjectId].name}</Table.TD>
+                <Table.TD>{currentConstructionProject.name}</Table.TD>
                 {hasMultiplePopulations && <Table.TD>{clientState.entities[clientState.entities[buildQueueItem.assignToPopulationId].speciesId].species.name}</Table.TD>}
                 <Table.TD><FormatNumber value={+buildQueueItem.completed} /></Table.TD>
                 <Table.TD><FormatNumber value={+buildQueueItem.total} /></Table.TD>
-                <Table.TD>TODO</Table.TD>
+                <Table.TD><Progress value={progress} max={+buildQueueItem.total} thin /></Table.TD>
                 <Table.TD>TODO</Table.TD>
               </Table.Row>
             })}

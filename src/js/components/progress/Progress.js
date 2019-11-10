@@ -17,10 +17,10 @@ import css from '@/helpers/css/class-list-to-string';
 import formatNumber from '@/helpers/string/format-number';
 
 //The component
-const Progress = React.forwardRef(function Progress({styles, value, max, showValues, formatValuesDecimalPlaces, full, ...rest}, ref) {
+const Progress = React.forwardRef(function Progress({styles, value, max, showValues, formatValuesDecimalPlaces, full, thin, ...rest}, ref) {
   const i18n = useI18n();
 
-  const extendedClasses = css(full && styles.full);
+  const extendedClasses = css(full && styles.full, thin && styles.thin);
 
   const formattedValue = formatNumber(value, formatValuesDecimalPlaces, i18n.language);//<FormatNumber value={formatValues ? formatValues(value) : value} />
   const formattedMax = formatNumber(max, formatValuesDecimalPlaces, i18n.language);//<FormatNumber value={formatValues ? formatValues(max) : max} />
