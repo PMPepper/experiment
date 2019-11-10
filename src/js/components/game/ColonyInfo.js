@@ -69,10 +69,10 @@ export default class ColonyInfo extends React.Component {
           {colony.colony.structuresWithCapability.mining && <p>{mapToSortedArray(colony.colony.structuresWithCapability.mining, (quantity, structureId) => {
             const structureDefinition = structureDefinitions[structureId];
 
-            return <span key="structureId">{structureDefinition.name}: {quantity}</span>
-          }, (a, b) => {
-            console.log(a, b);
-            debugger;//TODO
+            return <span key={structureId}>{structureDefinition.name}: {quantity}</span>
+          }, (a, b) => {//TODO sort method
+            //console.log(a, b);
+            //debugger;//TODO
             return 0;
           })}</p>}
           {isMineralsSurveyed ?

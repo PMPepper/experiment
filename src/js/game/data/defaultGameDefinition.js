@@ -199,8 +199,8 @@ export default {
       canBuild: true,
       bp: 24000,
       minerals: {
-        "4": 1200,
-        "9": 1200,
+        "4": 120,
+        "9": 120,
       },
     },
   },
@@ -238,8 +238,8 @@ export default {
       name: 'Upgrade conventional research facility to PE research facility',
       bp: 12000,
       minerals: {
-        "4": 1200,
-        "9": 1200,
+        "4": 120,
+        "9": 120,
       },
       requiredStructures: {
         "5": 1

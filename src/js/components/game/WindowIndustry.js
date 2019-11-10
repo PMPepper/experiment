@@ -97,7 +97,7 @@ export default function WindowIndustry({colonyId}) {
         <Table.TFoot>
           <Table.Row>
             <Table.TD colSpan={hasMultiplePopulations ? 4 : 3}>
-              <div className="alignEnd"><Trans>Colony total RP: {totalColonyConstructionFormatted}</Trans></div>
+              <div className="alignEnd"><Trans>Colony total BP: {totalColonyConstructionFormatted}</Trans></div>
             </Table.TD>
           </Table.Row>
         </Table.TFoot>

@@ -23,6 +23,7 @@ import add from '@/helpers/array/add';
 import formatNumber from '@/helpers/string/format-number';
 import getResearchProductionFromStructures from '@/helpers/app/getResearchProductionFromStructures';
 import getResearchETA from '@/helpers/app/getResearchETA';
+import sortAlphabeticalOnMappedProp from '@/helpers/sorting/sort-alphabetical-on-mapped-prop';
 
 //Other
 import {CloseModalContext} from '@/components/modal/Modal';
@@ -145,7 +146,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
             return <Form.Group key={population.id}>
               <Form.Legend>{name}</Form.Legend>
               {mapToSortedArray(
-                colony.colony.populationStructuresWithCapability[population.id].research,
+                filter(colony.colony.populationStructuresWithCapability[population.id].research, (qty, structureId) => (qty > 0)),
                 (quantity, structureId) => {
                   const structure = gameConfig.structures[structureId];
 
@@ -179,14 +180,12 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
                     </Form.Field>
                   </Form.Row>;
                 },
-                (a, b) => {
+                sortAlphabeticalOnMappedProp((structureId) => {
                   //TODO translations
-                  const aName = gameConfig.structures[a].name;
-                  const bName = gameConfig.structures[b].name;
-
-                  //TODO sort using locale-aware natsort
-                  return aName > bName ? -1 : 1
-                }
+                  return gameConfig.structures[structureId].name
+                }, i18n.language),
+                false,
+                true//sort on keys
               )}
             </Form.Group>
           })
