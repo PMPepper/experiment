@@ -6,11 +6,12 @@ const worldDefinition = {
   startDate: '2000-01-01T00:00:00Z',
   systems: systems,
   species: {
-    Humans: {name: 'Humans', growthRate: 1.05, miningRate: 1, researchRate: 1, constructionRate: 1}
+    Humans: {name: 'Humans', growthRate: 1.05, miningRate: 1, researchRate: 1, constructionRate: 1},
+    Martians: {name: 'Martians', growthRate: 1.04, miningRate: 0.9, researchRate: 1.1, constructionRate: 1},
   },
   factions: [{
     name: 'Humans',
-    startingResearch: [],
+    startingResearch: ['pe'],
     //key value pair, where key is 'id' for generation reference (shared between factions) and value is the system,
     //currently only known systems supported
     startingSystems: {
@@ -40,8 +41,17 @@ const worldDefinition = {
           species: 'Humans',
           population: 1000000000,
           structures: {
-            "1": 200,
+            "1": 150,
             "2": 100,
+            "5": 0
+          }
+        },
+        {
+          species: 'Martians',
+          population: 500000000,
+          structures: {
+            "1": 50,
+            "2": 0,
             "5": 10
           }
         }
@@ -49,27 +59,27 @@ const worldDefinition = {
       //TODO
       //money, minerals, fuel, etc
     },
-    // {
-    //   isStartingWorld: true,
-    //   isSurveyed: true,
-    //   system: 'Sol',//ID from systemsSystems object (the key)
-    //   body: 'Luna',//body ID (what if random?)
-    //   populations: [
-    //     {
-    //       species: 'Humans',
-    //       population: 10000000,
-    //       structures: {
-    //         "1": 20,
-    //         "2": 5,
-    //         "5": 0
-    //       },
-    //     }
-    //   ],
-    //
-    //
-    //   //TODO
-    //   //money, minerals, fuel, etc
-    // },
+    {
+      isStartingWorld: true,
+      isSurveyed: true,
+      system: 'Sol',//ID from systemsSystems object (the key)
+      body: 'Luna',//body ID (what if random?)
+      populations: [
+        {
+          species: 'Humans',
+          population: 10000000,
+          structures: {
+            "1": 20,
+            "2": 5,
+            "5": 0
+          },
+        }
+      ],
+
+
+      //TODO
+      //money, minerals, fuel, etc
+    },
     // {
     //   isStartingWorld: true,
     //   isSurveyed: true,

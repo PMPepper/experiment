@@ -384,7 +384,7 @@ export default {
     "pe": {
       name: 'Post-Einstein technology',
       description: "Unlock the potential of Post-Einsteinium (PE) physics to create technology vastly superior to anything previously thought possible.",
-      cost: 50000,
+      cost: 500,
       area: 2,
       requireResearchIds: [],
       unlockTechnologyIds: ['pe']

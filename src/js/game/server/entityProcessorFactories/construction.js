@@ -29,27 +29,35 @@ function constructionFactory(lastTime, time, init, full) {
 
       //find and remove completed build queue items at the start of the queue, or items missing their prerequisites
       while(colony.colony.buildQueue.length > 0) {
-        remainsToBuild = colony.colony.buildQueue[0].total - colony.colony.buildQueue[0].completed;
+        const buildQueueItem = colony.colony.buildQueue[0];
+        remainsToBuild = buildQueueItem.total - colony.colony.buildQueue[0].completed;
 
         if(remainsToBuild <= 0) {
           colony.colony.buildQueue.shift();//this build queue item is finished
           continue
         }
 
-        //TODO check that required source buildings (if any) are available
-        const constructionProject = gameConfig.constructionProjects[colony.colony.buildQueue[0].constructionProjectId]
+        //check that required source buildings (if any) are available
+
+        const constructionProject = gameConfig.constructionProjects[buildQueueItem.constructionProjectId]
 
         const hasAllRequiredStructures = every(constructionProject.requiredStructures, (quantity, requiredStructureId) => {
-          return ((colony.colony.structures[constructionProject.takeFromPopulationId] || {})[requiredStructureId] || 0) >= quantity
+          return ((colony.colony.structures[buildQueueItem.takeFromPopulationId] || {})[requiredStructureId] || 0) >= quantity
         });
 
         if(!hasAllRequiredStructures) {
+          debugger;
           colony.colony.buildQueue.shift();//this build queue item is finished
           continue
         }
 
         //If we get here, this build queue item is fine
         break;
+      }
+
+      //All build queue items were invalid
+      if(colony.colony.buildQueue.length === 0) {
+        return true;
       }
 
       const buildQueueItem = colony.colony.buildQueue[0];

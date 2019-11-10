@@ -31,6 +31,7 @@ import forEach from '@/helpers/object/forEach';
 import getCapabilityProductionForColonyPopulationStructure from '@/helpers/app/getCapabilityProductionForColonyPopulationStructure';
 import getColonyAssignedResearchStructures from '@/helpers/app/getColonyAssignedResearchStructures';
 import getColonyStructuresCapabilities from '@/helpers/app/getColonyStructuresCapabilities';
+import sortStructuresByNameAndSpecies from '@/helpers/app-ui/sort-structures-by-name-and-species';
 
 //reducers
 import {setResearchSelectedArea} from '@/redux/reducers/coloniesWindow';
@@ -81,22 +82,10 @@ export default function WindowResearch({colonyId}) {
   const client = useClient();
 
   const colonyResearchStructures = getColonyStructuresCapabilities(colony, 'research');
-
-  // reduce(colony.colony.populationStructuresWithCapability, (output, {research}, populationId) => {
-  //   research && forEach(research, (quantity, structureId) => {
-  //     output.push({
-  //       populationId,
-  //       structureId,
-  //       quantity
-  //     });
-  //   });
-  //
-  //   return output
-  // }, []);
-
   const totalColonyResearchFormatted = <FormatNumber value={colony.colony.capabilityProductionTotals.research} />;
-
   const assignedStructures = getColonyAssignedResearchStructures(colony);
+
+
 
   return <div className="vspaceStart">
     <h2 className={styles.title}><Trans>Colony research facilities</Trans></h2>
@@ -112,7 +101,8 @@ export default function WindowResearch({colonyId}) {
         </Table.THead>
         <Table.TBody>
           {colonyResearchStructures
-            .sort()//TODO sort on what?
+            .sort(sortStructuresByNameAndSpecies(i18n.language, clientState.entities, gameConfig))
+            .filter(({quantity}) => (quantity > 0))
             .map(({populationId, structureId, quantity}) => {
               const assigned = (assignedStructures[populationId] && assignedStructures[populationId][structureId]) || 0;
               const available = quantity - assigned;

@@ -83,6 +83,11 @@ export default function Game({client}) {
       createResearchQueue: client.createResearchQueue,
       updateResearchQueue: client.updateResearchQueue,
       removeResearchQueue: client.removeResearchQueue,
+
+      addBuildQueueItem: client.addBuildQueueItem,
+      removeBuildQueueItem: client.removeBuildQueueItem,
+      reorderBuildQueueItem: client.reorderBuildQueueItem,
+      updateBuildQueueItem: client.updateBuildQueueItem,
     }
   }, [client]);
 
@@ -175,7 +180,7 @@ export default function Game({client}) {
 
         return items;
       }}>
-        <SystemMap clientState={clientState} {...systemMap} systemId={selectedSystemId} setFollowing={setSystemMapFollowing} systemMapRef={(ref) => {console.log(ref)}} />
+        <SystemMap clientState={clientState} {...systemMap} systemId={selectedSystemId} setFollowing={setSystemMapFollowing} />
       </AddContextMenu>
       <div className={styles.toolbar}>
         <div className="hspaceStart">

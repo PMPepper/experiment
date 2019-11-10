@@ -401,8 +401,8 @@ export default class Server {
     }
 
     forEach(constructionProject.producedStructures, (quantity, structureId) => {
-      if(!colony.colony.structures[assignToPopulationId][constructionProjectId]) {
-        colony.colony.structures[assignToPopulationId][constructionProjectId] = 0;
+      if(!colony.colony.structures[assignToPopulationId][structureId]) {
+        colony.colony.structures[assignToPopulationId][structureId] = 0;
       }
     })
 
@@ -511,7 +511,7 @@ export default class Server {
 
   //-validation methods
   _clientOwnsEntity(clientId, entity) {
-    if(typeof(entity) === 'number') {
+    if(typeof(entity) !== 'object') {
       entity = this.entities[entity];
     }
 

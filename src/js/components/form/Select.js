@@ -12,7 +12,7 @@ import {StyleContext} from './contexts';
 
 
 //The component
-const Select = React.forwardRef(function Select({options, width, inline, setValue, placeholder, ...props}, ref) {
+const Select = React.forwardRef(function Select({options, width, inline, value, setValue, placeholder, ...props}, ref) {
   const className = useGetLayoutClasses('select', 0, inline ? width : 0);
   const styles = useContext(StyleContext);
 
@@ -23,7 +23,7 @@ const Select = React.forwardRef(function Select({options, width, inline, setValu
     ];
   }
 
-  return <select {...combineProps(props, {className: css(className, inline && styles.inline), onChange: (e) => {setValue(e.target.value, e)}})} ref={ref}>
+  return <select {...combineProps(props, {value: value || '', className: css(className, inline && styles.inline), onChange: (e) => {setValue(e.target.value, e)}})} ref={ref}>
     {options.map(option => (
       option.options ?
         <optgroup label={option.label} key={option.key || option.label}>
