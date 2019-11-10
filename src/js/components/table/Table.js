@@ -4,7 +4,7 @@ import defaultStyles from './table.scss';
 
 //Helpers
 import combineProps from '@/helpers/react/combine-props';
-//import css from '@/helpers/css/class-list-to-string';
+import css from '@/helpers/css/class-list-to-string';
 
 
 //The component
@@ -25,10 +25,10 @@ Table.defaultProps = {
 
 export default Table;
 
-Table.Row = React.forwardRef(function Row({children, ...rest}, ref) {
+Table.Row = React.forwardRef(function Row({children, highlighted, ...rest}, ref) {
   const styles = useContext(TableStyleContext);
 
-  return <tr {...combineProps({className: styles.tr}, rest)} ref={ref}>
+  return <tr {...combineProps({className: css(styles.tr, highlighted && styles.highlighted)}, rest)} ref={ref}>
     {children}
   </tr>
 });

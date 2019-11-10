@@ -1,4 +1,4 @@
-import React, {useMemo, useContext} from 'react';
+import React, {useMemo, useContext, useEffect} from 'react';
 import {Trans} from '@lingui/macro'
 
 import styles from './styles.scss';
@@ -90,6 +90,14 @@ export default function Game({client}) {
       updateBuildQueueItem: client.updateBuildQueueItem,
     }
   }, [client]);
+
+  useEffect(() => {
+    //DEV CODE
+    setSelectedColonyId(900);//and select this colony
+    setSystemMapFollowing(5);
+    open('coloniesWindow');//open up colonies window
+    //END DEV CODE
+  }, [])
 
   return <ClientContext.Provider value={clientAPI}>
     <div className={styles.game}>

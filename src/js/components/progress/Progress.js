@@ -21,6 +21,9 @@ const Progress = React.forwardRef(function Progress({styles, value, max, showVal
   const i18n = useI18n();
 
   const extendedClasses = css(full && styles.full, thin && styles.thin);
+  if(isNaN(value)) {
+    value = 0;
+  }
 
   const formattedValue = formatNumber(value, formatValuesDecimalPlaces, i18n.language);//<FormatNumber value={formatValues ? formatValues(value) : value} />
   const formattedMax = formatNumber(max, formatValuesDecimalPlaces, i18n.language);//<FormatNumber value={formatValues ? formatValues(max) : max} />

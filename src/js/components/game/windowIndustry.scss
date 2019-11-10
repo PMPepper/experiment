@@ -25,3 +25,7 @@
 
   padding: $basePadding/2;
 }
+
+.selectable {
+  @include blockInteraction();
+}

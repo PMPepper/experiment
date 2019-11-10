@@ -41,6 +41,7 @@ function doFakeDevStuff(client) {
   //construction
   //colonyId, constructionProjectId, total, assignToPopulationId, takeFromPopulationId = null
   client.addBuildQueueItem(900, '1', 10, 901);
+  client.addBuildQueueItem(900, '6', 2, 902);
 }
 
 //TODO add fake stuff to help development - e.g. a research queue:

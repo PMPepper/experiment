@@ -56,15 +56,37 @@ export default function WindowIndustry({colonyId}) {
   const [selectedAssignPopulationId, setSelectedAssignPopulationId] = useState(hasMultiplePopulations ? null : onlyPopulationId);
   const [selectedTakeFromPopulationId, setSelectedTakeFromPopulationId] = useState(null);
 
+  const [selectedBuildQueueItemId, setSelectedBuildQueueItemId] = useState(null);
+
   const selectedAddConstructionProject = selectedAddConstructionProjectId ? gameConfig.constructionProjects[selectedAddConstructionProjectId] : null;
   const selectedAddConstructionProjectRequiresStructures = selectedAddConstructionProject && !isEmpty(selectedAddConstructionProject.requiredStructures);
 
+  const selectedBuildQueueItem = (selectedBuildQueueItemId && colony.colony.buildQueue.find(buildQueueItem => buildQueueItem.id === selectedBuildQueueItemId)) || null;
+  const selectedBuildQueueItemIndex = selectedBuildQueueItem ? colony.colony.buildQueue.indexOf(selectedBuildQueueItem) : -1;
 
   //Handlers
   function onClickAddConstructionProject() {
     client.addBuildQueueItem(colonyId, selectedAddConstructionProjectId, selectedAddStructureQuantity, selectedAssignPopulationId, selectedTakeFromPopulationId).then(result => {
       //build queue item added
     })
+  }
+
+  function onClickRemoveBuildQueueItem() {
+    selectedBuildQueueItem && client.removeBuildQueueItem(colonyId, selectedBuildQueueItemId).then(result => {
+      //build queue item is removed
+    });
+  }
+
+  function onClickMoveBuildQueueItemUp() {
+    client.reorderBuildQueueItem(colonyId, selectedBuildQueueItemId, selectedBuildQueueItemIndex - 1).then(result => {
+      //build queue item is reordered
+    });
+  }
+
+  function onClickMoveBuildQueueItemDown() {
+    client.reorderBuildQueueItem(colonyId, selectedBuildQueueItemId, selectedBuildQueueItemIndex + 1).then(result => {
+      //build queue item is reordered
+    });
   }
 
   return <div className="vspaceStart">
@@ -107,7 +129,14 @@ export default function WindowIndustry({colonyId}) {
 
     <h2 className={styles.title}><Trans>Colony construction queue</Trans></h2>
     <div className={styles.queue}>
-      <Reorder moveUp={() => {}} moveDown={() => {}} remove={() => {}}>
+      <Reorder
+        moveUp={onClickMoveBuildQueueItemUp}
+        moveDown={onClickMoveBuildQueueItemDown}
+        remove={onClickRemoveBuildQueueItem}
+        disableMoveUp={!selectedBuildQueueItem || (selectedBuildQueueItemIndex === 0)}
+        disableMoveDown={!selectedBuildQueueItem || (selectedBuildQueueItemIndex === colony.colony.buildQueue.length - 1)}
+        disableRemove={!selectedBuildQueueItem}
+      >
         <Table>
           <Table.THead>
             <Table.Row>
@@ -125,7 +154,7 @@ export default function WindowIndustry({colonyId}) {
               const isFirstOfType = !colony.colony.buildQueue.slice(0, index).some(currentBuildQueueItem => (currentBuildQueueItem.constructionProjectId === buildQueueItem.constructionProjectId));
               const progress = +buildQueueItem.completed + (isFirstOfType ? colony.colony.buildInProgress[buildQueueItem.constructionProjectId] / currentConstructionProject.bp : 0);
 
-              return <Table.Row key={buildQueueItem.id}>
+              return <Table.Row key={buildQueueItem.id} highlighted={selectedBuildQueueItemId === buildQueueItem.id} className={styles.selectable} onClick={() => {setSelectedBuildQueueItemId(buildQueueItem.id)}}>
                 <Table.TD>{currentConstructionProject.name}</Table.TD>
                 {hasMultiplePopulations && <Table.TD>{clientState.entities[clientState.entities[buildQueueItem.assignToPopulationId].speciesId].species.name}</Table.TD>}
                 <Table.TD><FormatNumber value={+buildQueueItem.completed} /></Table.TD>
