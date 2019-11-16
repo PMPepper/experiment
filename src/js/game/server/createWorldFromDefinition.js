@@ -1,9 +1,11 @@
+//Helpers
 import orbitPeriod from '@/helpers/physics/orbit-period';
 import map from '@/helpers/object/map';
 import find from '@/helpers/object/find';
 import forEach from '@/helpers/object/forEach';
 
 import roundTo from '@/helpers/math/round-to';
+import random from '@/helpers/math/random';
 import defaultGameDefinition from '../data/defaultGameDefinition';
 
 export default function createWorldFromDefinition(server, definition) {
@@ -203,8 +205,12 @@ export default function createWorldFromDefinition(server, definition) {
     });
 
     //now add starting colonies
+    //-keep track of system bodies that have starting colonies
+    const systemBodiesWithStartingColonies = new Set();
+
     factionDefinition.startingColonies.forEach(startingColonyDefinition => {
       const systemBody = systemBodiesBySystemDefinitionIdBySystemBodyDefinitionName[startingColonyDefinition.system][startingColonyDefinition.body];
+      systemBodiesWithStartingColonies.add(systemBody);
 
       //Create the colony
       const colony = server.createColony(systemBody.id, faction.id, map(definition.minerals, () => (0)));//, structures, populationIds.filter(id => (id !== null))
@@ -240,7 +246,21 @@ export default function createWorldFromDefinition(server, definition) {
         }
       }
     });
+
+    //upgrade minerals of system bodies with starting colonies to startingWorldMinerals levels
+    systemBodiesWithStartingColonies.forEach(systemBody => {
+      systemBody.availableMinerals = generateStartingWorldMinerals(definition.startingWorldMinerals);
+    })
   })
+}
+
+function generateStartingWorldMinerals(startingWorldMineralsDefinition) {
+  return map(startingWorldMineralsDefinition, ({quantity, access}) => {
+    return {
+      quantity: random(quantity[0], quantity[1], 0),
+      access: random(access[0], access[1], 1)
+    }
+  });
 }
 
 function generateAvailableMinerals(bodyDefinition, definition) {
