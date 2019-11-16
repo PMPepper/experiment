@@ -268,23 +268,16 @@ function generateAvailableMinerals(bodyDefinition, definition) {
     return null;
   }
 
-  const isStartingWorld = false;//TODO detect starting worlds
+  return map(definition.minerals, (value, id) => {
+    //TODO do all this better..
+    const abundance = definition.systemBodyTypeMineralAbundance[bodyDefinition.type][id];
 
-  if(isStartingWorld) {
-    //TODO implement starting world minerals
-    return null;
-  } else {
-    return map(definition.minerals, (value, id) => {
-      //TODO do all this better..
-      const abundance = definition.systemBodyTypeMineralAbundance[bodyDefinition.type][id];
+    const quantity = Math.floor(Math.random() * abundance * Math.pow(bodyDefinition.mass, 1/5));
+    const access = Math.ceil(Math.random() * 10) / 10//TODO smaller bodies tend towards higher access
 
-      const quantity = Math.floor(Math.random() * abundance * Math.pow(bodyDefinition.mass, 1/5));
-      const access = Math.ceil(Math.random() * 10) / 10//TODO smaller bodies tend towards higher access
-
-      return quantity === 0 || access === 0 ?
-        {quantity: 0, access: 0}
-        :
-        {quantity, access};
-    });
-  }
+    return quantity === 0 || access === 0 ?
+      {quantity: 0, access: 0}
+      :
+      {quantity, access};
+  });
 }
