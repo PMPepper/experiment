@@ -44,7 +44,12 @@
   }
 }
 
-.systemBodyLabel {
+.shipyard {
+  fill: #FFF;
+}
+
+.systemBodyLabel,
+.shipyardLabel {
   fill: #FFF;
   font: normal 20px sans-serif;
   text-anchor: middle;
@@ -58,6 +63,10 @@
   }
 
   //filter: url(#textShadow);
+}
+
+.shipyardLabel {
+  font-size: 15px;
 }
 
 .orbit {

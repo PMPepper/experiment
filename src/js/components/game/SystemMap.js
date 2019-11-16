@@ -392,9 +392,9 @@ class SystemMap extends React.Component {
       props.setActiveKeys(flatten(Object.keys(props.options.controls)));
     }
 
-    //if following a new system body, set appropriate zoom level
+    //if following a new entity, set appropriate zoom level
     if(props.following && props.following !== prevProps.following) {
-      this.tzoom = Math.max(this.tzoom, getSystemBodyVisibleMaxZoom(props.clientState.entities[props.following]));
+      this.tzoom = Math.max(this.tzoom, getEntityVisibleMaxZoom(props.clientState.entities[props.following]));
     }
   }
 
@@ -429,16 +429,22 @@ export default compose(
 
 
 //TODO only works with circular orbits (all I have right now)
-export function getSystemBodyVisibleMaxZoom(systemBodyEntity) {
-  const parent = systemBodyEntity.movement && systemBodyEntity.movement.orbitingId;
-  const systemBodyRadius = systemBodyEntity.systemBody.radius;
+export function getEntityVisibleMaxZoom(entity) {
+  const parent = entity.movement && entity.movement.orbitingId;
+  let entityRadius = 0;
+
+  if(entity.type === 'systemBody') {
+    entityRadius = entity.systemBody.radius;
+  } else if(entity.type === 'shipyard') {
+    entityRadius = entity.shipyard.radius;
+  }
 
   //opacity = (systemBodyRadius - fullyFadeRadius) / (startFadeRadius - fullyFadeRadius);
-  const radiusMaxZoom = startFadeRadius / systemBodyRadius;
+  const radiusMaxZoom = startFadeRadius / entityRadius;
 
   //if you're orbiting something, check the max zoom before this starts to fade
   if(parent) {
-    const orbitRadius = systemBodyEntity.movement.radius;
+    const orbitRadius = entity.movement.radius;
 
     const orbitRadiusMaxZoom = (startFadeOrbitRadius / orbitRadius) * 1.2;
 

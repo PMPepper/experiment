@@ -15,6 +15,11 @@ const defaultSystemMapOptions = {
     highlightColonies: true,
     highlightMinerals: true,
     bodies: {
+      shipyard: {
+        body: RenderFlags.ALL,
+        label: RenderFlags.ALL,
+        orbit: RenderFlags.ALL
+      },
       asteroid: {
         body: RenderFlags.ALL,
         label: RenderFlags.ALL,

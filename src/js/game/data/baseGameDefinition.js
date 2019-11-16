@@ -56,6 +56,28 @@ const worldDefinition = {
           }
         }
       ],
+      shipyards: [
+        {
+          military: true,
+          slipways: 2,
+          capacity: 5000
+        },
+        {
+          military: true,
+          slipways: 1,
+          capacity: 10000
+        },
+        {
+          military: false,
+          slipways: 1,
+          capacity: 30000
+        },
+        {
+          military: false,
+          slipways: 2,
+          capacity: 15000
+        }
+      ]
       //TODO
       //money, minerals, fuel, etc
     },
@@ -160,7 +182,7 @@ const worldDefinition = {
 
   //TODO
   //To be implemented
-  
+
   //system generation properties
   numSystems: 10,
   wrecks: 0.1,

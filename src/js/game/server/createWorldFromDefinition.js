@@ -245,6 +245,13 @@ export default function createWorldFromDefinition(server, definition) {
           factionSystemBody.factionSystemBody.isSurveyed = true;
         }
       }
+
+      //now add shipyards
+      if(startingColonyDefinition.shipyards) {
+        startingColonyDefinition.shipyards.forEach(shipyardDefinition => {
+          server.createShipyard(faction.id, colony.id, !!shipyardDefinition.military, shipyardDefinition.capacity, shipyardDefinition.slipways, shipyardDefinition.orbitOffset || null)
+        })
+      }
     });
 
     //upgrade minerals of system bodies with starting colonies to startingWorldMinerals levels

@@ -18,6 +18,8 @@ export const systemBodyTypeMinRadius = {
   asteroid: 2,
 };
 
+export const shipyardMinRadius = 3;
+
 
 
 export const startFadeLargeOrbit = 12500;

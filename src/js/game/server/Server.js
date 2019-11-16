@@ -1,13 +1,15 @@
 //TODO check altered entities?
 //TODO update body minerals
 
-
+import orbitPeriod from '@/helpers/physics/orbit-period';
 import resolvePath from '@/helpers/object/resolve-path';
 import map from '@/helpers/object/map';
 import forEach from '@/helpers/object/forEach';
 import isEmpty from '@/helpers/object/isEmpty';
 import inPlaceReorder from '@/helpers/array/in-place-reorder';
 import getFactionSystemBodyFromFactionAndSystemBody from '@/helpers/app/getFactionSystemBodyFromFactionAndSystemBody';
+import getShipyardMass from '@/helpers/app/getShipyardMass';
+import getShipyardRadius from '@/helpers/app/getShipyardRadius';
 
 import createWorldFromDefinition from './createWorldFromDefinition';
 //import * as entityCacheTypes from './entityCacheTypes';
@@ -725,6 +727,56 @@ export default class Server {
     //this.entitiesLastUpdated[colonyId] = this.gameTime + 1;//mark as updated
   }
 
+  createShipyard(factionId, colonyId, isMilitary, capacity, slipways, orbitOffset = null) {
+    const colony = this.getEntityById(colonyId, 'colony');
+    const faction = this.getEntityById(factionId, 'faction');
+    const systemBody = this.getEntityById(colony.systemBodyId, 'systemBody');
+
+    //get initial orbit/position values
+    const orbitRadius = systemBody.systemBody.radius * 2;//TODO calculate this based on the systemBody, atmosphere, etc - aim for geostationary?
+    orbitOffset = orbitOffset === null ? Math.random() : orbitOffset;
+    const mass = getShipyardMass(isMilitary, capacity, slipways, this.gameConfig);//TODO just a temp calculation
+    const radius = getShipyardRadius(isMilitary, capacity, slipways, this.gameConfig);//TODO just a temp calculation
+    const orbitalPeriod = orbitPeriod(orbitRadius, mass, systemBody.mass);//orbitRadius, orbitingBodyMass, orbitedBodyMass,
+    const orbitFraction = ((this.gameTime + (orbitalPeriod * orbitOffset)) % orbitalPeriod)/orbitalPeriod;
+    const orbitAngle = orbitFraction * Math.PI * 2;
+    const positionX = systemBody.position.x + (orbitRadius * Math.cos(orbitAngle));
+    const positionY = systemBody.position.y + (orbitRadius * Math.sin(orbitAngle));
+
+    const shipyard = this._newEntity('shipyard', {
+      mass,
+
+      colonyId,
+      factionId,
+      systemId: colony.systemId,
+      systemBodyId: colony.systemBodyId,
+      factionSystemBodyId: getFactionSystemBodyFromFactionAndSystemBody(faction, colony.systemBodyId, this.entities).id,
+
+      render: {type: 'shipyard'},
+
+      movement: {
+        type: 'orbitRegular',
+        orbitingId: systemBody.id,
+        radius: orbitRadius,
+        period: orbitalPeriod,
+        offset: orbitOffset,
+      },
+      position: {
+        x: positionX,
+        y: positionY,
+      },
+
+      shipyard: {//TODO props for upgrade progress? or is that a construction project? What about ships under construction?
+        isMilitary,
+        capacity,
+        slipways,
+        radius
+      }
+    });
+
+    return shipyard;
+  }
+
 
   /////////////////////////////
   // Internal helper methods //
@@ -1017,4 +1069,4 @@ export default class Server {
 }
 
 
-const linkedEntityIdProps = ['factionId', 'speciesId', 'systemBodyId', 'systemId', 'speciesId', 'factionSystemId', 'factionSystemBodyId', 'colonyId', 'researchQueueId'];
+const linkedEntityIdProps = ['factionId', 'speciesId', 'systemBodyId', 'systemId', 'speciesId', 'factionSystemId', 'factionSystemBodyId', 'colonyId', 'researchQueueId', 'shipyardId'];

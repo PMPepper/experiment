@@ -9,6 +9,7 @@ import FormatNumber from '@/components/formatNumber/FormatNumber';
 import WindowIndustry from './WindowIndustry';
 import WindowResearch from './WindowResearch';
 import WindowMining from './WindowMining';
+import WindowShipbuilding from './WindowShipbuilding';
 
 //Helpers
 
@@ -48,6 +49,9 @@ export default class ColonyInfo extends React.Component {
         </Tab>
         <Tab key="research" tab-title={<Trans>Research</Trans>}>
           <WindowResearch colonyId={this.props.colonyId} />
+        </Tab>
+        <Tab key="shipbuilding" tab-title={<Trans>Shipbuilding</Trans>}>
+          <WindowShipbuilding colonyId={this.props.colonyId} />
         </Tab>
       </Tabs>
     </div>
