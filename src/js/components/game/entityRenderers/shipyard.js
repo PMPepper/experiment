@@ -96,7 +96,7 @@ export default function factionSystemBodyRenderer(renderPrimitives, entityScreen
   }
 
   if(displayLabel) {//TODO shipyard names
-    renderPrimitives.push(text(`${id}-label`, 'Shipyard', cx, cy + r + 4, opacity, 'shipyardLabel', null));
+    renderPrimitives.push(text(`${id}-label`, entity.shipyard.name, cx, cy + r + 4, opacity, 'shipyardLabel', null));
   }
 
   //record position

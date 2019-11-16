@@ -242,6 +242,12 @@ registerDatatableMetatype(
   (value, column, row, props) => (<Time value={value} langCode={props.langCode} format="datetime" />)
 );
 
+registerDatatableMetatype(
+  'bool',
+  (a, b) => (a - b),
+  (value, column, row, props) => (value ? <Trans>Yes</Trans> : <Trans>No</Trans>)
+);
+
 
 registerDatatableMetatype(
   'mapped',

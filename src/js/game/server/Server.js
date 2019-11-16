@@ -29,6 +29,8 @@ import shipBuildingFactory from './entityProcessorFactories/shipBuilding';
 
 import calculatePopulationWorkers from '@/game/server/entityProcessorFactories/colony/calculatePopulationWorkers';
 
+import NameGenerator from '@/game/NameGenerator';
+
 
 //Server phases
 const INITIALISING = 'initialising';
@@ -85,6 +87,8 @@ export default class Server {
 
   constructor(connector) {
     this.connector = connector;
+
+
   }
 
   //////////////////////
@@ -99,6 +103,9 @@ export default class Server {
 
     //c/onsole.log('[Server] createWorld: ', definition, clientId);
     this.totalElapsedTime = this.gameTime = Math.floor(new Date(definition.startDate).valueOf() / 1000);
+
+    //TODO different factions have different naming systems??
+    this.nameGenerator = new NameGenerator(null);
 
     //initialise the world based on supplied definition
     this.factions = {};
@@ -119,6 +126,8 @@ export default class Server {
       research: this.research,
       technology: this.technology,
     };
+
+
 
     //c/onsole.log('[Server] created world: ', this.entities);
 
@@ -727,7 +736,7 @@ export default class Server {
     //this.entitiesLastUpdated[colonyId] = this.gameTime + 1;//mark as updated
   }
 
-  createShipyard(factionId, colonyId, isMilitary, capacity, slipways, orbitOffset = null) {
+  createShipyard(factionId, colonyId, isMilitary, capacity, slipways, name = null, orbitOffset = null) {
     const colony = this.getEntityById(colonyId, 'colony');
     const faction = this.getEntityById(factionId, 'faction');
     const systemBody = this.getEntityById(colony.systemBodyId, 'systemBody');
@@ -770,9 +779,12 @@ export default class Server {
         isMilitary,
         capacity,
         slipways,
-        radius
+        radius,
+        name: ''
       }
     });
+
+    shipyard.shipyard.name = this.nameGenerator.getEntityName(shipyard)
 
     return shipyard;
   }

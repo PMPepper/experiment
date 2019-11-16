@@ -68,9 +68,6 @@ export default function WindowResearch({colonyId}) {
   const colony = clientState.entities[colonyId];
   const faction = clientState.entities[clientState.factionId];
 
-  const selectedResearchProjectId = Object.keys(coloniesWindow.availableResearchTable.selectedRows).pop() || null;
-  const selectedResearchProject = gameConfig.research[selectedResearchProjectId] && gameConfig.research[selectedResearchProjectId].area == coloniesWindow.researchSelectedArea ? gameConfig.research[selectedResearchProjectId] : null;
-
   const totalNumResearchFacilities = Object.values(colony.colony.structuresWithCapability.research).reduce((sum, add) => {return sum + add;}, 0);
 
   const client = useClient();
@@ -78,7 +75,6 @@ export default function WindowResearch({colonyId}) {
   const colonyResearchStructures = getColonyStructuresCapabilities(colony, 'research');
   const totalColonyResearchFormatted = <FormatNumber value={colony.colony.capabilityProductionTotals.research} />;
   const assignedStructures = getColonyAssignedResearchStructures(colony);
-
 
 
   return <div className="vspaceStart">

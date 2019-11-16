@@ -12,7 +12,7 @@ import lastInteracted from '@/redux/HORs/lastInteracted';
 import assignValueFactory, {assignValue} from '@/redux/HORs/assignValue';
 
 const {reducer: mineralsTableReducer, ...mineralsTableActions} = datatable(`${reduxId}.mineralsTable`);
-const {reducer: availableResearchTableReducer, ...availableResearchTableActions} = datatable(`${reduxId}.availableResearchTable`);
+const {reducer: shipyardsTableReducer, ...shipyardsTableActions} = datatable(`${reduxId}.shipyardsTable`);
 
 export default combineReducers({
   //...reducers,
@@ -26,9 +26,8 @@ export default combineReducers({
   //minerals
   mineralsTable: mineralsTableReducer,
 
-  //research
-  researchSelectedArea: assignValueFactory(`${reduxId}.research.selectedArea`, 0),
-  availableResearchTable: availableResearchTableReducer,
+  //Shipyards
+  shipyardsTable: shipyardsTableReducer,
 });
 
 
@@ -47,3 +46,4 @@ export function setResearchSelectedArea(selectedArea) {
 //TODO do I need this?
 //minerals table
 export {mineralsTableActions as mineralsTableActions};
+export {shipyardsTableActions as shipyardsTableActions};
