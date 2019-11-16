@@ -853,10 +853,14 @@ export default class Server {
     const entities = this.entities;
     const entityIds = this.entityIds;
     const numEntities = entityIds.length;
+    const allAlteredEntities = new Set();
 
     if(step === null) {
       //initial entity initialisation
-      this.entityProcessors.forEach(entityProcessor => entityProcessor.processEntitites(this.gameTime, this.gameTime, entities, this.gameConfig, true, true));
+      this.entityProcessors.forEach(entityProcessor => entityProcessor.processEntitites(allAlteredEntities, this.gameTime, this.gameTime, entities, this.gameConfig, true, true));
+
+      //mark all altered entities as altered
+      allAlteredEntities.forEach(this._alteredEntity);
 
       return;
     }
@@ -870,12 +874,12 @@ export default class Server {
       const gameTime = this.gameTime = Math.min(this.gameTime + step, advanceToTime);
 
       this.entityProcessors.forEach(entityProcessor => {
-        const alteredEntities = entityProcessor.processEntitites(lastGameTime, gameTime, entities, this.gameConfig, false, gameTime === advanceToTime);
-
-        //keep track of altered entities
-        alteredEntities.forEach(this._alteredEntity);
+        entityProcessor.processEntitites(allAlteredEntities, lastGameTime, gameTime, entities, this.gameConfig, false, gameTime === advanceToTime);
       });
     }
+
+    //mark all altered entities as altered
+    allAlteredEntities.forEach(this._alteredEntity);
 
     // Measure performance and store results
     performance.measure('advanceTime execution time step = '+step, 'advanceTime');

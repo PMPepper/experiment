@@ -290,6 +290,8 @@ function getConstructionOptions(faction, gameConfig, colony, i18n) {
   const buildProjects = availableConstructionProjectIds
     .filter(constructionProjectId =>
       isEmpty(gameConfig.constructionProjects[constructionProjectId].requiredStructures)
+      &&
+      isEmpty(gameConfig.constructionProjects[constructionProjectId].shipyard)
     )
     .map(constructionProjectId => ({
       label: gameConfig.constructionProjects[constructionProjectId].name,
@@ -300,6 +302,8 @@ function getConstructionOptions(faction, gameConfig, colony, i18n) {
   const upgradeProjects = availableConstructionProjectIds
     .filter(constructionProjectId =>
       !isEmpty(gameConfig.constructionProjects[constructionProjectId].requiredStructures)
+      &&
+      isEmpty(gameConfig.constructionProjects[constructionProjectId].shipyard)
     )
     .map(constructionProjectId => ({
       label: gameConfig.constructionProjects[constructionProjectId].name,
@@ -307,26 +311,37 @@ function getConstructionOptions(faction, gameConfig, colony, i18n) {
     }))
     .sort(sortFunc)
 
-  if(buildProjects.length > 0 && upgradeProjects.length > 0) {
-    return [
-      {
-        label: i18n._('Construction projects'),
-        key: 'build',
-        options: buildProjects
-      },
-      {
-        label: i18n._('Upgrade projects'),
-        key: 'upgrade',
-        options: upgradeProjects
-      }
-    ];
+  const shipyards = availableConstructionProjectIds
+    .filter(constructionProjectId => !isEmpty(gameConfig.constructionProjects[constructionProjectId].shipyard))
+    .map(constructionProjectId => ({
+      label: gameConfig.constructionProjects[constructionProjectId].name,
+      value: constructionProjectId
+    }))
+    .sort(sortFunc)
+
+  const options = [
+    {
+      label: i18n._('Construction projects'),
+      key: 'build',
+      options: buildProjects
+    },
+    {
+      label: i18n._('Upgrade projects'),
+      key: 'upgrade',
+      options: upgradeProjects
+    },
+    {
+      label: i18n._('Shipyards'),
+      key: 'shipyards',
+      options: shipyards
+    }
+  ].filter(optGroup => optGroup.options.length > 0);
+
+  if(options === 1) {
+    return options[0].options;
   }
 
-  if(buildProjects.length > 0) {
-    return buildProjects;
-  }
-
-  return upgradeProjects;
+  return options;
 }
 
 function getAvailableConstructionProjectIds(faction, gameConfig) {
@@ -337,8 +352,8 @@ function getAvailableConstructionProjectIds(faction, gameConfig) {
     const constructionProject = constructionProjects[constructionProjectId];
 
     //A construction project is available if you have the tech to build all of the structures used and produced as part of the project
-    return every(constructionProject.requiredStructures, (q, structureId) => availableStructureIds.has(structureId)) &&
-           every(constructionProject.producedStructures, (q, structureId) => availableStructureIds.has(structureId))
+    return every(constructionProject.requiredStructures || {}, (q, structureId) => availableStructureIds.has(structureId)) &&
+           every(constructionProject.producedStructures || {}, (q, structureId) => availableStructureIds.has(structureId))
 
   })
 }

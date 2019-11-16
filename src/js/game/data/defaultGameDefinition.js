@@ -205,6 +205,34 @@ export default {
     },
   },
   constructionProjects: {
+    "msy": {
+      name: 'Military shipyard',
+      bp: 20000,
+      minerals: {
+        "4": 200,
+        "5": 100,
+        "10": 100
+      },
+      shipyard: {
+        isMilitary: true,
+        capacity: 1000,
+        slipways: 1
+      }
+    },
+    "csy": {
+      name: 'Civilian shipyard',
+      bp: 20000,
+      minerals: {
+        "4": 200,
+        "5": 100,
+        "1": 100
+      },
+      shipyard: {
+        isMilitary: false,
+        capacity: 10000,
+        slipways: 1
+      }
+    },
     "1u3": {
       name: 'Upgrade conventional industry to PE industry',
       bp: 600,

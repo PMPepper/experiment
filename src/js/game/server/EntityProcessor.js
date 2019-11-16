@@ -42,22 +42,19 @@ export default class EntityProcessor {
     return this.entities.includes(entity);
   }
 
-  processEntitites(lastTime, time, entities, gameConfig, init = false, full = false) {
+  processEntitites(allAlteredEntities, lastTime, time, entities, gameConfig, init = false, full = false) {
     //factory will return a boolean
     const entityProcessorFunc = this.entityProcessFactory(lastTime, time, init, full);
-    const updated = [];
 
     if(entityProcessorFunc) {
       for(let i = 0, items = this.entities, l = items.length; i < l; i++) {
         const entity = items[i];
 
         if(entityProcessorFunc(entity, entities, gameConfig)) {
-          updated.push(entity);
+          allAlteredEntities.add(entity);
         }
       }
     }
-
-    return updated;//list of ids of updated entities
   }
 
   //do I need this?

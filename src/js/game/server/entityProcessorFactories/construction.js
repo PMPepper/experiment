@@ -121,6 +121,8 @@ function constructionFactory(lastTime, time, init, full) {
           colony.colony.structures[buildQueueItem.assignToPopulationId][producedStructureId] += remainsToBuild * quantity;
         });
 
+        //shipyards
+
         //clear progress
         buildInProgress[buildQueueItem.constructionProjectId] = 0;
 
@@ -143,6 +145,9 @@ function constructionFactory(lastTime, time, init, full) {
           forEach(constructionProject.producedStructures, (quantity, producedStructureId) => {
             colony.colony.structures[buildQueueItem.assignToPopulationId][producedStructureId] += numBuilt * quantity;
           });
+
+          //shipyards
+
 
           buildInProgress[buildQueueItem.constructionProjectId] %= constructionProject.bp;
           buildQueueItem.completed += numBuilt;
