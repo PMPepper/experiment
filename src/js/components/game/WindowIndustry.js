@@ -108,6 +108,7 @@ export default function WindowIndustry({colonyId}) {
         <Table.TBody>
           {colonyConstructionStructures
             .sort(sortStructuresByNameAndSpecies(i18n.language, clientState.entities, gameConfig))
+            .filter(({quantity}) => (quantity > 0))
             .map(({populationId, structureId, quantity}) => {
               const availableFormatted = <FormatNumber value={+quantity} />
               const rps = getCapabilityProductionForColonyPopulationStructure(colony, 'construction', populationId, structureId);

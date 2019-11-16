@@ -1,17 +1,11 @@
 import React, {useState, useCallback} from 'react';
-import memoize from 'memoize-one';
-import {compose} from 'recompose';
-import {connect} from 'react-redux';
 import {Trans} from '@lingui/macro';
 
 import styles from './windowResearch.scss';
 
 //Components
-import Layout, {Row, Cell} from '@/components/layout/Layout';
 import Button from '@/components/button/Button';
 import Buttons from '@/components/button/Buttons';
-import ReduxDataTableState from '@/components/datatable/ReduxDataTableState';
-import AvailableResearchProjects from '@/components/game/tables/AvailableResearchProjects';
 import Modal from '@/components/modal/Modal';
 import AddEditResearchQueue from '@/components/game/AddEditResearchQueue';
 import ResearchQueueOverview from '@/components/game/ResearchQueueOverview';
