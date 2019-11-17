@@ -13,15 +13,15 @@ function miningFactory(lastTime, time, init, full) {
 
   //only update once a day
   if(lastDay !== today || init) {
-    return function miningProcessor(colony, entities, gameConfig) {
+    return function miningProcessor(colony, entityManager, gameConfig) {
       const colonyMiningProduction = colony.colony.capabilityProductionTotals.mining;
 
       if(colonyMiningProduction <= 0) {
         return false;//no need to do anything for a colony that does not produce any minerals
       }
 
-      const totalSystemBodyMiningRate = calculateSystemBodyGlobalMiningRate(colony.systemBodyId, entities);
-      const systemBody = entities[colony.systemBodyId];
+      const totalSystemBodyMiningRate = calculateSystemBodyGlobalMiningRate(colony.systemBodyId, entityManager.entities);
+      const systemBody = entityManager.getEntityById(colony.systemBodyId, 'systemBody');
 
       forEach(gameConfig.minerals, (mineralName, mineralId) => {
         const systemBodyMinerals = systemBody.availableMinerals[mineralId];

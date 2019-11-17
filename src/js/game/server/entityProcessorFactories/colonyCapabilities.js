@@ -13,10 +13,10 @@ function colonyCapabilitiesFactory(lastTime, time, init, full) {
 
   //only update once a day
   if(lastDay !== today || init) {
-    return function colonyCapabilitiesProcessor(colony, entities, gameConfig) {
+    return function colonyCapabilitiesProcessor(colony, entityManager, gameConfig) {
       let i, l, totalPopulation = 0, totalEffectiveWorkers = 0, totalSupportWorkers = 0;
 
-      const faction = entities[colony.factionId];
+      const faction = entityManager.getEntityById(colony.factionId, 'faction');
       const technologyModifiers = calculateTechnologyModifiers(faction.faction.technology, gameConfig.technology);
       const structureDefinitions = gameConfig.structures;
 
@@ -25,14 +25,14 @@ function colonyCapabilitiesFactory(lastTime, time, init, full) {
 
       //for each population, calculate total number of workers and production output
       for(i = 0, l = colony.populationIds.length; i < l; ++i) {
-        let population = entities[colony.populationIds[i]];
+        let population = entityManager.getEntityById(colony.populationIds[i], 'population');
 
         //keep track of totals
         totalPopulation += population.population.quantity;
         totalEffectiveWorkers += population.population.effectiveWorkers;
         totalSupportWorkers += population.population.supportWorkers;
 
-        let populationProductionTotals = calculatePopulationProductionCapabilites(colony, population.id, technologyModifiers, structureDefinitions, entities, capabilityProductionTotals, structuresWithCapability);
+        let populationProductionTotals = calculatePopulationProductionCapabilites(colony, population.id, technologyModifiers, structureDefinitions, entityManager.entities, capabilityProductionTotals, structuresWithCapability);
 
         //record population production values
         colony.colony.populationCapabilityProductionTotals[population.id] = populationProductionTotals.capabilityProductionTotals;
@@ -41,7 +41,7 @@ function colonyCapabilitiesFactory(lastTime, time, init, full) {
       }
 
       //calculate production for structures that do not have a population (e.g. automated miners)
-      const automatedProductionTotals = calculatePopulationProductionCapabilites(colony, 0, technologyModifiers, structureDefinitions, entities, capabilityProductionTotals, structuresWithCapability);
+      const automatedProductionTotals = calculatePopulationProductionCapabilites(colony, 0, technologyModifiers, structureDefinitions, entityManager.entities, capabilityProductionTotals, structuresWithCapability);
 
       //record automated production values
       colony.colony.populationCapabilityProductionTotals[0] = automatedProductionTotals.capabilityProductionTotals;

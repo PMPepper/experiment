@@ -18,7 +18,7 @@ function constructionFactory(lastTime, time, init, full) {
 
   //only update once a day
   if(lastDay !== today || init) {
-    return function constructionProcessor(colony, entities, gameConfig) {
+    return function constructionProcessor(colony, entityManager, gameConfig) {
       const colonyConstructionProduction = colony.colony.capabilityProductionTotals.construction;
 
       if(colonyConstructionProduction <= 0 || colony.colony.buildQueue.length === 0) {
@@ -122,6 +122,9 @@ function constructionFactory(lastTime, time, init, full) {
         });
 
         //shipyards
+        if(constructionProject.shipyard) {
+          //TODO create shipyard entity
+        }
 
         //clear progress
         buildInProgress[buildQueueItem.constructionProjectId] = 0;
@@ -147,7 +150,9 @@ function constructionFactory(lastTime, time, init, full) {
           });
 
           //shipyards
-
+          if(constructionProject.shipyard) {
+            //TODO create shipyard entity
+          }
 
           buildInProgress[buildQueueItem.constructionProjectId] %= constructionProject.bp;
           buildQueueItem.completed += numBuilt;

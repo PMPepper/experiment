@@ -10,12 +10,12 @@ function updateResearchQueueFactory(lastTime, time, init, full) {
 
   //only update once a day
   if(lastDay !== today || init) {
-    return function updateResearchQueueProcessor(researchQueue, entities, gameConfig) {
+    return function updateResearchQueueProcessor(researchQueue, entityManager, gameConfig) {
       if(researchQueue.researchQueue.researchIds.length === 0) {
         return false;
       }
 
-      const faction = entities[researchQueue.factionId];
+      const faction = entityManager.getEntityById(researchQueue.factionId, 'faction');
 
       //filter out completed research projects
       const newResearchIds = researchQueue.researchQueue.researchIds.filter((researchId) => {

@@ -11,12 +11,12 @@ function orbitFactory(lastTime, time, init, full) {
 
 
 
-  function orbitProcessor(entity, entities) {
+  function orbitProcessor(entity, entityManager) {
     if(!init && !full) {
       return null;//TODO check if body needs to update (e.g. is system empty? then don't need to update)
     }
 
-    const parent = entities[entity.movement.orbitingId];
+    const parent = entityManager.getEntityById(entity.movement.orbitingId, 'systemBody');
     const orbit = entity.movement;
 
     const orbitRadius = orbit.radius;
@@ -30,7 +30,7 @@ function orbitFactory(lastTime, time, init, full) {
 
     if(parent) {
       if(parent.movement) {
-        movement(parent, entities);
+        movement(parent, entityManager.entities);
       }
 
       newPositionX += parent.position.x;

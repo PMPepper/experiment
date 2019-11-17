@@ -42,7 +42,7 @@ export default class EntityProcessor {
     return this.entities.includes(entity);
   }
 
-  processEntitites(allAlteredEntities, lastTime, time, entities, gameConfig, init = false, full = false) {
+  processEntitites(allAlteredEntities, lastTime, time, entityManager, gameConfig, init = false, full = false) {
     //factory will return a boolean
     const entityProcessorFunc = this.entityProcessFactory(lastTime, time, init, full);
 
@@ -50,7 +50,7 @@ export default class EntityProcessor {
       for(let i = 0, items = this.entities, l = items.length; i < l; i++) {
         const entity = items[i];
 
-        if(entityProcessorFunc(entity, entities, gameConfig)) {
+        if(entityProcessorFunc(entity, entityManager, gameConfig)) {
           allAlteredEntities.add(entity);
         }
       }

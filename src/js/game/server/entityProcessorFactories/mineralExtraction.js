@@ -13,8 +13,8 @@ function mineralExtractionFactory(lastTime, time, init, full) {
 
   //only update once a day
   if(lastDay !== today || init) {
-    return function mineralExtractionProcessor(systemBody, entities, gameConfig) {
-      const totalSystemBodyMiningRate = calculateSystemBodyGlobalMiningRate(systemBody, entities);
+    return function mineralExtractionProcessor(systemBody, entityManager, gameConfig) {
+      const totalSystemBodyMiningRate = calculateSystemBodyGlobalMiningRate(systemBody, entityManager.entities);
 
       if(totalSystemBodyMiningRate <= 0) {
         return false;//nothing doing any mining here!

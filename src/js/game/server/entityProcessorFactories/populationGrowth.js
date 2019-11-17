@@ -11,13 +11,13 @@ function populationGrowthFactory(lastTime, time, init, full) {
 
   //only update once a day
   if(lastDay !== today || init) {
-    return function populationGrowthProcessor(colony, entities, gameConfig) {
+    return function populationGrowthProcessor(colony, entityManager, gameConfig) {
 
       //for each population, calculate population growth, total number of workers and production output
       for(let i = 0, l = colony.populationIds.length; i < l; ++i) {
-        let population = entities[colony.populationIds[i]];
+        let population = entityManager.getEntityById(colony.populationIds[i], 'population');
 
-        calculatePopulationGrowth(init, population, colony, entities);
+        calculatePopulationGrowth(init, population, colony, entityManager.entities);
       }
 
       return true;

@@ -13,9 +13,9 @@ function factionCompletedResearchFactory(lastTime, time, init, full) {
 
   //only update once a day
   if(lastDay !== today || init) {
-    return function factionCompletedResearchProcessor(faction, entities, gameConfig) {
+    return function factionCompletedResearchProcessor(faction, entityManager, gameConfig) {
       faction.colonyIds.forEach(colonyId => {
-        const colony = entities[colonyId];
+        const colony = entityManager.getEntityById(colonyId, 'colony');
 
         forEach(colony.colony.researchInProgress, (researchProgress, researchId) => {
           const research = gameConfig.research[researchId];

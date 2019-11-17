@@ -15,8 +15,8 @@ function researchFactory(lastTime, time, init, full) {
 
   //only update once a day
   if(lastDay !== today || init) {
-    return function researchProcessor(colony, entities, gameConfig) {
-      const faction = entities[colony.factionId];
+    return function researchProcessor(colony, entityManager, gameConfig) {
+      const faction = entityManager.getEntityById(colony.factionId, 'faction');
 
       const colonyResearchProduction = colony.colony.capabilityProductionTotals.research;
 
@@ -39,7 +39,7 @@ function researchFactory(lastTime, time, init, full) {
       colony.colony.assignedResearchStructures = {};
 
       colony.researchQueueIds.forEach(researchQueueId => {
-        const researchQueue = entities[researchQueueId];
+        const researchQueue = entityManager.getEntityById(researchQueueId, 'researchQueue');
 
         if(researchQueue.researchQueue.researchIds.length === 0) {
           return;//empty queue
