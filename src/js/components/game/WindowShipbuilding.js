@@ -45,10 +45,11 @@ export default function WindowShipbuilding({colonyId}) {
 
   return <div className="vspaceStart">
     <h2 className={styles.title}><Trans>Shipyards</Trans></h2>
-    <div>
     <ReduxDataTableState path="coloniesWindow.shipyardsTable">
       <ColonyShipyards rows={shipyardRows} />
     </ReduxDataTableState>
-    </div>
+
+    <h2 className={styles.title}><Trans>Add shipyard project</Trans></h2>
+    <div>TODO</div>
   </div>
 }

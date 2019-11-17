@@ -52,12 +52,13 @@ const actions = {
 //The component
 export default function Game({client}) {
   const {
-    coloniesWindow, fleetsWindow, shipDesignWindow, clientState, systemMap,
+    coloniesWindow, fleetsWindow, shipDesignWindow, technologyDesignWindow, clientState, systemMap,
     selectedSystemId
   } = useShallowEqualSelector(state => ({
     coloniesWindow: state.coloniesWindow,
     fleetsWindow: state.fleetsWindow,
     shipDesignWindow: state.shipDesignWindow,
+    technologyDesignWindow: state.technologyDesignWindow,
     clientState: state.game,
 
     systemMap: state.systemMap,
@@ -195,6 +196,7 @@ export default function Game({client}) {
           <Button onClick={() => {open('coloniesWindow')}}><Trans id="toolbar.colonies">Colonies</Trans></Button>
           <Button onClick={() => {open('fleetsWindow')}}><Trans id="toolbar.fleets">Fleets</Trans></Button>
           <Button onClick={() => {open('shipDesignWindow')}}><Trans id="toolbar.shipDesign">Ship design</Trans></Button>
+          <Button onClick={() => {open('technologyDesignWindow')}}><Trans id="toolbar.technologyDesign">Design technology</Trans></Button>
         </div>
       </div>
 
@@ -259,6 +261,7 @@ export default function Game({client}) {
         </Window>
         <Window lastInteracted={fleetsWindow.lastInteracted} reduxPath="fleetsWindow" title={<Trans id="fleetsWindow.title">Fleets</Trans>}>TODO fleets window!</Window>
         <Window lastInteracted={shipDesignWindow.lastInteracted} reduxPath="shipDesignWindow" title={<Trans id="shipDesignWindow.title">Ship design</Trans>}>TODO ship design window!</Window>
+        <Window lastInteracted={technologyDesignWindow.lastInteracted} reduxPath="technologyDesignWindow" title={<Trans id="technologyDesignWindow.title">/Design technology</Trans>}>TODO technology design window!</Window>
       </SortChildren>
       <FPSStats isActive={true} />
       {/*<Test />*/}

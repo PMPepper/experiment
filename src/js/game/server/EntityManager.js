@@ -66,7 +66,12 @@ export default class EntityManager {
   }
 
   createFaction(faction) {
-    return this._newEntity('faction', {faction});
+    return this._newEntity('faction', {
+      faction: {
+        shipDesigns: {},
+        ...faction
+      }
+    });
   }
 
   createFactionSystem(factionId, systemId, factionSystem) {
