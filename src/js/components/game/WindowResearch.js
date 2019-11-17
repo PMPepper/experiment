@@ -26,6 +26,7 @@ import getCapabilityProductionForColonyPopulationStructure from '@/helpers/app/g
 import getColonyAssignedResearchStructures from '@/helpers/app/getColonyAssignedResearchStructures';
 import getColonyStructuresCapabilities from '@/helpers/app/getColonyStructuresCapabilities';
 import sortStructuresByNameAndSpecies from '@/helpers/app-ui/sort-structures-by-name-and-species';
+import getPopulationName from '@/helpers/app-ui/get-population-name';
 
 //reducers
 import {setResearchSelectedArea} from '@/redux/reducers/coloniesWindow';
@@ -102,7 +103,7 @@ export default function WindowResearch({colonyId}) {
 
               return <Table.Row key={`${populationId}-${structureId}`}>
                 <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
-                <Table.TD>{clientState.entities[clientState.entities[populationId].speciesId].species.name}</Table.TD>
+                <Table.TD>{getPopulationName(populationId, clientState.entities)}</Table.TD>
                 <Table.TD><Trans>{availableFormatted} / {totalFormatted}</Trans></Table.TD>
                 <Table.TD><FormatNumber value={rps} /></Table.TD>
               </Table.Row>

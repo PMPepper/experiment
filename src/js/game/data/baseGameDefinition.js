@@ -58,21 +58,25 @@ const worldDefinition = {
       ],
       shipyards: [
         {
+          species: 'Humans',
           military: true,
           slipways: 2,
           capacity: 5000
         },
         {
+          species: 'Humans',
           military: true,
           slipways: 1,
           capacity: 10000
         },
         {
+          species: 'Humans',
           military: false,
           slipways: 1,
           capacity: 30000
         },
         {
+          species: 'Martians',
           military: false,
           slipways: 2,
           capacity: 15000

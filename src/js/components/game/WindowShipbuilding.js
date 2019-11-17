@@ -7,6 +7,9 @@ import styles from './windowShipbuilding.scss';
 import ReduxDataTableState from '@/components/datatable/ReduxDataTableState';
 import ColonyShipyards from './tables/ColonyShipyards';
 
+//Helpers
+import getPopulationName from '@/helpers/app-ui/get-population-name';
+
 //Hooks
 import useI18n from '@/hooks/useI18n';
 import useShallowEqualSelector from '@/hooks/useShallowEqualSelector';
@@ -35,6 +38,7 @@ export default function WindowShipbuilding({colonyId}) {
       isMilitary: shipyard.shipyard.isMilitary,
       capacity: shipyard.shipyard.capacity,
       slipways: shipyard.shipyard.slipways,
+      speciesName: getPopulationName(shipyard.populationId, clientState.entities)
     };
   });//TODO
 

@@ -47,6 +47,17 @@ export default function createWorldFromDefinition(server, definition) {
   const systemBodiesBySystemDefinitionIdBySystemBodyDefinitionName = {};//[systemDefinitionId][systemBodyDefinitionName] = systemBody entity
   const factionsByDefinitionName = {};
 
+  function getPopulationIdFromSpeciesNameAndColonyId(speciesName, colonyId) {
+    const species = speciesByDefinitionId[speciesName];
+    const colony = server.entityManager.getEntityById(colonyId, 'colony');
+
+    return colony.populationIds.find(populationId => {
+      const population = server.entityManager.getEntityById(populationId, 'population');
+
+      return population.speciesId === species.id;
+    })
+  }
+
   //create the systems
   Object.keys(definition.systems).forEach(systemDefinitionId => {
     const systemDefinition = definition.systems[systemDefinitionId];
@@ -245,7 +256,13 @@ export default function createWorldFromDefinition(server, definition) {
       //now add shipyards
       if(startingColonyDefinition.shipyards) {
         startingColonyDefinition.shipyards.forEach(shipyardDefinition => {
-          server.entityManager.createShipyard(colony.id, !!shipyardDefinition.military, shipyardDefinition.capacity, shipyardDefinition.slipways, shipyardDefinition.orbitOffset || null)
+          server.entityManager.createShipyard(
+            getPopulationIdFromSpeciesNameAndColonyId(shipyardDefinition.species, colony.id),
+            !!shipyardDefinition.military,
+            shipyardDefinition.capacity,
+            shipyardDefinition.slipways,
+            shipyardDefinition.orbitOffset || null
+          );
         })
       }
     });

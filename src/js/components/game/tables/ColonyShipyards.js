@@ -22,6 +22,11 @@ export default dataTableFactory([
     }
   },
   {
+    name: 'speciesName',
+    label: <Trans>Species</Trans>,
+    sort: true,
+  },
+  {
     name: 'capacity',
     label: <Trans>Capacity</Trans>,
     valueType: 'number',

@@ -127,7 +127,7 @@ function constructionFactory(lastTime, time, init, full) {
 
           //create shipyard entity(ies)
           for(let i = 0; i < remainsToBuild; i++) {
-            entityManager.createShipyard(colony.id, isMilitary, capacity, slipways);
+            entityManager.createShipyard(buildQueueItem.assignToPopulationId, isMilitary, capacity, slipways);
           }
         }
 
@@ -160,7 +160,7 @@ function constructionFactory(lastTime, time, init, full) {
 
             //create shipyard entity(ies)
             for(let i = 0; i < numBuilt; i++) {
-              entityManager.createShipyard(colony.id, isMilitary, capacity, slipways);
+              entityManager.createShipyard(buildQueueItem.assignToPopulationId, isMilitary, capacity, slipways);
             }
           }
 

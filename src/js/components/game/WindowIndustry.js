@@ -28,6 +28,7 @@ import getColonyStructuresCapabilities from '@/helpers/app/getColonyStructuresCa
 import getCapabilityProductionForColonyPopulationStructure from '@/helpers/app/getCapabilityProductionForColonyPopulationStructure';
 import getETA from '@/helpers/app-ui/get-eta';
 import sortStructuresByNameAndSpecies from '@/helpers/app-ui/sort-structures-by-name-and-species';
+import getPopulationName from '@/helpers/app-ui/get-population-name';
 
 
 //The component
@@ -115,7 +116,7 @@ export default function WindowIndustry({colonyId}) {
 
               return <Table.Row key={`${populationId}-${structureId}`}>
                 <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
-                {hasMultiplePopulations && <Table.TD>{clientState.entities[clientState.entities[populationId].speciesId].species.name}</Table.TD>}
+                {hasMultiplePopulations && <Table.TD>{getPopulationName(populationId, clientState.entities)}</Table.TD>}
                 <Table.TD><Trans>{availableFormatted}</Trans></Table.TD>
                 <Table.TD><FormatNumber value={+rps} /></Table.TD>
               </Table.Row>

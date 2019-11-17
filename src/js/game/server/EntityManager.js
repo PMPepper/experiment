@@ -232,8 +232,9 @@ export default class EntityManager {
     this.alteredEntity(colonyId);
   }
 
-  createShipyard(colonyId, isMilitary, capacity, slipways, name = null, orbitOffset = null) {
-    const colony = this.getEntityById(colonyId, 'colony');
+  createShipyard(populationId, isMilitary, capacity, slipways, name = null, orbitOffset = null) {
+    const population = this.getEntityById(populationId, 'population');
+    const colony = this.getEntityById(population.colonyId, 'colony');
     const faction = this.getEntityById(colony.factionId, 'faction');
     const systemBody = this.getEntityById(colony.systemBodyId, 'systemBody');
 
@@ -250,8 +251,8 @@ export default class EntityManager {
 
     const shipyard = this._newEntity('shipyard', {
       mass,
-
-      colonyId,
+      populationId,
+      colonyId: colony.id,
       factionId: faction.id,
       systemId: colony.systemId,
       systemBodyId: colony.systemBodyId,
