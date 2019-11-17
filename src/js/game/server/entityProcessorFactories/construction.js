@@ -41,7 +41,7 @@ function constructionFactory(lastTime, time, init, full) {
 
         const constructionProject = gameConfig.constructionProjects[buildQueueItem.constructionProjectId]
 
-        const hasAllRequiredStructures = every(constructionProject.requiredStructures, (quantity, requiredStructureId) => {
+        const hasAllRequiredStructures = every(constructionProject.requiredStructures || {}, (quantity, requiredStructureId) => {
           return ((colony.colony.structures[buildQueueItem.takeFromPopulationId] || {})[requiredStructureId] || 0) >= quantity
         });
 
@@ -112,18 +112,23 @@ function constructionFactory(lastTime, time, init, full) {
       //now update construction
       if(effectiveBPs === remainingBPs) {//have finished this build queue
         //consume any required structures
-        forEach(constructionProject.requiredStructures, (quantity, requiredStructureId) => {
+        forEach(constructionProject.requiredStructures || {}, (quantity, requiredStructureId) => {
           colony.colony.structures[buildQueueItem.takeFromPopulationId][requiredStructureId] -= remainsToBuild * quantity;
         });
 
         //increment built structures
-        forEach(constructionProject.producedStructures, (quantity, producedStructureId) => {
+        forEach(constructionProject.producedStructures || {}, (quantity, producedStructureId) => {
           colony.colony.structures[buildQueueItem.assignToPopulationId][producedStructureId] += remainsToBuild * quantity;
         });
 
         //shipyards
         if(constructionProject.shipyard) {
-          //TODO create shipyard entity
+          const {isMilitary, capacity, slipways} = constructionProject.shipyard
+
+          //create shipyard entity(ies)
+          for(let i = 0; i < remainsToBuild; i++) {
+            entityManager.createShipyard(colony.id, isMilitary, capacity, slipways);
+          }
         }
 
         //clear progress
@@ -140,18 +145,23 @@ function constructionFactory(lastTime, time, init, full) {
         if(numBuilt > 0) {
           //-some are finished, update colony + build queue to reflect progress
           //-consume required structures
-          forEach(constructionProject.requiredStructures, (quantity, requiredStructureId) => {
+          forEach(constructionProject.requiredStructures || {}, (quantity, requiredStructureId) => {
             colony.colony.structures[buildQueueItem.takeFromPopulationId][requiredStructureId] -= numBuilt * quantity;
           });
 
           //-increment built structures
-          forEach(constructionProject.producedStructures, (quantity, producedStructureId) => {
+          forEach(constructionProject.producedStructures || {}, (quantity, producedStructureId) => {
             colony.colony.structures[buildQueueItem.assignToPopulationId][producedStructureId] += numBuilt * quantity;
           });
 
           //shipyards
           if(constructionProject.shipyard) {
-            //TODO create shipyard entity
+            const {isMilitary, capacity, slipways} = constructionProject.shipyard
+
+            //create shipyard entity(ies)
+            for(let i = 0; i < numBuilt; i++) {
+              entityManager.createShipyard(colony.id, isMilitary, capacity, slipways);
+            }
           }
 
           buildInProgress[buildQueueItem.constructionProjectId] %= constructionProject.bp;

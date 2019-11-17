@@ -394,7 +394,7 @@ export default class Server {
       colony.colony.structures[assignToPopulationId] = {};
     }
 
-    forEach(constructionProject.producedStructures, (quantity, structureId) => {
+    forEach(constructionProject.producedStructures || {}, (quantity, structureId) => {
       if(!colony.colony.structures[assignToPopulationId][structureId]) {
         colony.colony.structures[assignToPopulationId][structureId] = 0;
       }

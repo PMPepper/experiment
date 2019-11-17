@@ -245,7 +245,7 @@ export default function createWorldFromDefinition(server, definition) {
       //now add shipyards
       if(startingColonyDefinition.shipyards) {
         startingColonyDefinition.shipyards.forEach(shipyardDefinition => {
-          server.entityManager.createShipyard(faction.id, colony.id, !!shipyardDefinition.military, shipyardDefinition.capacity, shipyardDefinition.slipways, shipyardDefinition.orbitOffset || null)
+          server.entityManager.createShipyard(colony.id, !!shipyardDefinition.military, shipyardDefinition.capacity, shipyardDefinition.slipways, shipyardDefinition.orbitOffset || null)
         })
       }
     });

@@ -232,9 +232,9 @@ export default class EntityManager {
     this.alteredEntity(colonyId);
   }
 
-  createShipyard(factionId, colonyId, isMilitary, capacity, slipways, name = null, orbitOffset = null) {
+  createShipyard(colonyId, isMilitary, capacity, slipways, name = null, orbitOffset = null) {
     const colony = this.getEntityById(colonyId, 'colony');
-    const faction = this.getEntityById(factionId, 'faction');
+    const faction = this.getEntityById(colony.factionId, 'faction');
     const systemBody = this.getEntityById(colony.systemBodyId, 'systemBody');
 
     //get initial orbit/position values
@@ -252,7 +252,7 @@ export default class EntityManager {
       mass,
 
       colonyId,
-      factionId,
+      factionId: faction.id,
       systemId: colony.systemId,
       systemBodyId: colony.systemBodyId,
       factionSystemBodyId: getFactionSystemBodyFromFactionAndSystemBody(faction, colony.systemBodyId, this.entities).id,
