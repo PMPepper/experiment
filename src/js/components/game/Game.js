@@ -5,6 +5,7 @@ import styles from './styles.scss';
 import SystemMap from './SystemMap';
 
 import WindowColonies from './WindowColonies';
+import TechnologyDesignWindow from './TechnologyDesignWindow';
 
 import Panel from '@/components/panel/Panel';
 import Button from '@/components/button/Button';
@@ -261,7 +262,9 @@ export default function Game({client}) {
         </Window>
         <Window lastInteracted={fleetsWindow.lastInteracted} reduxPath="fleetsWindow" title={<Trans id="fleetsWindow.title">Fleets</Trans>}>TODO fleets window!</Window>
         <Window lastInteracted={shipDesignWindow.lastInteracted} reduxPath="shipDesignWindow" title={<Trans id="shipDesignWindow.title">Ship design</Trans>}>TODO ship design window!</Window>
-        <Window lastInteracted={technologyDesignWindow.lastInteracted} reduxPath="technologyDesignWindow" title={<Trans id="technologyDesignWindow.title">/Design technology</Trans>}>TODO technology design window!</Window>
+        <Window lastInteracted={technologyDesignWindow.lastInteracted} reduxPath="technologyDesignWindow" title={<Trans id="technologyDesignWindow.title">/Design technology</Trans>}>
+          <TechnologyDesignWindow />
+        </Window>
       </SortChildren>
       <FPSStats isActive={true} />
       {/*<Test />*/}

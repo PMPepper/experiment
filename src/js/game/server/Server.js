@@ -53,6 +53,7 @@ export default class Server {
   research;
   researchAreas;
   technology;
+  componentTypes;
   systemBodyTypeMineralAbundance;
 
   gameConfig;
@@ -112,6 +113,7 @@ export default class Server {
       researchAreas: this.researchAreas,
       research: this.research,
       technology: this.technology,
+      componentTypes: this.componentTypes,
     };
 
     //c/onsole.log('[Server] created world: ', this.entityManager.entities);
@@ -157,6 +159,7 @@ export default class Server {
       research: this.research,
       researchAreas: this.researchAreas,
       technology: this.technology,
+      componentTypes: this.componentTypes,
     })
   }
 

@@ -8,17 +8,23 @@ import roundTo from '@/helpers/math/round-to';
 import random from '@/helpers/math/random';
 import defaultGameDefinition from '../data/defaultGameDefinition';
 
+function clone(obj) {
+  //TODO a better clone method?
+  return JSON.parse(JSON.stringify(obj))
+}
+
 export default function createWorldFromDefinition(server, definition) {
   //merge in the default game definition
   definition = {...defaultGameDefinition, ...definition};
 
   //Basic props
   server.minerals = {...definition.minerals};
-  server.structures = JSON.parse(JSON.stringify(definition.structures));
+  server.structures = clone(definition.structures);
   server.researchAreas = {...definition.researchAreas};
-  server.research = JSON.parse(JSON.stringify(definition.research));
-  server.technology = JSON.parse(JSON.stringify(definition.technology));
-  server.systemBodyTypeMineralAbundance = JSON.parse(JSON.stringify(definition.systemBodyTypeMineralAbundance));
+  server.research = clone(definition.research);
+  server.technology = clone(definition.technology);
+  server.componentTypes = clone(definition.componentTypes);
+  server.systemBodyTypeMineralAbundance = clone(definition.systemBodyTypeMineralAbundance);
 
   //Parse structures for construction projects
   server.constructionProjects = JSON.parse(JSON.stringify(definition.constructionProjects || {}));

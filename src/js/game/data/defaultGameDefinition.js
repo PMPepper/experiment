@@ -1,3 +1,5 @@
+import engine from './base-components/engine';
+
 //includes stuff that usually won't change between games (minerals, tech tree, structure build times, costs, minerals, etc)
 
 export default {
@@ -417,37 +419,54 @@ export default {
       requireResearchIds: [],
       unlockTechnologyIds: ['pe']
     },
-    "test1": {
-      name: 'Test 1',
-      description: "A test technology.",
-      cost: 50000,
-      area: 2,
-      requireResearchIds: [],
-      unlockTechnologyIds: []
+    "re1": {
+      name: "Basic Reactor 1",
+      description: "Utilise PE physics to create a new form of power reactor, capable of producing huge quantities of power from the mineral Stellarium. Our scientists believe this will lead to further advances in propulsion.",
+      cost: 500,
+      area: 8,
+      requireResearchIds: ['pe'],
+      unlockTechnologyIds: ['re1']
     },
-    "test2": {
-      name: 'Test 2',
-      description: "Another test technology.",
-      cost: 20000,
-      area: 2,
-      requireResearchIds: [],
-      unlockTechnologyIds: []
+    "re2": {
+      name: "Basic Reactor 2",
+      description: "An enhanced version of the basic reator, capable of even greater power output.",
+      cost: 1000,
+      area: 8,
+      requireResearchIds: ['e1'],
+      unlockTechnologyIds: ['re2']
     },
     "e1": {
       name: "PE Drive",
       description: "Utilise PE physics to create a fundamentally new form of propulsion and gain access to the far reaches of our solar system",
-      cost: 5000,
+      cost: 500,
       area: 8,
-      requireResearchIds: ['pe'],
+      requireResearchIds: ['re1'],
       unlockTechnologyIds: ['e1', 'fe1']
+    },
+    "e2": {
+      name: "Improved PE Drive",
+      description: "An enhanced version of the PE drive, capable of producing even greater thrust.",
+      cost: 1000,
+      area: 8,
+      requireResearchIds: ['re2'],
+      unlockTechnologyIds: ['e2']
     }
   },
   technology: {
     "pe": {
       name: 'Post-Einstein technology'
     },
+    "re1": {
+      name: 'Basic reactor 1'
+    },
+    "re2": {
+      name: 'Basic reactor 2'
+    },
     "e1": {
-      name: 'PE Drive'
+      name: 'PE Drive',
+    },
+    "e2": {
+      name: 'Improved PE Drive',
     },
     "fe1": {
       name: 'Fuel efficiency 1'
@@ -543,5 +562,8 @@ export default {
         research: 0.2,
       },
     },
+  },
+  componentTypes: {
+    engine: engine,
   }
 };
