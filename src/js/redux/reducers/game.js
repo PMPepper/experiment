@@ -17,10 +17,10 @@ export default function game(state = DFEAULT_GAME_STATE, action) {
 
 
 //Action creators
-export function setGameState(newGameState, initialGameState) {
+export function setGameState(newGameState, gameConfig) {
   return {
     type: SET_GAME_STATE,
-    data: ClientState.fromState(newGameState, initialGameState)
+    data: ClientState.fromState(newGameState, gameConfig)
   };
 }
 

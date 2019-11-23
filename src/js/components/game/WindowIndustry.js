@@ -41,7 +41,7 @@ export default function WindowIndustry({colonyId}) {
   const i18n = useI18n();
   const client = useClient();
 
-  const gameConfig = clientState.initialGameState;
+  const gameConfig = clientState.gameConfig;
   //const researchAreas = gameConfig.researchAreas;
   const colony = clientState.entities[colonyId];
   const faction = clientState.entities[clientState.factionId];

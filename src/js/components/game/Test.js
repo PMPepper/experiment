@@ -34,7 +34,7 @@ export default compose(
       //researchProject={selectedResearchProject}
       faction={faction}
       colony={colony}
-      gameConfig={clientState.initialGameState}
+      gameConfig={clientState.gameConfig}
     />
   </Modal>
 })

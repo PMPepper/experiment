@@ -8,7 +8,7 @@ export function startGame(gameDefinition, client) {
       console.log('[Game] createWorld complete');
 
       return client.connect()
-        .then((initialGameState) => {
+        .then((gameConfig) => {
           console.log('[Game] client connected');
 
           //TODO need a UI to select if multiple faction Ids

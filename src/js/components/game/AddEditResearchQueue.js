@@ -108,7 +108,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
   })
 
   //calculate researchRate based on selected facilities
-  const gameConfig = clientState.initialGameState;
+  const gameConfig = clientState.gameConfig;
 
   //{[populationId]: {[capability]: {[structureId]: quantity}}}
   const researchRate = getResearchProductionFromStructures(structures, colony);

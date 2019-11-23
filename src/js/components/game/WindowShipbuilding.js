@@ -26,7 +26,7 @@ export default function WindowShipbuilding({colonyId}) {
   const i18n = useI18n();
   const client = useClient();
 
-  const gameConfig = clientState.initialGameState;
+  const gameConfig = clientState.gameConfig;
   const colony = clientState.entities[colonyId];
   const faction = clientState.entities[clientState.factionId];
 

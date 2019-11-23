@@ -27,7 +27,7 @@ export default class ColonyInfo extends React.Component {
 
     const systemBody = clientState.entities[colony.systemBodyId]
     const factionSystemBody = clientState.getFactionSystemBodyFromSystemBody(systemBody);
-    const structureDefinitions = clientState.initialGameState.structures;
+    const structureDefinitions = clientState.gameConfig.structures;
 
     const isMineralsSurveyed = factionSystemBody.factionSystemBody.isSurveyed;
 

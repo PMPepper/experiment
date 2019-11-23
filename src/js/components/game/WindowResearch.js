@@ -64,7 +64,7 @@ export default function WindowResearch({colonyId}) {
     })
   }, []);
 
-  const gameConfig = clientState.initialGameState;
+  const gameConfig = clientState.gameConfig;
   const researchAreas = gameConfig.researchAreas;
   const colony = clientState.entities[colonyId];
   const faction = clientState.entities[clientState.factionId];

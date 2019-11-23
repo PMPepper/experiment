@@ -186,12 +186,12 @@ export default class ClientState {
   // static creation methods //
   /////////////////////////////
 
-  static fromState(state, initialGameState) {
+  static fromState(state, gameConfig) {
     //TODO removed entities
 
     const clientState = new ClientState();
 
-    clientState.initialGameState = initialGameState;
+    clientState.gameConfig = gameConfig;
     clientState.factionId = state.factionId;
     clientState.entities = state.entities;
     clientState.gameTime = state.gameTime;
@@ -225,7 +225,7 @@ export default class ClientState {
     }
 
     //update client state props
-    clientState.initialGameState = oldState.initialGameState;
+    clientState.gameConfig = oldState.gameConfig;
     clientState.factionId = newData.factionId;
     clientState.entities = entities;
     clientState.gameTime = newData.gameTime;

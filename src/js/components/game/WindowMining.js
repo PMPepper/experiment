@@ -33,7 +33,7 @@ export default function WindowMining({colonyId}) {
 
   const i18n = useI18n();
 
-  const gameConfig = clientState.initialGameState;
+  const gameConfig = clientState.gameConfig;
   const colony = clientState.entities[colonyId];
   const faction = clientState.entities[clientState.factionId];
 
@@ -47,7 +47,7 @@ export default function WindowMining({colonyId}) {
   const totalColonyMiningFormatted = <FormatNumber value={colony.colony.capabilityProductionTotals.mining} />;
 
   //Mineral rows
-  const mineralsRows = isMineralsSurveyed ? map(clientState.initialGameState.minerals, (mineral, mineralId) => {
+  const mineralsRows = isMineralsSurveyed ? map(clientState.gameConfig.minerals, (mineral, mineralId) => {
     const systemBodyMinerals = systemBody.availableMinerals[mineralId];
     const dailyProduction = (colony.colony.capabilityProductionTotals.mining || 0) * systemBodyMinerals.access;
 

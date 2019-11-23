@@ -97,7 +97,7 @@ export default function Game({client}) {
     //DEV CODE
     setSelectedColonyId(900);//and select this colony
     setSystemMapFollowing(5);
-    open('coloniesWindow');//open up colonies window
+    open('technologyDesignWindow');//open up colonies window
     //END DEV CODE
   }, [])
 
@@ -262,7 +262,7 @@ export default function Game({client}) {
         </Window>
         <Window lastInteracted={fleetsWindow.lastInteracted} reduxPath="fleetsWindow" title={<Trans id="fleetsWindow.title">Fleets</Trans>}>TODO fleets window!</Window>
         <Window lastInteracted={shipDesignWindow.lastInteracted} reduxPath="shipDesignWindow" title={<Trans id="shipDesignWindow.title">Ship design</Trans>}>TODO ship design window!</Window>
-        <Window lastInteracted={technologyDesignWindow.lastInteracted} reduxPath="technologyDesignWindow" title={<Trans id="technologyDesignWindow.title">/Design technology</Trans>}>
+        <Window style={{width: '90%', maxWidth: '60rem'}} lastInteracted={technologyDesignWindow.lastInteracted} reduxPath="technologyDesignWindow" title={<Trans id="technologyDesignWindow.title">/Design technology</Trans>}>
           <TechnologyDesignWindow />
         </Window>
       </SortChildren>
