@@ -20,10 +20,23 @@ export default function createWorldFromDefinition(server, definition) {
   //Basic props
   server.minerals = {...definition.minerals};
   server.structures = clone(definition.structures);
-  server.researchAreas = {...definition.researchAreas};
-  server.research = clone(definition.research);
-  server.technology = clone(definition.technology);
-  server.componentTypes = clone(definition.componentTypes);
+
+  //research/technology/components
+  server.rtcManager.researchAreas = {...definition.researchAreas};
+  server.rtcManager.research = forEach(clone(definition.research), researchProject => {
+    if(!researchProject.factionId) {
+      researchProject.factionId = 0;
+    }
+  });
+  server.rtcManager.technology = forEach(clone(definition.technology), researchProject => {
+    if(!researchProject.factionId) {
+      researchProject.factionId = 0;
+    }
+  });
+  server.rtcManager.setComponentTypes(clone(definition.componentTypes));
+  server.rtcManager.setComponents(clone(definition.components));
+
+
   server.systemBodyTypeMineralAbundance = clone(definition.systemBodyTypeMineralAbundance);
 
   //Parse structures for construction projects

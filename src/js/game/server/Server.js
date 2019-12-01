@@ -1,8 +1,10 @@
 import resolvePath from '@/helpers/object/resolve-path';
 import map from '@/helpers/object/map';
 import forEach from '@/helpers/object/forEach';
+import filter from '@/helpers/object/filter';
 import isEmpty from '@/helpers/object/isEmpty';
 import inPlaceReorder from '@/helpers/array/in-place-reorder';
+import toString from '@/helpers/string/to-string';
 
 import createWorldFromDefinition from './createWorldFromDefinition';
 //import * as entityCacheTypes from './entityCacheTypes';
@@ -20,10 +22,9 @@ import updateResearchQueue from './entityProcessorFactories/updateResearchQueue'
 import constructionFactory from './entityProcessorFactories/construction';
 import shipBuildingFactory from './entityProcessorFactories/shipBuilding';
 
-
-
 import NameGenerator from '@/game/NameGenerator';
 import EntityManager from '@/game/server/EntityManager';
+import RTCManager from '@/game/server/RTCManager';
 
 
 //Server phases
@@ -50,10 +51,7 @@ export default class Server {
   minerals;
   structures;
   constructionProjects;
-  research;
-  researchAreas;
-  technology;
-  componentTypes;
+  rtcManager = null
   systemBodyTypeMineralAbundance;
 
   gameConfig;
@@ -102,6 +100,7 @@ export default class Server {
     this.entityManager = new EntityManager(this.gameTime, this.entityProcessors, this.nameGenerator);
     this.factions = {};
     this.clients = {};
+    this.rtcManager = new RTCManager();
 
     this.clientLastUpdatedTime = {};
     createWorldFromDefinition(this, definition);
@@ -110,10 +109,10 @@ export default class Server {
       minerals: this.minerals,
       structures: this.structures,
       constructionProjects: this.constructionProjects,
-      researchAreas: this.researchAreas,
-      research: this.research,
-      technology: this.technology,
-      componentTypes: this.componentTypes,
+      researchAreas: this.rtcManager.researchAreas,
+      research: this.rtcManager.research,
+      technology: this.rtcManager.technology,
+      componentTypes: this.rtcManager.componentTypes,
     };
 
     //c/onsole.log('[Server] created world: ', this.entityManager.entities);
@@ -156,10 +155,11 @@ export default class Server {
       minerals: this.minerals,
       constructionProjects: this.constructionProjects,
       structures: this.structures,
-      research: this.research,
-      researchAreas: this.researchAreas,
-      technology: this.technology,
-      componentTypes: this.componentTypes,
+      research: this.rtcManager.getGenericResearch(),
+      researchAreas: this.rtcManager.researchAreas,
+      technology: this.rtcManager.getGenericTechnology(),
+      componentTypes: this.rtcManager.componentTypes,
+      components: this.rtcManager.getGenericComponents(),
     })
   }
 
@@ -202,6 +202,8 @@ export default class Server {
 
     //broadcast updated state to all players
     this.connector.broadcastToClients('clientUpdated', this.clients);
+
+    //TODO update with faction specific tech and research
 
     //new settings applied successfully
     return Promise.resolve(true);
@@ -505,6 +507,15 @@ export default class Server {
     return Promise.resolve(colony.colony.buildQueue);
   }
 
+  message_addComponentProject({name, componentTypeId, componentOptions}, clientId) {
+    this._checkPhase(RUNNING);
+    this._checkValidClient(clientId);
+
+    const faction = this._getFactionForClient(clientId);
+
+    return Promise.resolve(this.rtcManager.addFactionComponent(faction, name, componentTypeId, componentOptions));
+  }
+
 
   //-validation methods
   _clientOwnsEntity(clientId, entity) {
@@ -722,7 +733,19 @@ export default class Server {
     this.clientLastUpdatedTime[clientId] = gameTime;
 
     //output state to client
-    return {entities: clientEntities, removedEntities, gameTime, gameSpeed: this.gameSpeed, desiredGameSpeed: client.gameSpeed, isPaused: this.isPaused, factionId: client.factionId};
+    return {
+      entities: clientEntities,
+      removedEntities,
+      gameTime,
+      gameSpeed: this.gameSpeed,
+      desiredGameSpeed: client.gameSpeed,
+      isPaused: this.isPaused,
+      factionId: client.factionId,
+
+      research: this.rtcManager.getResearchUpdatesFor(factionId),
+      technology: this.rtcManager.getTechnologyUpdatesFor(factionId),
+      components: this.rtcManager.getComponentUpdatesFor(factionId),
+    };
   }
 
 
@@ -737,5 +760,21 @@ export default class Server {
 
       return output;
     }, [])
+  }
+
+  _getFactionForClient(clientId) {
+    const client = this.clients[clientId];
+
+    if(!client) {
+      throw new Error('Unknown client');
+    }
+
+    const faction = this.factions[client.factionId];
+
+    if(!faction) {
+      throw new Error('Client does not have associated faction');
+    }
+
+    return faction;
   }
 }

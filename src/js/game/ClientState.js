@@ -1,5 +1,6 @@
 import toId from '@/helpers/app/toId';
 import toEntity from '@/helpers/app/toEntity';
+import forEach from '@/helpers/object/forEach';
 
 export default class ClientState {
 
@@ -232,6 +233,18 @@ export default class ClientState {
     clientState.desiredGameSpeed = newData.desiredGameSpeed;
     clientState.gameSpeed = newData.gameSpeed;
     clientState.isPaused = newData.isPaused;
+
+    newData.research && forEach(newData.research, (research, id) => {
+      clientState.gameConfig.research[id] = research;
+    });
+
+    newData.technology && forEach(newData.technology, (technology, id) => {
+      clientState.gameConfig.technology[id] = technology;
+    });
+
+    newData.components && forEach(newData.components, (component, id) => {
+      clientState.gameConfig.components[id] = component;
+    });
 
     clientState.entityIds = Object.keys(clientState.entities);
 

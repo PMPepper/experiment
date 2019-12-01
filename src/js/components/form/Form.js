@@ -74,5 +74,4 @@ Form.Button = Button;
 Form.Container = Container;
 Form.Output = Output;
 
-
 export {Group, Legend, Row, Column, Field, Input, Textarea, Select, Checkboxes, Label, Button, Container, Output};

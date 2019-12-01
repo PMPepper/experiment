@@ -90,6 +90,8 @@ export default function Game({client}) {
       removeBuildQueueItem: client.removeBuildQueueItem,
       reorderBuildQueueItem: client.reorderBuildQueueItem,
       updateBuildQueueItem: client.updateBuildQueueItem,
+
+      addComponentProject: client.addComponentProject,
     }
   }, [client]);
 

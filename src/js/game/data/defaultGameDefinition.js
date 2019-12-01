@@ -562,8 +562,29 @@ export default {
         research: 0.2,
       },
     },
+    standardFuelTank: {
+      name: 'Standard fuel tank',
+      unlockComponentIds: ['standardFuelTank']
+    }
   },
   componentTypes: {
     engine: engine,
-  }
+  },
+  components: {
+    standardFuelTank: {
+      name: 'Standard fuel tank',
+
+      //TODO component properties (temp values for now)
+      mass: 1000,
+      bp: 10,
+      hitpoints: 2,
+      crew: 0,
+      explosionChance: 0,
+      minerals: {
+        "4": 5
+      },
+
+      fuelStorage: 10000
+    }
+  },
 };

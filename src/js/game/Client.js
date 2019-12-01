@@ -109,7 +109,11 @@ export default class Client {
   updateBuildQueueItem = (colonyId, id, total, assignToPopulationId, takeFromPopulationId = null) => {
     return this.connector.sendMessageToServer('updateBuildQueueItem', {colonyId, id, total, assignToPopulationId, takeFromPopulationId})
   }
-  //[{constructionProjectId, total, completed, id}]
+
+  //components
+  addComponentProject = (name, componentTypeId, componentOptions) => {
+    return this.connector.sendMessageToServer('addComponentProject', {name, componentTypeId, componentOptions})
+  }
 
   ///////////////////////////////////////
   // Server -> Client message handlers //

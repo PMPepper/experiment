@@ -2,6 +2,7 @@ import range from 'range-inclusive';
 
 export default {
   name: 'Engine',
+  researchAreaId: 8,
 
   //required props
   mass: 'size * 10',
@@ -18,6 +19,7 @@ export default {
   thermal: '(size * et * p)',//TODO thermal reduction tech (LOW priority)
   thrust: 'size * et * p',
   fuelConsumption: '(size * et * p) * p^2.5 * eff * (1 - (size / 100))',
+  fuelConsumptionPerETH: 'p^2.5 * eff * (1 - (size / 100))',
 
   options: [
     {

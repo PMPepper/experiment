@@ -21,7 +21,7 @@ import sortAlphabeticalOnObjPath from '@/helpers/sorting/sort-alphabetical-on-ob
 const componentProperties = [
   'rp', 'bp', 'mass', 'hitpoints', 'crew', 'explosionChance',
   //engines
-  'thermal', 'thrust', 'fuelConsumption'
+  'thermal', 'thrust', 'fuelConsumption', 'fuelConsumptionPerETH'
 ];//minerals are special/handled separately
 
 const parser = new exprEval.Parser();
@@ -51,6 +51,7 @@ export default function TechnologyDesignWindow(props) {
 
   //local state
   const [selectedComponentType, setSelectedComponentType] = useState(componentTypeOptions[0].value);
+  const [componentName, setComponentName] = useState('');
   const selectedComponent = componentTypes[selectedComponentType];
 
   const [componentOptions, setComponentOptions] = useState(() => getComponentDefaults(selectedComponent, faction));
@@ -99,12 +100,18 @@ export default function TechnologyDesignWindow(props) {
           <Trans>Proposed component parameters</Trans>
         </Form.Legend>
         <Form.Row columns={12}>
+          <Form.Field inline width={12} columns={12}>
+            <Form.Label width={4}><Trans>Component name</Trans></Form.Label>
+            <Form.Input width={8} value={componentName} setValue={setComponentName} />
+          </Form.Field>
+        </Form.Row>
+        <Form.Row columns={12}>
           {componentProperties.map(property => {
             if(!(property in selectedComponent)) {
               return null;
             }
             const expr = parser.parse(selectedComponent[property]);
-            
+
             const calculatedValue = expr.evaluate(componentOptions);
             const calculatedValueFormatted = <FormatNumber value={calculatedValue} />
 
@@ -115,6 +122,11 @@ export default function TechnologyDesignWindow(props) {
           })}
         </Form.Row>
       </Form.Group>
+      <Form.Row columns={12}>
+        <Form.Button width={12} onClick={() => {
+          client.addComponentProject(componentName, selectedComponentType, componentOptions);
+        }}><Trans>Create component project</Trans></Form.Button>
+      </Form.Row>
     </Form>
   </div>;
 }
