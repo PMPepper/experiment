@@ -2,15 +2,13 @@ import {combineReducers} from 'redux';
 
 const reduxId = 'technologyDesignWindow';
 
-import isOpen, {OPEN} from '@/redux/HORs/isOpen';
-import position, {MOVE_TO, MOVE_BY} from '@/redux/HORs/position';
-import size, {RESIZE_TO, RESIZE_BY} from '@/redux/HORs/size';
-import lastInteracted from '@/redux/HORs/lastInteracted';
+import isOpen from '@/redux/HORs/isOpen';
+import position from '@/redux/HORs/position';
+import size from '@/redux/HORs/size';
 
 export default combineReducers({
   //...reducers,
   isOpen: isOpen(reduxId),
   position: position(reduxId),
-  size: size(reduxId),
-  lastInteracted: lastInteracted(reduxId, [OPEN, MOVE_TO, MOVE_BY, RESIZE_TO, RESIZE_BY])
+  size: size(reduxId)
 });

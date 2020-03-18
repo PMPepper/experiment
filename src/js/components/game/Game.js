@@ -1,5 +1,6 @@
-import React, {useMemo, useContext, useEffect} from 'react';
+import React, {useMemo, useContext, useEffect, useCallback} from 'react';
 import {Trans} from '@lingui/macro'
+import {useSelector} from 'react-redux'
 
 import styles from './styles.scss';
 import SystemMap from './SystemMap';
@@ -20,7 +21,6 @@ import FPSStats from '@/components/dev/FPSStats';
 import Test from './Test';
 
 //Hooks
-import useShallowEqualSelector from '@/hooks/useShallowEqualSelector';
 import useActions from '@/hooks/useActions';
 
 //helpers
@@ -52,19 +52,10 @@ const actions = {
 
 //The component
 export default function Game({client}) {
-  const {
-    coloniesWindow, fleetsWindow, shipDesignWindow, technologyDesignWindow, clientState, systemMap,
-    selectedSystemId
-  } = useShallowEqualSelector(state => ({
-    coloniesWindow: state.coloniesWindow,
-    fleetsWindow: state.fleetsWindow,
-    shipDesignWindow: state.shipDesignWindow,
-    technologyDesignWindow: state.technologyDesignWindow,
-    clientState: state.game,
-
-    systemMap: state.systemMap,
-    selectedSystemId: state.selectedSystemId,
-  }));
+  const windowLastInteracted = useSelector(state => state.windowLastInteracted);
+  const clientState = useSelector(state => state.game);
+  const systemMap = useSelector(state => state.systemMap);
+  const selectedSystemId = useSelector(state => state.selectedSystemId);
 
   const {
     open,
@@ -94,6 +85,18 @@ export default function Game({client}) {
       addComponentProject: client.addComponentProject,
     }
   }, [client]);
+
+  const windowOrderIndexes = useMemo(() => {
+    return windowLastInteracted.reduce((windowOrderIndexes, windowId, index) => {
+      windowOrderIndexes[windowId] = index;
+
+      return windowOrderIndexes
+    }, {})
+  }, [windowLastInteracted])
+
+  const sortWindows = useCallback((a, b) => {
+    return (windowOrderIndexes[a.props.reduxPath] || 0) - (windowOrderIndexes[b.props.reduxPath] || 0);
+  }, [windowOrderIndexes])
 
   useEffect(() => {
     //DEV CODE
@@ -258,13 +261,13 @@ export default function Game({client}) {
 
       <Panel title={<Trans id="optionsPanel.title">Options</Trans>} className={styles.options}>[TODO options panel]</Panel>
 
-      <SortChildren sort={(a, b) => (a.props.lastInteracted - b.props.lastInteracted)} mapChild={(child) => (cloneOmittingProps(child, ['lastInteracted']))}>
-        <Window style={{width: '90%', maxWidth: '120rem'}} lastInteracted={coloniesWindow.lastInteracted} reduxPath="coloniesWindow" title={<Trans id="coloniesWindow.title">Colonies</Trans>}>
+      <SortChildren sort={sortWindows}>
+        <Window style={{width: '90%', maxWidth: '120rem'}} reduxPath="coloniesWindow" title={<Trans id="coloniesWindow.title">Colonies</Trans>}>
           <WindowColonies />
         </Window>
-        <Window lastInteracted={fleetsWindow.lastInteracted} reduxPath="fleetsWindow" title={<Trans id="fleetsWindow.title">Fleets</Trans>}>TODO fleets window!</Window>
-        <Window lastInteracted={shipDesignWindow.lastInteracted} reduxPath="shipDesignWindow" title={<Trans id="shipDesignWindow.title">Ship design</Trans>}>TODO ship design window!</Window>
-        <Window style={{width: '90%', maxWidth: '60rem'}} lastInteracted={technologyDesignWindow.lastInteracted} reduxPath="technologyDesignWindow" title={<Trans id="technologyDesignWindow.title">/Design technology</Trans>}>
+        <Window reduxPath="fleetsWindow" title={<Trans id="fleetsWindow.title">Fleets</Trans>}>TODO fleets window!</Window>
+        <Window reduxPath="shipDesignWindow" title={<Trans id="shipDesignWindow.title">Ship design</Trans>}>TODO ship design window!</Window>
+        <Window style={{width: '90%', maxWidth: '60rem'}} reduxPath="technologyDesignWindow" title={<Trans id="technologyDesignWindow.title">/Design technology</Trans>}>
           <TechnologyDesignWindow />
         </Window>
       </SortChildren>

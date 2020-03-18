@@ -3,7 +3,7 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        102
+        85
       ]
     ]
   },
@@ -11,7 +11,7 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        107
+        90
       ]
     ]
   },
@@ -19,7 +19,7 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        108
+        91
       ]
     ]
   },
@@ -27,7 +27,7 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        109
+        92
       ]
     ]
   },
@@ -35,7 +35,7 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        110
+        93
       ]
     ]
   },
@@ -43,7 +43,7 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        126
+        110
       ]
     ]
   },
@@ -51,7 +51,7 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        135
+        119
       ]
     ]
   },
@@ -59,16 +59,15 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        142
+        126
       ]
     ]
   },
   "windowResearch.groups.create": {
-    "defaults": "Create",
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        154
+        138
       ]
     ]
   },
@@ -76,7 +75,7 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        158
+        142
       ]
     ]
   },
@@ -84,7 +83,7 @@
     "origin": [
       [
         "src/js/components/game/WindowResearch.js",
-        158
+        142
       ]
     ]
   }

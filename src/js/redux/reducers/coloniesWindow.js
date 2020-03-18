@@ -3,12 +3,11 @@ import {combineReducers} from 'redux';
 
 const reduxId = 'coloniesWindow';
 
-import isOpen, {OPEN} from '@/redux/HORs/isOpen';
-import position, {MOVE_TO, MOVE_BY} from '@/redux/HORs/position';
-import size, {RESIZE_TO, RESIZE_BY} from '@/redux/HORs/size';
+import isOpen from '@/redux/HORs/isOpen';
+import position from '@/redux/HORs/position';
+import size from '@/redux/HORs/size';
 //import tree, * as treeActions from '@/redux/HORs/tree';
 import datatable from '@/redux/HORs/datatable';
-import lastInteracted from '@/redux/HORs/lastInteracted';
 import assignValueFactory, {assignValue} from '@/redux/HORs/assignValue';
 
 const {reducer: mineralsTableReducer, ...mineralsTableActions} = datatable(`${reduxId}.mineralsTable`);
@@ -19,7 +18,6 @@ export default combineReducers({
   isOpen: isOpen(reduxId),
   position: position(reduxId),
   size: size(reduxId),
-  lastInteracted: lastInteracted(reduxId, [OPEN, MOVE_TO, MOVE_BY, RESIZE_TO, RESIZE_BY]),
   tab: assignValueFactory(`${reduxId}.tab`, 0),
   selectedColonyId: assignValueFactory(`${reduxId}.colony`, ''),
 

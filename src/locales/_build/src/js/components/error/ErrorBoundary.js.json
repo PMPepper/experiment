@@ -1,6 +1,5 @@
 {
   "errorboundary-title": {
-    "defaults": "Sorry, something went wrong",
     "origin": [
       [
         "src/js/components/error/ErrorBoundary.js",
@@ -13,7 +12,6 @@
     ]
   },
   "errorboundary-error-title": {
-    "defaults": "Error",
     "origin": [
       [
         "src/js/components/error/ErrorBoundary.js",
@@ -22,7 +20,6 @@
     ]
   },
   "errorboundary-componentStack-title": {
-    "defaults": "React component stack",
     "origin": [
       [
         "src/js/components/error/ErrorBoundary.js",
@@ -31,7 +28,6 @@
     ]
   },
   "errorboundary-error-msg": {
-    "defaults": "Your system administrators have been notified of this error. Please contact them for further assitance. The error messages was: {0}",
     "origin": [
       [
         "src/js/components/error/ErrorBoundary.js",

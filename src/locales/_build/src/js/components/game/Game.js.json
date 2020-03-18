@@ -3,7 +3,7 @@
     "origin": [
       [
         "src/js/components/game/Game.js",
-        157
+        170
       ]
     ]
   },
@@ -11,48 +11,27 @@
     "origin": [
       [
         "src/js/components/game/Game.js",
-        168
+        181
       ]
     ]
   },
   "toolbar.colonies": {
-    "defaults": "Colonies",
     "origin": [
       [
         "src/js/components/game/Game.js",
-        182
+        195
       ]
     ]
   },
   "toolbar.fleets": {
-    "defaults": "Fleets",
     "origin": [
       [
         "src/js/components/game/Game.js",
-        183
+        196
       ]
     ]
   },
   "toolbar.shipDesign": {
-    "defaults": "Ship design",
-    "origin": [
-      [
-        "src/js/components/game/Game.js",
-        184
-      ]
-    ]
-  },
-  "toolbar.togglePaused": {
-    "defaults": "Toggle paused game",
-    "origin": [
-      [
-        "src/js/components/game/Game.js",
-        192
-      ]
-    ]
-  },
-  "toolbar.realTime": {
-    "defaults": "Play at real time",
     "origin": [
       [
         "src/js/components/game/Game.js",
@@ -60,70 +39,79 @@
       ]
     ]
   },
+  "toolbar.togglePaused": {
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        205
+      ]
+    ]
+  },
+  "toolbar.realTime": {
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        210
+      ]
+    ]
+  },
   "toolbar.x60": {
-    "defaults": "Play at 1 minute per second",
-    "origin": [
-      [
-        "src/js/components/game/Game.js",
-        202
-      ]
-    ]
-  },
-  "toolbar.x3600": {
-    "defaults": "Play at 1 hour per second",
-    "origin": [
-      [
-        "src/js/components/game/Game.js",
-        208
-      ]
-    ]
-  },
-  "toolbar.x86400": {
-    "defaults": "Play at 1 day per second",
     "origin": [
       [
         "src/js/components/game/Game.js",
         215
+      ]
+    ]
+  },
+  "toolbar.x3600": {
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        221
+      ]
+    ]
+  },
+  "toolbar.x86400": {
+    "origin": [
+      [
+        "src/js/components/game/Game.js",
+        228
       ],
       [
         "src/js/components/game/Game.js",
-        223
+        236
       ]
     ]
   },
   "optionsPanel.title": {
-    "defaults": "Options",
     "origin": [
       [
         "src/js/components/game/Game.js",
-        241
+        254
       ]
     ]
   },
   "coloniesWindow.title": {
-    "defaults": "Colonies",
     "origin": [
       [
         "src/js/components/game/Game.js",
-        244
+        257
       ]
     ]
   },
   "fleetsWindow.title": {
-    "defaults": "Fleets",
     "origin": [
       [
         "src/js/components/game/Game.js",
-        247
+        260
       ]
     ]
   },
   "shipDesignWindow.title": {
-    "defaults": "Ship design",
     "origin": [
       [
         "src/js/components/game/Game.js",
-        248
+        261
       ]
     ]
   }

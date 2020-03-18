@@ -23,7 +23,7 @@
       ]
     ]
   },
-  "Annual production": {
+  "Daily production": {
     "origin": [
       [
         "src/js/components/game/tables/ColonyMinerals.js",
