@@ -35,6 +35,7 @@ export function updateGameState(newGameState, existingEntities) {
       entities: Object.freeze(newGameState.entities),
       removedEntities: newGameState.removedEntities,
       factionId: newGameState.factionId,
+      gameTime: newGameState.gameTime,
       existingEntities
     }
   };

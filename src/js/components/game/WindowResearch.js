@@ -92,7 +92,7 @@ export default function WindowResearch({colonyId}) {
         </Table.THead>
         <Table.TBody>
           {colonyResearchStructures
-            .sort(sortStructuresByNameAndSpecies(i18n.language, clientState.entities, gameConfig))
+            .sort(sortStructuresByNameAndSpecies(i18n.language, clientState.entities, clientState.entities, gameConfig))
             .filter(({quantity}) => (quantity > 0))
             .map(({populationId, structureId, quantity}) => {
               const assigned = (assignedStructures[populationId] && assignedStructures[populationId][structureId]) || 0;
@@ -103,7 +103,7 @@ export default function WindowResearch({colonyId}) {
 
               return <Table.Row key={`${populationId}-${structureId}`}>
                 <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
-                <Table.TD>{getPopulationName(populationId, clientState.entities)}</Table.TD>
+                <Table.TD>{getPopulationName(populationId, clientState.entities, clientState.entities)}</Table.TD>
                 <Table.TD><Trans>{availableFormatted} / {totalFormatted}</Trans></Table.TD>
                 <Table.TD><FormatNumber value={rps} /></Table.TD>
               </Table.Row>

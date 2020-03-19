@@ -38,7 +38,7 @@ export default function WindowShipbuilding({colonyId}) {
       isMilitary: shipyard.shipyard.isMilitary,
       capacity: shipyard.shipyard.capacity,
       slipways: shipyard.shipyard.slipways,
-      speciesName: getPopulationName(shipyard.populationId, clientState.entities)
+      speciesName: getPopulationName(shipyard.populationId, clientState.entities, clientState.entities)
     };
   });//TODO
 

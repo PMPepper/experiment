@@ -75,7 +75,7 @@ export default function WindowMining({colonyId}) {
         </Table.THead>
         <Table.TBody>
           {colonyMiningStructures
-            .sort(sortStructuresByNameAndSpecies(i18n.language, clientState.entities, gameConfig))
+            .sort(sortStructuresByNameAndSpecies(i18n.language, clientState.entities, clientState.entities, gameConfig))
             .filter(({quantity}) => (quantity > 0))
             .map(({populationId, structureId, quantity}) => {
               const availableFormatted = <FormatNumber value={+quantity} />
@@ -83,7 +83,7 @@ export default function WindowMining({colonyId}) {
 
               return <Table.Row key={`${populationId}-${structureId}`}>
                 <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
-                {hasMultiplePopulations && <Table.TD>{getPopulationName(populationId, clientState.entities)}</Table.TD>}
+                {hasMultiplePopulations && <Table.TD>{getPopulationName(populationId, clientState.entities, clientState.entities)}</Table.TD>}
                 <Table.TD><Trans>{availableFormatted}</Trans></Table.TD>
                 <Table.TD><FormatNumber value={+rps} /></Table.TD>
               </Table.Row>

@@ -33,13 +33,12 @@ import getPopulationName from '@/helpers/app-ui/get-population-name';
 
 //The component
 export default function WindowIndustry({colonyId}) {
-  console.log('render WindowIndustry');
   const gameConfig = useSelector(state => state.game.gameConfig);
-  const gameTimeDate = useSelector(state => state.game.gameTimeDate);
+  const populations = useSelector(state => state.entitiesByType.population);
+  const species = useSelector(state => state.entitiesByType.species);
+  const gameTimeDate = useSelector(state => state.gameTime) * 1000;
   const colony = useSelector(state => state.game.entities[colonyId]);
   const faction = useSelector(state => state.game.entities[state.game.factionId]);
-
-  const clientState = useSelector(state => state.game);
 
   const i18n = useI18n();
   const client = useClient();
@@ -106,7 +105,7 @@ export default function WindowIndustry({colonyId}) {
         </Table.THead>
         <Table.TBody>
           {colonyConstructionStructures
-            .sort(sortStructuresByNameAndSpecies(i18n.language, clientState.entities, gameConfig))
+            .sort(sortStructuresByNameAndSpecies(i18n.language, populations, species, gameConfig))
             .filter(({quantity}) => (quantity > 0))
             .map(({populationId, structureId, quantity}) => {
               const availableFormatted = <FormatNumber value={+quantity} />
@@ -114,7 +113,7 @@ export default function WindowIndustry({colonyId}) {
 
               return <Table.Row key={`${populationId}-${structureId}`}>
                 <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
-                {hasMultiplePopulations && <Table.TD>{getPopulationName(populationId, clientState.entities)}</Table.TD>}
+                {hasMultiplePopulations && <Table.TD>{getPopulationName(populationId, populations, species)}</Table.TD>}
                 <Table.TD><Trans>{availableFormatted}</Trans></Table.TD>
                 <Table.TD><FormatNumber value={+rps} /></Table.TD>
               </Table.Row>
@@ -168,7 +167,7 @@ export default function WindowIndustry({colonyId}) {
 
               return <Table.Row key={buildQueueItem.id} highlighted={selectedBuildQueueItemId === buildQueueItem.id} className={styles.selectable} onClick={() => {setSelectedBuildQueueItemId(buildQueueItem.id)}}>
                 <Table.TD>{currentConstructionProject.name}</Table.TD>
-                {hasMultiplePopulations && <Table.TD>{clientState.entities[clientState.entities[buildQueueItem.assignToPopulationId].speciesId].species.name}</Table.TD>}
+                {hasMultiplePopulations && <Table.TD>{getPopulationName(buildQueueItem.assignToPopulationId, populations, species)}</Table.TD>}
                 <Table.TD><FormatNumber value={+buildQueueItem.completed} /></Table.TD>
                 <Table.TD><FormatNumber value={+buildQueueItem.total} /></Table.TD>
                 <Table.TD><Progress value={progress} max={+buildQueueItem.total} thin /></Table.TD>
@@ -219,7 +218,7 @@ export default function WindowIndustry({colonyId}) {
             <Form.Select
               width={4}
               placeholder={i18n._('select.placeholder', null, {defaults: '- - Select - -'})}
-              options={getPopulationOptions(colony.populationIds, clientState, i18n)}
+              options={getPopulationOptions(colony.populationIds, populations, species, i18n)}
               value={selectedAssignPopulationId}
               setValue={setSelectedAssignPopulationId}
             />
@@ -232,7 +231,8 @@ export default function WindowIndustry({colonyId}) {
               placeholder={i18n._('select.placeholder', null, {defaults: '- - Select - -'})}
               options={getPopulationOptions(
                 colony.populationIds,
-                clientState,
+                populations,
+                species,
                 i18n,
                 populationId => {
                   //does this population have the prerequisites to do this project?
@@ -272,10 +272,10 @@ export default function WindowIndustry({colonyId}) {
 }
 
 
-function getPopulationOptions(populationIds, clientState, i18n, disabledFilter = null) {
+function getPopulationOptions(populationIds, populations, species, i18n, disabledFilter = null) {
   return populationIds
     .map(populationId => ({
-      label: clientState.entities[clientState.entities[populationId].speciesId].species.name,
+      label: getPopulationName(populationId, populations, species),
       value: populationId,
       disabled: disabledFilter ? disabledFilter(populationId) : false
     }))
