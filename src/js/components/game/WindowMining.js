@@ -1,5 +1,6 @@
 import React, {useState, useCallback} from 'react';
 import {Trans} from '@lingui/macro';
+import {useSelector} from 'react-redux'
 
 import styles from './windowMining.scss';
 
@@ -26,37 +27,38 @@ import getPopulationName from '@/helpers/app-ui/get-population-name';
 
 //The component
 export default function WindowMining({colonyId}) {
-  const {clientState, coloniesWindow} = useShallowEqualSelector(state => ({
-    clientState: state.game,
-    coloniesWindow: state.coloniesWindow,
-  }));
+  console.log('render WindowMining');
+  const gameConfig = useSelector(state => state.game.gameConfig);
+  const colony = useSelector(state => state.game.entities[colonyId]);
+  const systemBodyMinerals = useSelector(
+    state => state.game.entities[colony.systemBodyId].availableMinerals,
+    (a, b) => JSON.stringify(a) === JSON.stringify(b)
+  );
+  const factionSystemBody = useSelector(state => state.game.entities[colony.factionSystemBodyId]);
+  const faction = useSelector(state => state.game.entities[state.game.factionId]);
+  const populations = useSelector(state => state.entitiesByType.population);
+  const species = useSelector(state => state.entitiesByType.species);
 
   const i18n = useI18n();
 
-  const gameConfig = clientState.gameConfig;
-  const colony = clientState.entities[colonyId];
-  const faction = clientState.entities[clientState.factionId];
-
   const hasMultiplePopulations = colony.populationIds.length > 1;
 
-  const systemBody = clientState.entities[colony.systemBodyId]
-  const factionSystemBody = clientState.getFactionSystemBodyFromSystemBody(systemBody);
   const isMineralsSurveyed = factionSystemBody.factionSystemBody.isSurveyed;
 
   const colonyMiningStructures = getColonyStructuresCapabilities(colony, 'mining');
   const totalColonyMiningFormatted = <FormatNumber value={colony.colony.capabilityProductionTotals.mining} />;
 
   //Mineral rows
-  const mineralsRows = isMineralsSurveyed ? map(clientState.gameConfig.minerals, (mineral, mineralId) => {
-    const systemBodyMinerals = systemBody.availableMinerals[mineralId];
-    const dailyProduction = (colony.colony.capabilityProductionTotals.mining || 0) * systemBodyMinerals.access;
+  const mineralsRows = isMineralsSurveyed ? map(gameConfig.minerals, (mineral, mineralId) => {
+    const systemBodyMineral = systemBodyMinerals[mineralId];
+    const dailyProduction = (colony.colony.capabilityProductionTotals.mining || 0) * systemBodyMineral.access;
 
     return {
       mineral,
-      quantity: Math.ceil(systemBodyMinerals.quantity),
-      access: systemBodyMinerals.access,
+      quantity: Math.ceil(systemBodyMineral.quantity),
+      access: systemBodyMineral.access,
       production: dailyProduction,
-      depletion: dailyProduction > 0 ? roundToDigits(systemBodyMinerals.quantity / (dailyProduction * 365.25), 3) : Number.NaN,
+      depletion: dailyProduction > 0 ? roundToDigits(systemBodyMineral.quantity / (dailyProduction * 365.25), 3) : Number.NaN,
       stockpile: Math.floor(colony.colony.minerals[mineralId]),
     };
   }) : null;
@@ -75,7 +77,7 @@ export default function WindowMining({colonyId}) {
         </Table.THead>
         <Table.TBody>
           {colonyMiningStructures
-            .sort(sortStructuresByNameAndSpecies(i18n.language, clientState.entities, clientState.entities, gameConfig))
+            .sort(sortStructuresByNameAndSpecies(i18n.language, populations, species, gameConfig))
             .filter(({quantity}) => (quantity > 0))
             .map(({populationId, structureId, quantity}) => {
               const availableFormatted = <FormatNumber value={+quantity} />
@@ -83,7 +85,7 @@ export default function WindowMining({colonyId}) {
 
               return <Table.Row key={`${populationId}-${structureId}`}>
                 <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
-                {hasMultiplePopulations && <Table.TD>{getPopulationName(populationId, clientState.entities, clientState.entities)}</Table.TD>}
+                {hasMultiplePopulations && <Table.TD>{getPopulationName(populationId, populations, species)}</Table.TD>}
                 <Table.TD><Trans>{availableFormatted}</Trans></Table.TD>
                 <Table.TD><FormatNumber value={+rps} /></Table.TD>
               </Table.Row>

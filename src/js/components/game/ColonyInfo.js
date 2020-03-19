@@ -24,7 +24,7 @@ export default function ColonyInfo({name, colonyId, tab, setTab}) {
         {true && <WindowIndustry colonyId={colonyId} />}
       </Tab>
       <Tab key="mining" tab-title={<Trans>Mining</Trans>}>
-        {false && <WindowMining colonyId={colonyId} />}
+        {true && <WindowMining colonyId={colonyId} />}
       </Tab>
       <Tab key="research" tab-title={<Trans>Research</Trans>}>
         {false && <WindowResearch colonyId={colonyId} />}
