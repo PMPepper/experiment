@@ -2,7 +2,7 @@ import resolvePath from '@/helpers/object/resolve-path';
 import map from '@/helpers/object/map';
 import forEach from '@/helpers/object/forEach';
 import filter from '@/helpers/object/filter';
-import isEmpty from '@/helpers/object/isEmpty';
+import isEmpty from '@/helpers/object/is-empty';
 import inPlaceReorder from '@/helpers/array/in-place-reorder';
 import toString from '@/helpers/string/to-string';
 

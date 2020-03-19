@@ -1,5 +1,6 @@
 import React, {useState, useCallback} from 'react';
 import {Trans} from '@lingui/macro';
+import {useSelector} from 'react-redux'
 
 import styles from './windowIndustry.scss';
 
@@ -16,13 +17,12 @@ import Form from '@/components/form/Form';
 
 //Hooks
 import useI18n from '@/hooks/useI18n';
-import useShallowEqualSelector from '@/hooks/useShallowEqualSelector';
 import {useClient} from '@/components/game/Game';
 
 //Helpers
 import forEach from '@/helpers/object/forEach';
 import every from '@/helpers/object/every';
-import isEmpty from '@/helpers/object/isEmpty';
+import isEmpty from '@/helpers/object/is-empty';
 import sortAlphabeticalOnObjPath from '@/helpers/sorting/sort-alphabetical-on-obj-path';
 import getColonyStructuresCapabilities from '@/helpers/app/getColonyStructuresCapabilities';
 import getCapabilityProductionForColonyPopulationStructure from '@/helpers/app/getCapabilityProductionForColonyPopulationStructure';
@@ -33,18 +33,16 @@ import getPopulationName from '@/helpers/app-ui/get-population-name';
 
 //The component
 export default function WindowIndustry({colonyId}) {
-  const {clientState, coloniesWindow} = useShallowEqualSelector(state => ({
-    clientState: state.game,
-    coloniesWindow: state.coloniesWindow,
-  }));
+  console.log('render WindowIndustry');
+  const gameConfig = useSelector(state => state.game.gameConfig);
+  const gameTimeDate = useSelector(state => state.game.gameTimeDate);
+  const colony = useSelector(state => state.game.entities[colonyId]);
+  const faction = useSelector(state => state.game.entities[state.game.factionId]);
+
+  const clientState = useSelector(state => state.game);
 
   const i18n = useI18n();
   const client = useClient();
-
-  const gameConfig = clientState.gameConfig;
-  //const researchAreas = gameConfig.researchAreas;
-  const colony = clientState.entities[colonyId];
-  const faction = clientState.entities[clientState.factionId];
 
   const hasMultiplePopulations = colony.populationIds.length > 1;
   const onlyPopulationId = hasMultiplePopulations ? null : colony.populationIds[0];
@@ -92,7 +90,7 @@ export default function WindowIndustry({colonyId}) {
     });
   }
 
-  let etaDate = new Date(clientState.gameTimeDate)
+  let etaDate = new Date(gameTimeDate)
 
   return <div className="vspaceStart">
     <h2 className={styles.title}><Trans>Colony construction facilities</Trans></h2>

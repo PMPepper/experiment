@@ -128,7 +128,8 @@ export default class Client {
   message_updatingGame(gameState) {
     this.gameState = gameState;
 
-    this.store.dispatch(updateGameState(gameState))
+    //Hmmm...
+    this.store.dispatch(updateGameState(gameState, this.store.getState().entities))
   }
 
   //

@@ -261,7 +261,7 @@ export default class EntityManager {
       factionId: faction.id,
       systemId: colony.systemId,
       systemBodyId: colony.systemBodyId,
-      factionSystemBodyId: getFactionSystemBodyFromFactionAndSystemBody(faction, colony.systemBodyId, this.entities).id,
+      factionSystemBodyId: getFactionSystemBodyFromFactionAndSystemBody(faction, this.entities[colony.systemBodyId], this.entities).id,
 
       render: {type: 'shipyard'},
 

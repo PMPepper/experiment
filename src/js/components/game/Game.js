@@ -102,7 +102,8 @@ export default function Game({client}) {
     //DEV CODE
     setSelectedColonyId(900);//and select this colony
     setSystemMapFollowing(5);
-    open('technologyDesignWindow');//open up colonies window
+    open('coloniesWindow');//open up colonies window
+    //open('technologyDesignWindow');//open up colonies window
     //END DEV CODE
   }, [])
 

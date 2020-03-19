@@ -39,6 +39,9 @@ if(process.env.NODE_ENV !== 'production') {
   store = createStore(root)
 }
 
+window.temp1 = store;
+console.log('Store: ', store);
+
 //REAL TEMP CODE!
 
 

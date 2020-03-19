@@ -5,11 +5,14 @@ export default function resolvePath(obj, path) {
 }
 
 export function normalisePath(path) {
-  return typeof(path) === 'string' ?
-    path
-      .replace(/\[(\w+)\]/g, '.$1') // convert indexes to properties
-      .replace(/^\./, '')           // strip a leading dot
-      .split('.')
+  return typeof(path) === 'number' ?
+    [path.toString()]
     :
-    path;
+    typeof(path) === 'string' ?
+      path
+        .replace(/\[(\w+)\]/g, '.$1') // convert indexes to properties
+        .replace(/^\./, '')           // strip a leading dot
+        .split('.')
+      :
+      path;
 }

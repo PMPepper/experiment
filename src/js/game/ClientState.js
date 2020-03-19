@@ -1,3 +1,5 @@
+//TODO deprecated
+
 import toId from '@/helpers/app/toId';
 import toEntity from '@/helpers/app/toEntity';
 import forEach from '@/helpers/object/forEach';
@@ -208,7 +210,7 @@ export default class ClientState {
   static mergeState(oldState, newData) {
     const clientState = new ClientState();
 
-    const entities = newData.entities;
+    const entities = {...newData.entities};
     const stateEntities = oldState.entities;
 
     //added/altered entities

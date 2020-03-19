@@ -1,15 +1,15 @@
 import toId from './toId';
-import toEntity from '@/helpers/app/toEntity';
 
-export default function getFactionSystemBodyFromFactionAndSystemBody(faction, systemBody, entities) {
+import toString from '@/helpers/string/to-string';
+
+export default function getFactionSystemBodyFromFactionAndSystemBody(faction, systemBody, factionSystemBodies) {
   const factionId = toId(faction);
-  systemBody = toEntity(systemBody, entities);
 
   if(!systemBody.factionSystemBodyIds || systemBody.factionSystemBodyIds.length ===0 ) {
     return null;
   }
 
-  const factionSystemBodyId = systemBody.factionSystemBodyIds.find(factionSystemBodyId => (entities[factionSystemBodyId].factionId === factionId));
+  const factionSystemBodyId = systemBody.factionSystemBodyIds.find(factionSystemBodyId => toString(factionSystemBodies[factionSystemBodyId].factionId) === toString(factionId));
 
-  return factionSystemBodyId ? entities[factionSystemBodyId] : null;
+  return factionSystemBodyId ? factionSystemBodies[factionSystemBodyId] : null;
 }
