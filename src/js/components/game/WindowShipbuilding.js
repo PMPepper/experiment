@@ -25,7 +25,7 @@ export default function WindowShipbuilding({colonyId}) {
 
   //Redux
   const gameConfig = useSelector(state => state.game.gameConfig);
-  const colony = useSelector(state => state.game.entities[colonyId]);
+  const colony = useSelector(state => state.entities.byId[colonyId]);
   const colonyShipyards = useSelector(state => {
     return colony.shipyardIds.reduce((output, shipyardId) => {
       output[shipyardId] = state.entitiesByType.shipyard[shipyardId].shipyard

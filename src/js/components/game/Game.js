@@ -1,6 +1,6 @@
-import React, {useMemo, useContext, useEffect, useCallback} from 'react';
+import React, {useMemo, useContext, useEffect, useCallback, useRef} from 'react';
 import {Trans} from '@lingui/macro'
-import {useSelector} from 'react-redux'
+import {useSelector, useStore, shallowEqual} from 'react-redux'
 
 import styles from './styles.scss';
 import SystemMap from './SystemMap';
@@ -25,6 +25,7 @@ import useActions from '@/hooks/useActions';
 
 //helpers
 import cloneOmittingProps from '@/helpers/react/clone-omitting-props';
+import reduce from '@/helpers/object/reduce';
 import sortArrayOnPropertyNumeric from '@/helpers/sorting/sort-array-on-property-numeric';
 
 //reducers
@@ -53,9 +54,22 @@ const actions = {
 //The component
 export default function Game({client}) {
   const windowLastInteracted = useSelector(state => state.windowLastInteracted);
-  const clientState = useSelector(state => state.game);
+  const game = useSelector(state => state.game);
   const systemMap = useSelector(state => state.systemMap);
   const selectedSystemId = useSelector(state => state.selectedSystemId);
+  const gameTimeDate = useSelector(state => state.gameTime) * 1000;
+  const knownSystems = useSelector(state => reduce(state.entitiesByType.factionSystem, (output, factionSystem) => {
+    if(factionSystem.factionId == state.factionId) {
+      output.push(factionSystem);
+    }
+
+    return output;
+  }, []), shallowEqual);
+
+
+  const store = useStore();
+  const storeRef = useRef();
+  storeRef.current = store;
 
   const {
     open,
@@ -65,9 +79,6 @@ export default function Game({client}) {
     setSelectedSystemId,
     setSelectedColonyId,
   } = useActions(actions);
-
-  const entities = clientState.entities;
-  const entityIds = clientState.entityIds;
 
   const clientAPI = useMemo(() => {
     //expose methods of client to rest of the UI
@@ -94,9 +105,108 @@ export default function Game({client}) {
     }, {})
   }, [windowLastInteracted])
 
+  //Callbacks
+
   const sortWindows = useCallback((a, b) => {
     return (windowOrderIndexes[a.props.reduxPath] || 0) - (windowOrderIndexes[b.props.reduxPath] || 0);
   }, [windowOrderIndexes])
+
+  const getContextMenuItems = useCallback((e, entityScreenPositions) => {
+    const items = [];
+
+    const clickX = e.clientX;
+    const clickY = e.clientY;
+
+    //get all system bodies with r OR within mininmum of ...3 px?
+    const minSystemBodyDist = 3;
+    const clickedSystemBodies = [];
+
+    //access redux state
+    const state = storeRef.current.getState();
+    const factionId = state.factionId;
+    const systemBodies = state.entitiesByType.systemBody;
+    const colonies = state.entitiesByType.colony;
+    const factions = state.entitiesByType.faction;
+    const factionEntityNames = state.factionEntityNames;
+
+    entityScreenPositions.forEach(position => {
+      const systemBody = systemBodies[position.id];
+
+      if(systemBody) {
+        const r = Math.max(minSystemBodyDist, position.r);
+
+        const dx = position.x - clickX;
+        const dy = position.y - clickY;
+
+        const d = (dx * dx) + (dy * dy);
+
+        if(d <= (r * r)) {
+          clickedSystemBodies.push({d, systemBody});
+        }
+      }
+    });
+
+    sortArrayOnPropertyNumeric(clickedSystemBodies, 'd');
+
+    //
+    clickedSystemBodies.forEach(({systemBody}) => {
+      const systemBodyItem = {
+        label: factionEntityNames[systemBody.id],
+        icon: <Icon icon="globe" />,
+        items: []
+      };
+
+      //Colonies stuff
+      if(systemBody.systemBody.type !== 'star') {
+        //Get all colonies on this system body
+        const coloniesOnSystemBody = reduce(colonies, (output, colony) => {
+          if(colony.systemBodyId === systemBody.id) {
+            output.push(colony);
+          }
+
+          return output;
+        }, [])
+
+        let hasOwnColony = false;
+
+        coloniesOnSystemBody.forEach(colony => {
+          if(colony.factionId === factionId) {
+            hasOwnColony = true;
+          }
+
+          systemBodyItem.items.push({
+            label: factions[colony.factionId].faction.name,
+            action: colony.factionId === factionId ? () => {
+              setSelectedColonyId(colony.id);//and select this colony
+              setSystemMapFollowing(colony.systemBodyId);
+              open('coloniesWindow');//open up colonies window
+            } : null
+          });
+        })
+
+        if(!hasOwnColony) {
+          systemBodyItem.items.unshift({
+            label: <Trans>Create colony</Trans>,
+            action: () => {
+              client.createColony(systemBody.id);
+            }
+          })
+        }
+
+        systemBodyItem.items.push('spacer');
+      }
+
+      systemBodyItem.items.push({
+        label: <Trans>Body info</Trans>,
+        action: () => {alert('TODO')}
+      });
+
+      items.push(systemBodyItem);
+    })
+
+
+    return items;
+  }, []);
 
   useEffect(() => {
     //DEV CODE
@@ -109,94 +219,8 @@ export default function Game({client}) {
 
   return <ClientContext.Provider value={clientAPI}>
     <div className={styles.game}>
-      <AddContextMenu key={selectedSystemId} getItems={(e, entityScreenPositions) => {
-        const items = [];
-
-        const clickX = e.clientX;
-        const clickY = e.clientY;
-
-        const factionId = clientState.factionId;
-
-        //get all system bodies with r OR within mininmum of ...3 px?
-        const minSystemBodyDist = 3;
-        const systemBodies = [];
-
-        entityScreenPositions.forEach(position => {
-          const entity = entities[position.id];
-
-          if(entity.type === 'systemBody') {
-            const r = Math.max(minSystemBodyDist, position.r);
-
-            const dx = position.x - clickX;
-            const dy = position.y - clickY;
-
-            const d = (dx * dx) + (dy * dy);
-
-            if(d <= (r * r)) {
-              systemBodies.push({d, entity});
-            }
-          }
-        });
-
-        sortArrayOnPropertyNumeric(systemBodies, 'd');
-
-        systemBodies.forEach(item => {
-          const systemBody = item.entity;
-
-          const factionSystemBody = clientState.getFactionSystemBodyFromSystemBody(systemBody);
-
-
-          const systemBodyItem = {
-            label: factionSystemBody.factionSystemBody.name,
-            icon: <Icon icon="globe" />,
-            items: []
-          };
-
-          //Colonies stuff
-          if(systemBody.systemBody.type !== 'star') {
-            const colonies = clientState.getColoniesForSystemBody(systemBody) || [];
-
-            let hasOwnColony = false;
-
-            colonies.forEach(colony => {
-              if(colony.factionId === factionId) {
-                hasOwnColony = true;
-              }
-
-              systemBodyItem.items.push({
-                label: entities[colony.factionId].faction.name,
-                action: colony.factionId === factionId ? () => {
-                  setSelectedColonyId(colony.id);//and select this colony
-                  setSystemMapFollowing(colony.systemBodyId);
-                  open('coloniesWindow');//open up colonies window
-                } : null
-              });
-            })
-
-            if(!hasOwnColony) {
-              systemBodyItem.items.unshift({
-                label: <Trans>Create colony</Trans>,
-                action: () => {
-                  client.createColony(systemBody.id);
-                }
-              })
-            }
-
-            systemBodyItem.items.push('spacer');
-          }
-
-          systemBodyItem.items.push({
-            label: <Trans>Body info</Trans>,
-            action: () => {alert('TODO')}
-          });
-
-          items.push(systemBodyItem);
-        })
-
-
-        return items;
-      }}>
-        <SystemMap clientState={clientState} {...systemMap} systemId={selectedSystemId} setFollowing={setSystemMapFollowing} />
+      <AddContextMenu key={selectedSystemId} getItems={getContextMenuItems}>
+        <SystemMap clientState={game} {...systemMap} systemId={selectedSystemId} setFollowing={setSystemMapFollowing} />
       </AddContextMenu>
       <div className={styles.toolbar}>
         <div className="hspaceStart">
@@ -210,30 +234,30 @@ export default function Game({client}) {
       <div className={styles.controls}>
         <div className="vspaceStart">
           <div className="hspaceStart">
-            <Button selected={!!clientState.isPaused} onClick={() => {client.setIsPaused(!clientState.isPaused)}}>
+            <Button selected={!!game.isPaused} onClick={() => {client.setIsPaused(!game.isPaused)}}>
               <span className="offscreen"><Trans id="toolbar.togglePaused">Toggle paused game</Trans></span>
               <Icon icon="pause" />
             </Button>
 
-            <Button selected={clientState.desiredGameSpeed === 1} onClick={() => {client.setDesiredSpeed(1)}}>
+            <Button selected={game.desiredGameSpeed === 1} onClick={() => {client.setDesiredSpeed(1)}}>
               <span className="offscreen"><Trans id="toolbar.realTime">Play at real time</Trans></span>
               <Icon icon="play" />
             </Button>
 
-            <Button selected={clientState.desiredGameSpeed === 2} onClick={() => {client.setDesiredSpeed(2)}}>
+            <Button selected={game.desiredGameSpeed === 2} onClick={() => {client.setDesiredSpeed(2)}}>
               <span className="offscreen"><Trans id="toolbar.x60">Play at 1 minute per second</Trans></span>
               <Icon icon="play" />
               <Icon icon="play" />
             </Button>
 
-            <Button selected={clientState.desiredGameSpeed === 3} onClick={() => {client.setDesiredSpeed(3)}}>
+            <Button selected={game.desiredGameSpeed === 3} onClick={() => {client.setDesiredSpeed(3)}}>
               <span className="offscreen"><Trans id="toolbar.x3600">Play at 1 hour per second</Trans></span>
               <Icon icon="play" />
               <Icon icon="play" />
               <Icon icon="play" />
             </Button>
 
-            <Button selected={clientState.desiredGameSpeed === 4} onClick={() => {client.setDesiredSpeed(4)}}>
+            <Button selected={game.desiredGameSpeed === 4} onClick={() => {client.setDesiredSpeed(4)}}>
               <span className="offscreen"><Trans id="toolbar.x86400">Play at 1 day per second</Trans></span>
               <Icon icon="play" />
               <Icon icon="play" />
@@ -241,7 +265,7 @@ export default function Game({client}) {
               <Icon icon="play" />
             </Button>
 
-            <Button selected={clientState.desiredGameSpeed === 5} onClick={() => {client.setDesiredSpeed(5)}}>
+            <Button selected={game.desiredGameSpeed === 5} onClick={() => {client.setDesiredSpeed(5)}}>
               <span className="offscreen"><Trans id="toolbar.x86400">Play at 1 day per second</Trans></span>
               <Icon icon="play" />
               <Icon icon="play" />
@@ -250,13 +274,13 @@ export default function Game({client}) {
               <Icon icon="play" />
             </Button>
           </div>
-          <Time value={clientState.gameTimeDate} format="datetime" />
+          <Time value={new Date(gameTimeDate)} format="datetime" />
         </div>
       </div>
 
       <div className={styles.selectSystem}>
         <select value={selectedSystemId} onChange={(e) => {setSelectedSystemId(+e.target.value)}}>
-          {clientState.knownSystems.map(knownSystem => (<option value={knownSystem.systemId} key={knownSystem.systemId}>{knownSystem.factionSystem.name}</option>))}
+          {knownSystems.map(knownSystem => (<option value={knownSystem.systemId} key={knownSystem.systemId}>{knownSystem.factionSystem.name}</option>))}
         </select>
       </div>
 

@@ -37,8 +37,8 @@ export default function WindowIndustry({colonyId}) {
   const populations = useSelector(state => state.entitiesByType.population);
   const species = useSelector(state => state.entitiesByType.species);
   const gameTimeDate = useSelector(state => state.gameTime) * 1000;
-  const colony = useSelector(state => state.game.entities[colonyId]);
-  const faction = useSelector(state => state.game.entities[state.game.factionId]);
+  const colony = useSelector(state => state.entities.byId[colonyId]);
+  const faction = useSelector(state => state.entities.byId[state.factionId]);
 
   const i18n = useI18n();
   const client = useClient();

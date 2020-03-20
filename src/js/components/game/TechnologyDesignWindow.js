@@ -29,17 +29,12 @@ const parser = new exprEval.Parser();
 
 //The component
 export default function TechnologyDesignWindow(props) {
-  const {clientState, coloniesWindow} = useShallowEqualSelector(state => ({
-    clientState: state.game,
-    coloniesWindow: state.coloniesWindow,
-  }));
+  const faction = useSelector(state => state.entities.byId[state.factionId]);
+  const gameConfig = useSelector(state => state.game.gameConfig);
 
   const i18n = useI18n();
   const client = useClient();
 
-  const faction = clientState.entities[clientState.factionId];
-
-  const gameConfig = clientState.gameConfig;
   const componentTypes = gameConfig.componentTypes;
 
   const componentTypeOptions = useMemo(() => mapToSortedArray(

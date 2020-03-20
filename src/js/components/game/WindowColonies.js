@@ -34,7 +34,7 @@ const actions = {
 
 //The component
 export default React.memo(function WindowColonies() {
-  const factionId = useSelector(state => state.game.factionId);
+  const factionId = useSelector(state => state.factionId);
 
   const factionEntityNames = useSelector(state => state.factionEntityNames);
   const colonies = useSelector(state => state.entitiesByType.colony);

@@ -9,7 +9,7 @@ import FormatNumber from '@/components/formatNumber/FormatNumber';
 
 
 export default function WindowColonySummary({colonyId}) {
-  const colony = useSelector(state => state.game.entities[colonyId]);
+  const colony = useSelector(state => state.entities.byId[colonyId]);
 
   return <div>
     <p>Total population: <FormatNumber value={colony.colony.totalPopulation} /></p>

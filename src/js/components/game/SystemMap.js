@@ -1,4 +1,5 @@
 //TODO set limits on zoom/scroll
+//TODO refactor out compose, and turn into functional component with hooks
 
 import React from 'react';
 import {compose} from 'recompose';
