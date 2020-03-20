@@ -3,6 +3,12 @@ import resolvePath, {normalisePath} from './resolve-path';
 //Immutably modify simple objects
 //Doesn't deal with functions, symbols - only really intended for primitives, objects and arrays
 export default function modify(obj, ...paths/*path, newValue*/) {
+  let createFunc = null;
+
+  if(paths.length > 2 && paths.length % 2 === 1 && paths[paths.length - 1] instanceof Function) {
+    createFunc = paths.pop();
+  }
+
   if(paths.length % 2 !== 0) {
     throw new Error('modify requires pairs of path/newValue arguments')
   }
@@ -21,7 +27,12 @@ export default function modify(obj, ...paths/*path, newValue*/) {
       path.forEach(function(curPath, index) {
         if(index !== endIndex) {
           //clone objects on path, and modify them to reference their new cloned children as needed
-          curObj[curPath] = clone(curObj[curPath]);
+          if(curObj[curPath] === undefined && createFunc) {
+            debugger;
+            curObj[curPath] = createFunc(index, path);
+          } else {
+            curObj[curPath] = clone(curObj[curPath]);
+          }
           curObj = curObj[curPath];
         } else {
           //At the end of the path, assign newValue

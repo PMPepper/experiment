@@ -1,5 +1,6 @@
 import React, {useContext, useState, useCallback} from 'react';
 import {Trans} from '@lingui/macro';
+import {useSelector} from 'react-redux'
 
 //Components
 import Form from '@/components/form/Form';
@@ -30,9 +31,17 @@ import {CloseModalContext} from '@/components/modal/Modal';
 
 
 //The component
-export default function AddEditResearchQueue({faction, colony, clientState, onComplete, researchQueue}) {
+export default function AddEditResearchQueue({faction, colony, onComplete, researchQueue}) {
   const i18n = useI18n();
   const close = useContext(CloseModalContext);
+
+  //Redux
+  const gameConfig = useSelector(state => state.game.gameConfig);
+  const researchQueues = useSelector(state => state.entitiesByType.researchQueue);
+  const populations = useSelector(state => state.entitiesByType.population);
+  const species = useSelector(state => state.entitiesByType.species);
+  const gameTimeDate = useSelector(state => state.gameTime) * 1000;
+
   const [structures, setStructures] = useState(researchQueue ? {...researchQueue.researchQueue.structures} : {});
   const [researchIds, setResearchIds] = useState(researchQueue ? [...researchQueue.researchQueue.researchIds] : []);
   const [isEditing] = useState(!!researchQueue);
@@ -100,7 +109,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
 
   //...things already in another queue
   colony.researchQueueIds.forEach(researchQueueId => {
-    const currentResearchQueue = clientState.entities[researchQueueId];
+    const currentResearchQueue = researchQueues[researchQueueId];
 
     if(currentResearchQueue !== researchQueue) {
       add(excludeResearchIds, currentResearchQueue.researchQueue.researchIds);
@@ -108,13 +117,11 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
   })
 
   //calculate researchRate based on selected facilities
-  const gameConfig = clientState.gameConfig;
-
   //{[populationId]: {[capability]: {[structureId]: quantity}}}
   const researchRate = getResearchProductionFromStructures(structures, colony);
 
   //used to keep track of ETAs of research projects in this queue
-  let currentDate = new Date(clientState.gameTimeDate)
+  let currentDate = new Date(gameTimeDate)
 
 
   return <div className="vspaceStart">
@@ -130,18 +137,18 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
           })
           .map(populationId => {
             //map to population object
-            return clientState.entities[populationId]
+            return populations[populationId]
           })
           .sort((a, b) => {
             //TODO translations
-            const aName = clientState.entities[a.speciesId].species.name;
-            const bName = clientState.entities[b.speciesId].species.name;
+            const aName = species[a.speciesId].species.name;
+            const bName = species[b.speciesId].species.name;
 
             //TODO sort using locale-aware natsort
             return aName > bName ? -1 : 1
           })
           .map(population => {
-            const name = clientState.entities[population.speciesId].species.name;
+            const name = species[population.speciesId].species.name;
 
             return <Form.Group key={population.id}>
               <Form.Legend>{name}</Form.Legend>
@@ -152,7 +159,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
 
                   //how may of this population/structure are in use by another research queue on this colony?
                   const inUse = colony.researchQueueIds.reduce((total, researchQueueId) => {
-                    const currentResearchQueue = clientState.entities[researchQueueId];
+                    const currentResearchQueue = researchQueues[researchQueueId];
 
                     if(currentResearchQueue !== researchQueue) {
                       total += currentResearchQueue.researchQueue.structures[population.id] ?
@@ -174,7 +181,7 @@ export default function AddEditResearchQueue({faction, colony, clientState, onCo
                     <Form.Field columns={6} inline>
                       <Form.Label width={2}>{structure.name} ({rpPerFacilityFormatted}RP)</Form.Label>{/*TODO translation!?*/}
                       <Form.Input width={1} type="number" min={0} max={available} step={1} value={value} setValue={(newValue) => {
-                        setStructures(modify(structures, [population.id, structureId], +newValue, (index, path) => {return {};}));
+                        setStructures(modify(structures, [population.id, structureId], +newValue));
                       }} />
                       / {available}
                     </Form.Field>

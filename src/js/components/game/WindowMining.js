@@ -15,6 +15,7 @@ import ColonyMineralsTable from './tables/ColonyMinerals';
 //Hooks
 import useI18n from '@/hooks/useI18n';
 import useShallowEqualSelector from '@/hooks/useShallowEqualSelector';
+import jsonComparison from '@/helpers/object/json-comparison';
 
 //Helpers
 import map from '@/helpers/object/map';
@@ -27,12 +28,11 @@ import getPopulationName from '@/helpers/app-ui/get-population-name';
 
 //The component
 export default function WindowMining({colonyId}) {
-  console.log('render WindowMining');
   const gameConfig = useSelector(state => state.game.gameConfig);
   const colony = useSelector(state => state.game.entities[colonyId]);
   const systemBodyMinerals = useSelector(
     state => state.game.entities[colony.systemBodyId].availableMinerals,
-    (a, b) => JSON.stringify(a) === JSON.stringify(b)
+    jsonComparison
   );
   const factionSystemBody = useSelector(state => state.game.entities[colony.factionSystemBodyId]);
   const faction = useSelector(state => state.game.entities[state.game.factionId]);

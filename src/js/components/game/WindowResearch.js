@@ -1,5 +1,6 @@
 import React, {useState, useCallback} from 'react';
 import {Trans} from '@lingui/macro';
+import {useSelector} from 'react-redux'
 
 import styles from './windowResearch.scss';
 
@@ -34,10 +35,14 @@ import {setResearchSelectedArea} from '@/redux/reducers/coloniesWindow';
 
 //The component
 export default function WindowResearch({colonyId}) {
-  const {clientState, coloniesWindow} = useShallowEqualSelector(state => ({
-    clientState: state.game,
-    coloniesWindow: state.coloniesWindow,
-  }));
+  const gameConfig = useSelector(state => state.game.gameConfig);
+  const colony = useSelector(state => state.game.entities[colonyId]);
+  const faction = useSelector(state => state.game.entities[state.game.factionId]);
+  const populations = useSelector(state => state.entitiesByType.population);
+  const species = useSelector(state => state.entitiesByType.species);
+  const researchQueues = useSelector(state => state.entitiesByType.researchQueue);
+  const gameTimeDate = useSelector(state => state.gameTime) * 1000;
+
   const setResearchSelectedAreaDispatcher = useActions(setResearchSelectedArea);
 
   const i18n = useI18n();
@@ -64,10 +69,7 @@ export default function WindowResearch({colonyId}) {
     })
   }, []);
 
-  const gameConfig = clientState.gameConfig;
   const researchAreas = gameConfig.researchAreas;
-  const colony = clientState.entities[colonyId];
-  const faction = clientState.entities[clientState.factionId];
 
   const totalNumResearchFacilities = Object.values(colony.colony.structuresWithCapability.research).reduce((sum, add) => {return sum + add;}, 0);
 
@@ -92,7 +94,7 @@ export default function WindowResearch({colonyId}) {
         </Table.THead>
         <Table.TBody>
           {colonyResearchStructures
-            .sort(sortStructuresByNameAndSpecies(i18n.language, clientState.entities, clientState.entities, gameConfig))
+            .sort(sortStructuresByNameAndSpecies(i18n.language, populations, species, gameConfig))
             .filter(({quantity}) => (quantity > 0))
             .map(({populationId, structureId, quantity}) => {
               const assigned = (assignedStructures[populationId] && assignedStructures[populationId][structureId]) || 0;
@@ -103,7 +105,7 @@ export default function WindowResearch({colonyId}) {
 
               return <Table.Row key={`${populationId}-${structureId}`}>
                 <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
-                <Table.TD>{getPopulationName(populationId, clientState.entities, clientState.entities)}</Table.TD>
+                <Table.TD>{getPopulationName(populationId, populations, species)}</Table.TD>
                 <Table.TD><Trans>{availableFormatted} / {totalFormatted}</Trans></Table.TD>
                 <Table.TD><FormatNumber value={rps} /></Table.TD>
               </Table.Row>
@@ -123,10 +125,10 @@ export default function WindowResearch({colonyId}) {
     <h2 className={styles.title}><Trans>Research queues</Trans></h2>
     <ul className={styles.researchQueueList}>
       {colony.researchQueueIds.map(researchQueueId => {
-        const researchQueue = clientState.entities[researchQueueId];
+        const researchQueue = researchQueues[researchQueueId];
 
         return <li key={researchQueueId}>
-          <ResearchQueueOverview colony={colony} researchQueue={researchQueue} gameTimeDate={clientState.gameTimeDate} gameConfig={gameConfig} entities={clientState.entities} onEditClick={onClickEditResearchGroup} onRemoveClick={onClickRemoveResearchGroup} />
+          <ResearchQueueOverview colony={colony} researchQueue={researchQueue} gameTimeDate={gameTimeDate} gameConfig={gameConfig} populations={populations} species={species} onEditClick={onClickEditResearchGroup} onRemoveClick={onClickRemoveResearchGroup} />
         </li>
       })}
     </ul>
@@ -143,8 +145,7 @@ export default function WindowResearch({colonyId}) {
       <AddEditResearchQueue
         faction={faction}
         colony={colony}
-        clientState={clientState}
-        researchQueue={editResearchGroupId ? clientState.entities[editResearchGroupId] : null}
+        researchQueue={editResearchGroupId ? researchQueues[editResearchGroupId] : null}
         onComplete={(structures, researchIds) => {
           if(editResearchGroupId) {
             ///Edit queue

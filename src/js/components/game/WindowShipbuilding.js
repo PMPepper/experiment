@@ -1,5 +1,6 @@
 import React from 'react';
 import {Trans} from '@lingui/macro'
+import {useSelector, shallowEqual} from 'react-redux'
 
 import styles from './windowShipbuilding.scss';
 
@@ -9,6 +10,7 @@ import ColonyShipyards from './tables/ColonyShipyards';
 
 //Helpers
 import getPopulationName from '@/helpers/app-ui/get-population-name';
+import jsonComparison from '@/helpers/object/json-comparison';
 
 //Hooks
 import useI18n from '@/hooks/useI18n';
@@ -18,27 +20,40 @@ import {useClient} from '@/components/game/Game';
 
 //The component
 export default function WindowShipbuilding({colonyId}) {
-  const {clientState, coloniesWindow} = useShallowEqualSelector(state => ({
-    clientState: state.game,
-    coloniesWindow: state.coloniesWindow,
-  }));
-
   const i18n = useI18n();
   const client = useClient();
 
-  const gameConfig = clientState.gameConfig;
-  const colony = clientState.entities[colonyId];
-  const faction = clientState.entities[clientState.factionId];
+  //Redux
+  const gameConfig = useSelector(state => state.game.gameConfig);
+  const colony = useSelector(state => state.game.entities[colonyId]);
+  const colonyShipyards = useSelector(state => {
+    return colony.shipyardIds.reduce((output, shipyardId) => {
+      output[shipyardId] = state.entitiesByType.shipyard[shipyardId].shipyard
+
+      return output;
+    }, {});
+  }, jsonComparison);
+
+  const colonyShipyardPopulationIds = useSelector(state => {
+    return colony.shipyardIds.reduce((output, shipyardId) => {
+      output[shipyardId] = state.entitiesByType.shipyard[shipyardId].populationId
+
+      return output;
+    }, {});
+  }, shallowEqual)
+
+  const populations = useSelector(state => state.entitiesByType.population);
+  const species = useSelector(state => state.entitiesByType.species);
 
   const shipyardRows = colony.shipyardIds.map(shipyardId => {
-    const shipyard = clientState.entities[shipyardId];
+    const shipyard = colonyShipyards[shipyardId];
 
     return {
-      name: shipyard.shipyard.name,
-      isMilitary: shipyard.shipyard.isMilitary,
-      capacity: shipyard.shipyard.capacity,
-      slipways: shipyard.shipyard.slipways,
-      speciesName: getPopulationName(shipyard.populationId, clientState.entities, clientState.entities)
+      name: shipyard.name,
+      isMilitary: shipyard.isMilitary,
+      capacity: shipyard.capacity,
+      slipways: shipyard.slipways,
+      speciesName: getPopulationName(colonyShipyardPopulationIds[shipyardId], populations, species)
     };
   });//TODO
 

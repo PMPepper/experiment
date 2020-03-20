@@ -18,19 +18,19 @@ export default function ColonyInfo({name, colonyId, tab, setTab}) {
     <h2>{name}</h2>
     <Tabs selectedTabIndex={tab} setSelectedTabIndex={setTab}>
       <Tab key="summary" tab-title={<Trans>Summary</Trans>}>
-        {true && <WindowColonySummary colonyId={colonyId} />}
+        <WindowColonySummary colonyId={colonyId} />
       </Tab>
       <Tab key="industry" tab-title={<Trans>Industry</Trans>}>
-        {true && <WindowIndustry colonyId={colonyId} />}
+        <WindowIndustry colonyId={colonyId} />
       </Tab>
       <Tab key="mining" tab-title={<Trans>Mining</Trans>}>
-        {true && <WindowMining colonyId={colonyId} />}
+        <WindowMining colonyId={colonyId} />
       </Tab>
       <Tab key="research" tab-title={<Trans>Research</Trans>}>
-        {false && <WindowResearch colonyId={colonyId} />}
+        <WindowResearch colonyId={colonyId} />
       </Tab>
       <Tab key="shipbuilding" tab-title={<Trans>Shipbuilding</Trans>}>
-        {false && <WindowShipbuilding colonyId={colonyId} />}
+        <WindowShipbuilding colonyId={colonyId} />
       </Tab>
     </Tabs>
   </div>

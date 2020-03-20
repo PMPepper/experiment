@@ -223,7 +223,7 @@ export default class Server {
     if(Object.values(this.clients).every(client => (client.ready))) {
       //For each client, tell them the game is starting and send them their client state
       Object.values(this.clients).forEach(client => {
-        this.connector.sendMessageToClient(client.id, 'startingGame', this._getClientState(client.id, true));
+        this.connector.sendMessageToClient(client.id, 'startingGame', this._getClientState(client.id, [], true));
       });
 
       this._lastTime = Date.now();
@@ -282,7 +282,7 @@ export default class Server {
     this._checkPhase(RUNNING);
     this._checkValidClient(clientId);
 
-    return Promise.resolve(this._getClientState(clientId, true))
+    return Promise.resolve(this._getClientState(clientId, [], true))
   }
 
   message_setDesiredSpeed(newDesiredSpeed, clientId) {
@@ -629,8 +629,11 @@ export default class Server {
       this._advanceTime(this.gameSecondsPerStep);
     }
 
+    //get deleted entities
+    const removedEntities = this.entityManager.getAndClearRemovedEntities();
+
     Object.values(this.clients).forEach(client => {
-      this.connector.sendMessageToClient(client.id, 'updatingGame', this._getClientState(client.id));
+      this.connector.sendMessageToClient(client.id, 'updatingGame', this._getClientState(client.id, removedEntities));
     });
   }
 
@@ -677,7 +680,7 @@ export default class Server {
     performance.clearMeasures();
   }
 
-  _getClientState(clientId, full = false) {
+  _getClientState(clientId, removedEntities, full = false) {
     clientId = clientId.toString();
 
     const gameTime = this.gameTime;
@@ -709,29 +712,29 @@ export default class Server {
     }
 
     //removed entities
-    const removedEntities = [];
-
-    for(var removedEntityId in this.entityManager.entitiesRemoved) {
-      const removedEntityClientsToInformSet = this.entityManager.entitiesRemoved[removedEntityId];
-
-      //If this client hasn't been told about this entity being removed, do so now
-      if(removedEntityClientsToInformSet.has(clientId)) {
-        //add to update data
-        removedEntities.push(removedEntityId);
-
-        //remove this client form list to be informed
-        removedEntityClientsToInformSet.delete(clientId)
-
-        if(removedEntityClientsToInformSet.count === 0) {
-          //everyone told about this, remove from list - not 100% happy about this being here
-          delete this.entityManager.entitiesRemoved[removedEntityId];
-        }
-      }
-    }
+    // const removedEntities = [];
+    //
+    // for(var removedEntityId in this.entityManager.entitiesRemoved) {
+    //   const removedEntityClientsToInformSet = this.entityManager.entitiesRemoved[removedEntityId];
+    //
+    //   //If this client hasn't been told about this entity being removed, do so now
+    //   if(removedEntityClientsToInformSet.has(clientId)) {
+    //     //add to update data
+    //     removedEntities.push(removedEntityId);
+    //
+    //     //remove this client form list to be informed
+    //     removedEntityClientsToInformSet.delete(clientId)
+    //
+    //     if(removedEntityClientsToInformSet.count === 0) {
+    //       //everyone told about this, remove from list - not 100% happy about this being here
+    //       delete this.entityManager.entitiesRemoved[removedEntityId];
+    //     }
+    //   }
+    // }
 
     //record last updated time
     this.clientLastUpdatedTime[clientId] = gameTime;
-
+if(!removedEntities) {debugger;}
     //output state to client
     return {
       entities: clientEntities,

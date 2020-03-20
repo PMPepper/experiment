@@ -1,5 +1,7 @@
 
 export default function getETA(fromDate, cost, progress, rate) {
+  progress = progress || 0;
+  
   if(rate <= 0 || (cost - progress) <= 0) {
     return null;//will never complete
   }

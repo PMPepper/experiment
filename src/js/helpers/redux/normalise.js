@@ -73,6 +73,7 @@ export function removeByKey(state, schema, key, value) {
 }
 
 export function removeByIds(state, schema, ids) {
+
   if(!schema) {
     throw new Error(`a valid schema is required`);
   }
@@ -97,7 +98,7 @@ export function removeByIds(state, schema, ids) {
     if(ids.has(id)) {
       hasRemovedItem = true;
 
-      return;
+      continue;
     }
 
     newState.byId[id] = item;

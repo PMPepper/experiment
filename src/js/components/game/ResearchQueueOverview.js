@@ -21,7 +21,7 @@ import getETA from '@/helpers/app-ui/get-eta';
 
 
 //The component
-const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({colony, gameTimeDate, researchQueue, gameConfig, entities, onEditClick, onRemoveClick}, ref) {
+const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({colony, gameTimeDate, researchQueue, gameConfig, populations, species, onEditClick, onRemoveClick}, ref) {
   const currentResearchId = researchQueue.researchQueue.researchIds[0]
   const currentResearchProject = currentResearchId ?
     gameConfig.research[currentResearchId]
@@ -33,14 +33,15 @@ const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({c
     null
 
   //get the actually assigned structures
-  const assignedStructures = colony.colony.assignedResearchStructures[researchQueue.id] || {};
+  const assignedStructures = colony.colony.assignedResearchStructures[researchQueue.id] || {};//TODO not assigned until the end of the first day
 
   //now work out how much research that produces
   const totalRPs = getResearchProductionFromStructures(assignedStructures, colony);
   const totalRPsFormatted = <FormatNumber value={totalRPs} />
 
   const eta = currentResearchProject ? getETA(gameTimeDate, currentResearchProject.cost, currentResearchProgress, totalRPs) : null
-  const etaFormatted = <FormatDate value={eta} format="date" />;
+
+  const etaFormatted = eta !== null ? <FormatDate value={eta} format="date" /> : <Trans id="n/a">N/A</Trans>;
 
   return <div ref={ref} className={styles.researchQueueOverview}>
     <div className={styles.overview}>
@@ -59,14 +60,14 @@ const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({c
             {researchStructuresToArray(researchQueue.researchQueue.structures)
               .sort()//TODO sort on what?
               .map(({populationId, structureId, quantity}) => {
-                const species = entities[entities[populationId].speciesId];
+                const currentSpecies = species[populations[populationId].speciesId];
                 const quantityRequestedFormatted = <FormatNumber value={quantity} />;
                 const quantityAssigned = (assignedStructures[populationId] && assignedStructures[populationId][structureId]) || 0;
                 const quantityAssignedFormatted = <FormatNumber value={quantityAssigned} />;
 
                 return <Table.Row key={`${populationId}-${structureId}`}>
                   <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
-                  <Table.TD>{species.species.name}</Table.TD>
+                  <Table.TD>{currentSpecies.species.name}</Table.TD>
                   <Table.TD><Trans>{quantityRequestedFormatted} / {quantityAssignedFormatted}</Trans></Table.TD>
                   <Table.TD><FormatNumber value={getCapabilityProductionForColonyPopulationStructure(colony, 'research', populationId, structureId) * quantityAssigned} /></Table.TD>
                 </Table.Row >

@@ -18,7 +18,7 @@ export default class EntityManager {
   entityId = 1;//used to keep track of assigned entity IDs - increments after each entity is created
   entityIds = null;
   entitiesLastUpdated = {};
-  entitiesRemoved = {};
+  removedEntities = [];
 
   entityProcessors = null;
 
@@ -46,6 +46,14 @@ export default class EntityManager {
     const entities = this.entities;
 
     return ids.map(id => (entities[id]));
+  }
+
+  getAndClearRemovedEntities() {
+    const removedEntities = this.removedEntities;
+
+    this.removedEntities = [];
+
+    return removedEntities;
   }
 
   ///////////////////////////
@@ -353,8 +361,7 @@ export default class EntityManager {
       this.entityProcessors.forEach(entityProcessor => entityProcessor.removeEntity(entityId));
 
       //mark as removed
-      //TODO only add relevent clients to inform set
-      this.entitiesRemoved[entityId] = new Set(Object.keys(this.clients));
+      this.removedEntities.push(entityId);
 
       //update modified entities
       modifiedEntities.forEach(entity => (this.alteredEntity(entity)))
