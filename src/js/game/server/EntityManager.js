@@ -117,6 +117,7 @@ export default class EntityManager {
       systemBodyId: systemBody.id,
       factionSystemBodyId: getFactionSystemBodyFromFactionAndSystemBody(faction, systemBody, this.entities).id,
       researchQueueIds: [],//groups performing research
+      shipyardIds: [],
       populationIds,
       colony: {
         structures,

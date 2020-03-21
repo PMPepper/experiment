@@ -36,7 +36,7 @@ export default function AddEditResearchQueue({faction, colony, onComplete, resea
   const close = useContext(CloseModalContext);
 
   //Redux
-  const gameConfig = useSelector(state => state.game.gameConfig);
+  const gameConfig = useSelector(state => state.gameConfig);
   const researchQueues = useSelector(state => state.entitiesByType.researchQueue);
   const populations = useSelector(state => state.entitiesByType.population);
   const species = useSelector(state => state.entitiesByType.species);

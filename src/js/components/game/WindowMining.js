@@ -28,13 +28,13 @@ import getPopulationName from '@/helpers/app-ui/get-population-name';
 
 //The component
 export default function WindowMining({colonyId}) {
-  const gameConfig = useSelector(state => state.game.gameConfig);
+  const gameConfig = useSelector(state => state.gameConfig);
   const colony = useSelector(state => state.entities.byId[colonyId]);
   const systemBodyMinerals = useSelector(
     state => state.entities.byId[colony.systemBodyId].availableMinerals,
     jsonComparison
   );
-  const factionSystemBody = useSelector(state => state.game.entities[colony.factionSystemBodyId]);
+  const factionSystemBody = useSelector(state => state.entities.byId[colony.factionSystemBodyId]);
   const faction = useSelector(state => state.entities.byId[state.factionId]);
   const populations = useSelector(state => state.entitiesByType.population);
   const species = useSelector(state => state.entitiesByType.species);

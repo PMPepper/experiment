@@ -7,12 +7,13 @@ import SystemMap from './SystemMap';
 
 import WindowColonies from './WindowColonies';
 import TechnologyDesignWindow from './TechnologyDesignWindow';
+import GameTime from '@/components/game/GameTime';
 
 import Panel from '@/components/panel/Panel';
 import Button from '@/components/button/Button';
 import Window from '@/components/window/ConnectedWindow';
 import SortChildren from '@/components/sortChildren/SortChildren';
-import Time from '@/components/time/Time';
+
 import Icon from '@/components/icon/Icon';
 import AddContextMenu from '@/components/contextMenu/AddContextMenu';
 
@@ -53,11 +54,11 @@ const actions = {
 
 //The component
 export default function Game({client}) {
+  //c/onsole.log('render Game');
   const windowLastInteracted = useSelector(state => state.windowLastInteracted);
   const game = useSelector(state => state.game);
-  const systemMap = useSelector(state => state.systemMap);
   const selectedSystemId = useSelector(state => state.selectedSystemId);
-  const gameTimeDate = useSelector(state => state.gameTime) * 1000;
+
   const knownSystems = useSelector(state => reduce(state.entitiesByType.factionSystem, (output, factionSystem) => {
     if(factionSystem.factionId == state.factionId) {
       output.push(factionSystem);
@@ -179,7 +180,7 @@ export default function Game({client}) {
             action: colony.factionId === factionId ? () => {
               setSelectedColonyId(colony.id);//and select this colony
               setSystemMapFollowing(colony.systemBodyId);
-              open('coloniesWindow');//open up colonies window
+              //open('coloniesWindow');//open up colonies window
             } : null
           });
         })
@@ -220,7 +221,7 @@ export default function Game({client}) {
   return <ClientContext.Provider value={clientAPI}>
     <div className={styles.game}>
       <AddContextMenu key={selectedSystemId} getItems={getContextMenuItems}>
-        <SystemMap clientState={game} {...systemMap} systemId={selectedSystemId} setFollowing={setSystemMapFollowing} />
+        <SystemMap systemId={selectedSystemId} setFollowing={setSystemMapFollowing} />
       </AddContextMenu>
       <div className={styles.toolbar}>
         <div className="hspaceStart">
@@ -274,7 +275,7 @@ export default function Game({client}) {
               <Icon icon="play" />
             </Button>
           </div>
-          <Time value={new Date(gameTimeDate)} format="datetime" />
+          <GameTime />
         </div>
       </div>
 

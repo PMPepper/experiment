@@ -7,12 +7,11 @@ import formatDistanceSI from '@/helpers/string/format-distance-si';
 
 
 //The component
-export default function SystemMapSVGRenderer(props) {
-  const {windowSize, renderPrimitives, styles, x, y, zoom, options, elementProps} = props;
+export default function SystemMapSVGRenderer({windowSize, renderPrimitives, styles, x, y, zoom, options, ...props}) {
 
   return <div
       className={styles.systemMapWrapper}
-      {...elementProps}
+      {...props}
     >
       <svg className={styles.systemMap}>
         {renderPrimitives.map(primitive => {

@@ -33,7 +33,7 @@ import getPopulationName from '@/helpers/app-ui/get-population-name';
 
 //The component
 export default function WindowIndustry({colonyId}) {
-  const gameConfig = useSelector(state => state.game.gameConfig);
+  const gameConfig = useSelector(state => state.gameConfig);
   const populations = useSelector(state => state.entitiesByType.population);
   const species = useSelector(state => state.entitiesByType.species);
   const gameTimeDate = useSelector(state => state.gameTime) * 1000;

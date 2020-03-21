@@ -1,22 +1,25 @@
 //TODO set limits on zoom/scroll
-//TODO refactor out compose, and turn into functional component with hooks
 
-import React from 'react';
-import {compose} from 'recompose';
+import React, {useRef, useCallback, useEffect, useMemo, useState} from 'react';
 import objectpool from 'objectpool';
+import {useSelector, useStore} from 'react-redux'
 
 import defaultStyles from './systemMap.scss';
 import * as EntityRenderers from './entityRenderers';
 import SystemMapSVGRenderer from './SystemMapSVGRenderer';
-import SystemMapPixiRenderer from './SystemMapPixiRenderer';
+//import SystemMapPixiRenderer from './SystemMapPixiRenderer';
 import {startFadeRadius, fullyFadeRadius, startFadeOrbitRadius, fullyFadeOrbitRadius} from './GameConsts';
 
-import WindowSizeComponent from '@/HOCs/WindowSizeComponent';
-import KeyboardControlsComponent from '@/HOCs/KeyboardControlsComponent';
+//Hooks
+import useKeyboardState from '@/hooks/useKeyboardState';
+import useWindowDimensions from '@/hooks/useWindowDimensions';
 
+//Helpers
 import reduce from '@/helpers/object/reduce';
 import flatten from '@/helpers/array/flatten';
+import combineProps from '@/helpers/react/combine-props';
 
+//Other
 import {addItem, removeItem} from '@/modules/onFrameIterator';
 
 //constants
@@ -39,241 +42,205 @@ const zoomEaseThreshold = 0.0001;
 const followExtraEaseTime = 0.5;
 
 
-class SystemMap extends React.Component {
-  constructor(props) {
-    super(props);
+const SystemMap = React.memo(function SystemMap({
+  systemId, setFollowing, cx, cy, styles, renderComponent: RenderComponent, onContextMenu,
+  initialX, initialY, initialZoom,
+  ...props
+}) {
+  //c/onsole.log('render SystemMap');
 
-    this.state = {
-      x: props.x,
-      y: props.y,
-      zoom: props.zoom
-    };
+  const [keyboardStateProps, isKeyDown] = useKeyboardState(true);
+  const windowSize = useWindowDimensions();
+  const [t, setT] = useState();
+  const setTRef = useRef();
+  setTRef.current = setT;
+  const hasReRenderedRef = useRef();
+  hasReRenderedRef.current = true;
 
-    this.tx = props.x;
-    this.ty = props.y;
-    this.tzoom = props.zoom;
-    this.followingTime = 0;
-    this.lastFollowing = null;
-    this.isMouseDragging = false;
+  //Redux
+  const {following, options} = useSelector(state => state.systemMap);
+  const factionId = useSelector(state => state.factionId);
 
-    if(props.systemMapRef) {
-      props.systemMapRef(this);
-    }
+  const store = useStore();
+  const state = store.getState();
+  const entities = state.entities.byId;
+  const entityIds = state.entities.allIds;
+  const colonies = state.entitiesByType.colony;
 
-    addItem(this._onFrameUpdate);
+  //Refs
+  const renderPrimitivesRef = useRef([]);
+  const entityScreenPositionsRef = useRef([]);
+  const stateRef = useRef({//init state ref
+    mouseClientX: 0,
+    mouseClientY: 0,
+    isMouseDragging: false,
+    mouseDownWorldCoords: null,
+    dragMouseX: null,
+    dragMouseY: null,
 
-    this._elementProps = {
-      onKeyDown: props.onKeyDown,
-      onKeyUp: props.onKeyUp,
-      onBlur: props.onBlur,
-      tabIndex: 0,
-      onMouseDown: this._onMouseDown,
-      onMouseMove: this._onMouseMove,
-      onMouseLeave: this._onMouseLeave,
-      onClick: this._onClick,
-      onWheel: this._onWheel,
-      onContextMenu: (e) => {
-        //const worldPos = this.screenToWorld(e.clientX, e.clientY);
+    lastFollowing: null,
+    followingTime: 0,
 
-        props.onContextMenu(e, this._entityScreenPositions);
-      }
-    };
+    x: initialX,
+    y: initialY,
+    zoom: initialZoom,
+    tx: initialX,
+    ty: initialY,
+    tzoom: initialZoom,
+    cx,
+    cy,
+    isKeyDown,
+    windowSize,
+    options,
+    following,
+    setFollowing,
+    store,
+    lastTime: Date.now()
+  })
 
-    props.setActiveKeys(flatten(Object.values(props.options.controls)));
-  }
+  //-keep state ref updated
+  stateRef.current.cx = cx;
+  stateRef.current.cy = cy;
+  stateRef.current.windowSize = windowSize;
+  stateRef.current.options = options;
+  stateRef.current.following = following;
+  stateRef.current.setFollowing = setFollowing;
+  stateRef.current.store = store;
 
-  _onFrameUpdate = (elapsedTime) => {
-    const {props, state, mouseClientX, mouseClientY, isMouseDragging} = this;
-    const {isKeyDown, options, windowSize, clientState} = props;
+  stateRef.current = onUpdateHandler(stateRef.current);
 
-    const newState = {x: state.x, y: state.y, zoom: state.zoom};
-    let hasScrolled = false;//has moved camera left/right/up/down, doesn't care about zooming < used to determine if we should stop following
-    let isFollowing = false;
+  let {x, y, zoom} = stateRef.current;
 
-    //-keyboard zooming
-    const zoomSpeed = (isKeyDown(options.controls.fast) ? fastZoomSpeed : normalZoomSpeed);//<TODO take into account elapsed time (frame rate)
-
-    if(isKeyDown(options.controls.zoomIn)) {//zoom in
-      this.tzoom *= Math.pow(zoomSpeed, elapsedTime);
-    } else if(isKeyDown(options.controls.zoomOut)) {//zoom out
-      this.tzoom *= Math.pow(1 / zoomSpeed, elapsedTime);
-    }
-
-    if(isMouseDragging) {
-      if(props.following) {
-        props.setFollowing(null);
-      }
-
-      //set target position to wherever places the mouseDownWorldCoords at the
-      //current dragMouse screen position
-      this.tx = this.mouseDownWorldCoords.x -((this.dragMouseX - (windowSize.width * props.cx) ) / state.zoom);
-      this.ty = this.mouseDownWorldCoords.y -((this.dragMouseY - (windowSize.height * props.cy) ) / state.zoom);
-    } else {
-      //Take keyboard input scrolling
-      const scrollSpeed = ((isKeyDown(options.controls.fast) ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / state.zoom;
-
-      //-scrolling
-      if(isKeyDown(options.controls.scrollRight) || (!props.following && mouseClientX !== null && (options.mouseEdgeScrolling + mouseClientX >= windowSize.width))) {//right
-        this.tx += scrollSpeed;
-        hasScrolled = true;
-      } else if(isKeyDown(options.controls.scrollLeft) || (!props.following && mouseClientX !== null && (mouseClientX < options.mouseEdgeScrolling))) {//left
-        this.tx -= scrollSpeed;
-        hasScrolled = true;
+  const factionColoniesBySystemBody = useMemo(() => {
+    return reduce(colonies, (output, colony) => {
+      if(colony.systemId == systemId && colony.factionId == factionId) {
+        output[colony.systemBodyId] = colony;
       }
 
-      if(isKeyDown(options.controls.scrollDown) || (!props.following && mouseClientY !== null && (options.mouseEdgeScrolling + mouseClientY >= windowSize.height))) {//down
-        this.ty += scrollSpeed;
-        hasScrolled = true;
-      } else if(isKeyDown(options.controls.scrollUp) || (!props.following && mouseClientY !== null && (mouseClientY < options.mouseEdgeScrolling))) {//up
-        this.ty -= scrollSpeed;
-        hasScrolled = true;
-      }
+      return output;
+    }, {});
+  }, [colonies, factionId, systemId])
 
-      //follow current target
-      if(props.following) {
-        if(hasScrolled) {
-          //user has scrolled, stop following current target
-          props.setFollowing(null);
-          this.lastFollowing = null;
-          this.followingTime = 0;
-        } else {
-          const followEntity = clientState.entities[props.following];
+  //center in window
+  x -= (windowSize.width * cx) / zoom;
+  y -= (windowSize.height * cy) / zoom;
 
-          //This is an entity that has a position, so can be followed...
-          if(followEntity.position) {
-            this.tx = followEntity.position.x;
-            this.ty = followEntity.position.y;
-            isFollowing = true;
-          }
-        }
-      }
+  //return previous primitives to the pool
+  const renderPrimitives = renderPrimitivesRef.current;
 
-      if(this.lastFollowing) {
-        if(isFollowing) {
-          if(props.following === this.lastFollowing) {
-            //still following the same thing
-            this.followingTime += elapsedTime;
-          } else {
-            //switched to following something new
-            this.lastFollowing = props.following;
-            this.followingTime = 0;
-          }
-        } else {
-          //no longer following a thing
-          this.lastFollowing = null;
-          this.followingTime = 0;
-        }
-      } else if(isFollowing) {
-        //am now following something
-        this.lastFollowing = props.following;
-        this.followingTime = 0;
-      }
-    }//end not currently mouse dragging
+  renderPrimitives.forEach(primitive => {
+    switch (primitive.t) {
+      case 'circle':
+        circlePool.release(primitive);
+        break;
+      case 'text':
+        textPool.release(primitive);
+        break;
+      default:
+        debugger;//shouldn't happen!
+    }
+  });
 
-    //Ease zooming
-    newState.zoom += ((this.tzoom - newState.zoom) * zoomEaseFactor);
+  //reset primitives length
+  renderPrimitives.length = 0;
 
-    if(Math.abs(1 - (newState.zoom / this.tzoom)) < zoomEaseThreshold) {
-      newState.zoom = this.tzoom;//zoom easing finished
+  //reset entityScreenPositions to pool
+  const entityScreenPositions = entityScreenPositionsRef.current;
+
+  entityScreenPositions.forEach(position => {positionsPool.release(position);});
+
+  entityScreenPositions.length = 0;
+
+
+  //Get new primitives + screen positions
+  const renderableEntities = entityIds.reduce((output, id) => {
+    const entity = entities[id];
+
+    if(entity.render && entity.systemId == systemId) {
+      output.push(entity);
     }
 
-    //keep zooming centered
-    if(!isFollowing && newState.zoom !== state.zoom) {
-      if(mouseClientX !== null && mouseClientY !== null) {
-        const mouseZoomWorldCurPos = this.screenToWorld(mouseClientX, mouseClientY);
-        const mouseZoomWorldNewPos = this.screenToWorld(mouseClientX, mouseClientY, {zoom: newState.zoom});
+    return output;
+  }, []);
 
-        const zoomDX = -(mouseZoomWorldNewPos.x - mouseZoomWorldCurPos.x);
-        const zoomDY = -(mouseZoomWorldNewPos.y - mouseZoomWorldCurPos.y);
+  renderableEntities.forEach(entity => {
+    const renderer = EntityRenderers[entity.render.type];
 
-        newState.x += zoomDX;
-        newState.y += zoomDY;
+    renderer && renderer(renderPrimitives, entityScreenPositions, windowSize, x, y, zoom, entity, entities, factionColoniesBySystemBody, options.display);
+  });
 
-        this.tx += zoomDX;
-        this.ty += zoomDY;
-      }
+  //Callbacks
+  const onUpdate = useCallback(elapsedTime => {
+    if(hasReRenderedRef.current) {//if the map has re-rendered since the last time this was called
+      hasReRenderedRef.current = false;
+      setTRef.current(Date.now());//will force a re-render
     }
+  }, []);
 
-    //convert target x/y to real x/y with easing
-    let easeFactor = baseScrollEaseFactor;
-    const easeThreshold = 1 / state.zoom;
-    const distanceFromTarget = Math.sqrt(Math.pow(this.tx - newState.x, 2) + Math.pow(this.ty - newState.y, 2));
+  const onMouseDown = useCallback(e => {
+    const state = stateRef.current;
 
-    //if you're following something slowly reduce the easing to nothing so the
-    //camera will catch up with it, even if it's moving quickly
-    if(this.followingTime > 0) {
-      easeFactor += (this.followingTime / followExtraEaseTime) * (1 - easeFactor);
-    }
+    state.dragMouseX = e.clientX;
+    state.dragMouseY = e.clientY;
+    state.mouseDownWorldCoords = screenToWorld(e.clientX, e.clientY, state);
 
-    //if easing not required
-    if(easeFactor >= 1 || distanceFromTarget <= easeThreshold) {
-      //just move to target
-      newState.x = this.tx;
-      newState.y = this.ty;
-    } else {
-      //apply easing
-      newState.x += ((this.tx - newState.x) * easeFactor);
-      newState.y += ((this.ty - newState.y) * easeFactor);
-    }
+    window.addEventListener('mousemove', onDragMove);
+    window.addEventListener('mouseup', onDragUp);
+  }, []);
 
-    //If any state changes, update the state
-    if(newState.x !== state.x || newState.y !== state.y || newState.zoom !== state.zoom) {
-      this.setState(newState);
-    }
-  }
-
-  //event handlers
-  _onMouseDown = (e) => {
-    this.dragMouseX = e.clientX;
-    this.dragMouseY = e.clientY;
-
-    this.mouseDownWorldCoords = this.screenToWorld(e.clientX, e.clientY);
-
-    window.addEventListener('mousemove', this._onDragMove);
-    window.addEventListener('mouseup', this._onDragUp);
-  }
-
-  _onDragMove = (e) => {
+  const onDragMove = useCallback(e => {
     e.preventDefault();
+    const state = stateRef.current;
 
-    this.isMouseDragging = true;
+    state.isMouseDragging = true;
+    state.dragMouseX = e.clientX;
+    state.dragMouseY = e.clientY;
+  }, []);
 
-    this.dragMouseX = e.clientX;
-    this.dragMouseY = e.clientY;
-  }
-
-  _onDragUp = (e) => {
+  const onDragUp = useCallback(e => {
     e.preventDefault();
+    const state = stateRef.current;
+    state.isMouseDragging = false;
 
-    this._endDragging()
-  }
+    window.removeEventListener('mousemove', onDragMove);
+    window.removeEventListener('mouseup', onDragUp);
+  }, []);
 
-  _endDragging() {
-    this.isMouseDragging = false;
+  const onMouseMove = useCallback(e => {
+    const state = stateRef.current;
 
-    window.removeEventListener('mousemove', this._onDragMove);
-    window.removeEventListener('mouseup', this._onDragUp);
-  }
+    state.mouseClientX = e.clientX;
+    state.mouseClientY = e.clientY;
+  }, []);
 
-  _onMouseMove = (e) => {
-    this.mouseClientX = e.clientX;
-    this.mouseClientY = e.clientY;
-  }
+  const onMouseLeave = useCallback(e => {
+    const state = stateRef.current;
 
-  _onMouseLeave = (e) => {
-    this.mouseClientX = null;
-    this.mouseClientY = null;
-  }
+    state.mouseClientX = null;
+    state.mouseClientY = null;
+  }, []);
 
-  _onClick = (e) => {
+  const onWheel = useCallback(e => {
+    const state = stateRef.current;
+
+    const wheelZoomSpeed = state.isKeyDown(state.options.controls.fast) ? fastWheelZoomSpeed : normalWheelZoomSpeed;
+
+    if(e.deltaY < 0) {
+      state.tzoom *= wheelZoomSpeed;
+    } else if(e.deltaY > 0) {
+      state.tzoom *= (1 / wheelZoomSpeed);
+    }
+  }, []);
+
+  const onClick = useCallback(e => {
     const target = e.target;
 
     const clickX = e.clientX;
-    const clickY = e.clientY
+    const clickY = e.clientY;
 
-    const clickedEntity = this._entityScreenPositions.find(position => {
+    const clickedEntity = entityScreenPositions.find(position => {
       if(position.r === 0) {
-        return;
+       return;
       }
 
       const dx = position.x - clickX;
@@ -282,151 +249,246 @@ class SystemMap extends React.Component {
       return (dx * dx) + (dy * dy) <= (position.r * position.r);
     })
 
-    clickedEntity && this.props.setFollowing(clickedEntity.id);
-  }
+    clickedEntity && setFollowing(clickedEntity.id);
+  }, [setFollowing]);
 
-  _onWheel = (e) => {
-    const wheelZoomSpeed = this.props.isKeyDown(this.props.options.controls.fast) ? fastWheelZoomSpeed : normalWheelZoomSpeed;
 
-    if(e.deltaY < 0) {
-      this.tzoom *= wheelZoomSpeed;
-    } else if(e.deltaY > 0) {
-      this.tzoom *= (1 / wheelZoomSpeed);
+  //Side effects
+  useEffect(() => {
+    addItem(onUpdate);
+
+    return () => {
+      removeItem(onUpdate);
+
+      //tidy up event listeners
+      window.removeEventListener('mouseup', onDragUp);
+      window.removeEventListener('mousemove', onDragMove);
     }
-  }
+  }, [])
 
-  //public methods
-  screenToWorld(screenX, screenY, options) {
-    const {cx, cy, windowSize} = this.props;
-    const x = options && ('x' in options) ? options.x : this.state.x;
-    const y = options && ('y' in options) ? options.y : this.state.y;
-    const zoom = options && ('zoom' in options) ? options.zoom : this.state.zoom;
+  //Output rendered content
+  return <RenderComponent
+    {...combineProps(
+      keyboardStateProps,
+      props,
+      {
+        x,
+        y,
+        zoom,
+        renderPrimitives,
+        styles,
+        windowSize,
+        options,
+        tabIndex: 0,
+        onContextMenu: onContextMenu ? (e) => {
+          onContextMenu(e, entityScreenPositions);
+        } : null,
 
-    screenX -= windowSize.width * cx;
-    screenY -= windowSize.height * cy;
-
-    return {
-      x: x + (screenX / zoom),
-      y: y + (screenY / zoom),
-    };
-  }
-
-  worldToScreen(worldX, worldY) {
-    const {cx, cy, windowSize} = this.props;
-    const {x, y, zoom} = this.state;
-
-    return {
-      x: ((worldX - x) * zoom) + (windowSize.width * cx),
-      y: ((worldY - y) * zoom) + (windowSize.height * cy)
-    };
-  }
-
-  //React lifecycle methods
-
-  _renderPrimitives = [];
-  _entityScreenPositions = [];
-
-  render() {
-    const props = this.props;
-    const {systemId, windowSize, clientState, styles, cx, cy, options, renderComponent: RenderComponent} = props;
-    let {x, y, zoom} = this.state;
-    const colonies = clientState.getColoniesBySystemBody(systemId);
-
-    //center in window
-    x -= (windowSize.width * cx) / zoom;
-    y -= (windowSize.height * cy) / zoom;
-
-    //return previous primitives to the pool
-    const renderPrimitives = this._renderPrimitives;
-
-    renderPrimitives.forEach(primitive => {
-      switch (primitive.t) {
-        case 'circle':
-          circlePool.release(primitive);
-          break;
-        case 'text':
-          textPool.release(primitive);
-          break;
-        default:
-          debugger;//shouldn't happen!
+        onMouseDown,
+        onMouseMove,
+        onMouseLeave,
+        onClick,
+        onWheel,
       }
-    });
+    )}
+  />
+})
 
-    //reset primitives length
-    renderPrimitives.length = 0;
+SystemMap.defaultProps = {
+  styles: defaultStyles,
+  cx: 0.5,
+  cy: 0.5,
 
-    //reset entityScreenPositions to pool
-    const entityScreenPositions = this._entityScreenPositions;
+  initialX: 0,
+  initialY: 0,
+  initialZoom: 1/1000000000,
+  //renderComponent: SystemMapPixiRenderer,
+  renderComponent: SystemMapSVGRenderer,
+};
 
-    entityScreenPositions.forEach(position => {positionsPool.release(position);});
-
-    entityScreenPositions.length = 0;
+export default SystemMap;
 
 
-    //Get new primitives + screen positions
-    const renderableEntities = this._renderableEntities = clientState.getRenderableEntities(systemId);
+function onUpdateHandler(state) {
+  const now = Date.now();
+  const elapsedTime = (now - state.lastTime) / 1000;
 
-    renderableEntities.forEach(entity => {
-      const renderer = EntityRenderers[entity.render.type];
+  const {
+    mouseClientX, mouseClientY, isMouseDragging,
+    tx, ty, tzoom,
+    x, y, zoom,
+    cx, cy,
+    isKeyDown, windowSize, options,
+    following, setFollowing, lastFollowing,
 
-      renderer && renderer(renderPrimitives, entityScreenPositions, windowSize, x, y, zoom, entity, clientState.entities, colonies, options.display);
-    });
+    mouseDownWorldCoords,
+    dragMouseX, dragMouseY,
 
-    //Output rendered content
-    return <RenderComponent
-      x={x}
-      y={y}
-      zoom={zoom}
-      renderPrimitives={renderPrimitives}
-      styles={styles}
-      windowSize={windowSize}
-      options={options.display}
+    store
+  } = state;
 
-      elementProps={this._elementProps}
-    />
+  const newState = {
+    ...state,
+    lastTime: now
+  };
+  let hasScrolled = false;//has moved camera left/right/up/down, doesn't care about zooming < used to determine if we should stop following
+  let isFollowing = false;
+
+  //-keyboard zooming
+  const zoomSpeed = (isKeyDown(options.controls.fast) ? fastZoomSpeed : normalZoomSpeed);//<TODO take into account elapsed time (frame rate)
+
+  if(isKeyDown(options.controls.zoomIn)) {//zoom in
+    newState.tzoom *= Math.pow(zoomSpeed, elapsedTime);
+  } else if(isKeyDown(options.controls.zoomOut)) {//zoom out
+    newState.tzoom *= Math.pow(1 / zoomSpeed, elapsedTime);
   }
 
-  componentDidUpdate(prevProps) {
-    const props = this.props;
-
-    if(props.setActiveKeys !== prevProps.setActiveKeys || props.options !== prevProps.options) {
-      props.setActiveKeys(flatten(Object.keys(props.options.controls)));
+  if(isMouseDragging) {
+    if(following) {
+      setFollowing(null);
     }
 
-    //if following a new entity, set appropriate zoom level
-    if(props.following && props.following !== prevProps.following) {
-      this.tzoom = Math.max(this.tzoom, getEntityVisibleMaxZoom(props.clientState.entities[props.following]));
+    //set target position to wherever places the mouseDownWorldCoords at the
+    //current dragMouse screen position
+    newState.tx = mouseDownWorldCoords.x -((dragMouseX - (windowSize.width * cx) ) / zoom);
+    newState.ty = mouseDownWorldCoords.y -((dragMouseY - (windowSize.height * cy) ) / zoom);
+  } else {
+    //Take keyboard input scrolling
+    const scrollSpeed = ((isKeyDown(options.controls.fast) ? fastScrollSpeed : normalScrollSpeed) * elapsedTime) / zoom;
+
+    //-scrolling
+    if(isKeyDown(options.controls.scrollRight) || (!following && mouseClientX !== null && (options.mouseEdgeScrolling + mouseClientX >= windowSize.width))) {//right
+      newState.tx += scrollSpeed;
+      hasScrolled = true;
+    } else if(isKeyDown(options.controls.scrollLeft) || (!following && mouseClientX !== null && (mouseClientX < options.mouseEdgeScrolling))) {//left
+      newState.tx -= scrollSpeed;
+      hasScrolled = true;
+    }
+
+    if(isKeyDown(options.controls.scrollDown) || (!following && mouseClientY !== null && (options.mouseEdgeScrolling + mouseClientY >= windowSize.height))) {//down
+      newState.ty += scrollSpeed;
+      hasScrolled = true;
+    } else if(isKeyDown(options.controls.scrollUp) || (!following && mouseClientY !== null && (mouseClientY < options.mouseEdgeScrolling))) {//up
+      newState.ty -= scrollSpeed;
+      hasScrolled = true;
+    }
+
+    //follow current target
+    if(following) {
+      if(hasScrolled) {
+        //user has scrolled, stop following current target
+        setFollowing(null);
+        newState.lastFollowing = null;
+        newState.followingTime = 0;
+      } else {
+        const state = store.getState();
+        const followEntity = state.entities.byId[following];
+
+        //This is an entity that has a position, so can be followed...
+        if(followEntity.position) {
+          newState.tx = followEntity.position.x;
+          newState.ty = followEntity.position.y;
+          isFollowing = true;
+        }
+      }
+    }
+
+    if(newState.lastFollowing) {
+      if(isFollowing) {
+        if(following === lastFollowing) {
+          //still following the same thing
+          newState.followingTime += elapsedTime;
+        } else {
+          //switched to following something new
+          newState.lastFollowing = following;
+          newState.followingTime = 0;
+        }
+      } else {
+        //no longer following a thing
+        newState.lastFollowing = null;
+        newState.followingTime = 0;
+      }
+    } else if(isFollowing) {
+      //am now following something
+      newState.lastFollowing = following;
+      newState.followingTime = 0;
+    }
+  }//end not currently mouse dragging
+
+  //Ease zooming
+  newState.zoom += ((tzoom - newState.zoom) * zoomEaseFactor);
+
+  if(Math.abs(1 - (newState.zoom / tzoom)) < zoomEaseThreshold) {
+    newState.zoom = tzoom;//zoom easing finished
+  }
+
+  //keep zooming centered
+  if(!isFollowing && newState.zoom !== zoom) {
+    if(mouseClientX !== null && mouseClientY !== null) {
+      const mouseZoomWorldCurPos = screenToWorld(mouseClientX, mouseClientY, state);
+      const mouseZoomWorldNewPos = screenToWorld(mouseClientX, mouseClientY, newState);
+
+      const zoomDX = -(mouseZoomWorldNewPos.x - mouseZoomWorldCurPos.x);
+      const zoomDY = -(mouseZoomWorldNewPos.y - mouseZoomWorldCurPos.y);
+
+      newState.x += zoomDX;
+      newState.y += zoomDY;
+
+      newState.tx += zoomDX;
+      newState.ty += zoomDY;
     }
   }
 
-  componentWillUnmount() {
-    removeItem(this._onFrameUpdate);
+  //convert target x/y to real x/y with easing
+  let easeFactor = baseScrollEaseFactor;
+  const easeThreshold = 1 / state.zoom;
+  const distanceFromTarget = Math.sqrt(Math.pow(newState.tx - newState.x, 2) + Math.pow(newState.ty - newState.y, 2));
 
-    this._endDragging();
-
-    if(this.props.systemMapRef) {
-      this.props.systemMapRef(null);
-    }
+  //if you're following something slowly reduce the easing to nothing so the
+  //camera will catch up with it, even if it's moving quickly
+  if(newState.followingTime > 0) {
+    easeFactor += (newState.followingTime / followExtraEaseTime) * (1 - easeFactor);
   }
 
-  //static props
-  static defaultProps = {
-    styles: defaultStyles,
-    zoom: 1/1000000000,
-    x: 0,
-    y: 0,
-    cx: 0.5,
-    cy: 0.5,
-    //renderComponent: SystemMapPixiRenderer,
-    renderComponent: SystemMapSVGRenderer,
+  //if easing not required
+  if(easeFactor >= 1 || distanceFromTarget <= easeThreshold) {
+    //just move to target
+    newState.x = newState.tx;
+    newState.y = newState.ty;
+  } else {
+    //apply easing
+    newState.x += ((newState.tx - newState.x) * easeFactor);
+    newState.y += ((newState.ty - newState.y) * easeFactor);
+  }
+
+  return newState;
+}
+
+//public methods
+function screenToWorld(screenX, screenY, state, options) {
+  const {cx, cy, windowSize} = state;
+
+  const x = options && ('x' in options) ? options.x : state.x;
+  const y = options && ('y' in options) ? options.y : state.y;
+  const zoom = options && ('zoom' in options) ? options.zoom : state.zoom;
+
+  screenX -= windowSize.width * cx;
+  screenY -= windowSize.height * cy;
+
+  return {
+    x: x + (screenX / zoom),
+    y: y + (screenY / zoom),
   };
 }
 
-//Compose the component
-export default compose(
-  WindowSizeComponent(),
-  KeyboardControlsComponent()
-)(SystemMap);
+function worldToScreen(worldX, worldY, state) {
+  const {cx, cy, windowSize, x, y, zoom} = state;
+
+  return {
+    x: ((worldX - x) * zoom) + (windowSize.width * cx),
+    y: ((worldY - y) * zoom) + (windowSize.height * cy)
+  };
+}
 
 
 //TODO only works with circular orbits (all I have right now)

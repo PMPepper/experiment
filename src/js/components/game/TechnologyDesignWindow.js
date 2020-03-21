@@ -30,7 +30,7 @@ const parser = new exprEval.Parser();
 //The component
 export default function TechnologyDesignWindow(props) {
   const faction = useSelector(state => state.entities.byId[state.factionId]);
-  const gameConfig = useSelector(state => state.game.gameConfig);
+  const gameConfig = useSelector(state => state.gameConfig);
 
   const i18n = useI18n();
   const client = useClient();

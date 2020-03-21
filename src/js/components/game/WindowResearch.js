@@ -35,7 +35,7 @@ import {setResearchSelectedArea} from '@/redux/reducers/coloniesWindow';
 
 //The component
 export default function WindowResearch({colonyId}) {
-  const gameConfig = useSelector(state => state.game.gameConfig);
+  const gameConfig = useSelector(state => state.gameConfig);
   const colony = useSelector(state => state.entities.byId[colonyId]);
   const faction = useSelector(state => state.entities.byId[state.factionId]);
   const populations = useSelector(state => state.entitiesByType.population);

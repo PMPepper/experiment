@@ -2,9 +2,9 @@ import {SET_GAME_STATE, UPDATE_GAME_STATE} from '@/redux/reducers/game';
 
 
 
-export default function reducer(state = 0, action) {
-  if(action.type === UPDATE_GAME_STATE || action.type === SET_GAME_STATE) {
-    return action.payload.gameTime;
+export default function reducer(state = 0, {type, payload}) {
+  if(type === UPDATE_GAME_STATE || type === SET_GAME_STATE) {
+    return payload.gameTime;
   }
 
   return state;

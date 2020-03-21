@@ -4,21 +4,21 @@ import isEmpty from '@/helpers/object/is-empty';
 
 
 
-export default function reducer(state = {}, action) {
-  if(action.type === UPDATE_GAME_STATE) {
-    return updateState(state, action);
-  } else if(action.type === SET_GAME_STATE) {
-    return setState(state, action)
+export default function reducer(state = {}, {type, payload}) {
+  if(type === UPDATE_GAME_STATE) {
+    return updateState(state, payload);
+  } else if(type === SET_GAME_STATE) {
+    return setState(state, payload)
   }
 
   return state;
 }
 
-function setState(state, action) {
+function setState(state, payload) {
   const newState = {};
 
-  for(var id in action.payload.entities) {
-    const entity = action.payload.entities[id];
+  for(var id in payload.entities) {
+    const entity = payload.entities[id];
 
     if(!newState[entity.type]) {
       newState[entity.type] = {};
@@ -30,13 +30,13 @@ function setState(state, action) {
   return newState;
 }
 
-function updateState(state, action) {
+function updateState(state, payload) {
   const updatedTypes = {};
   const updatedState = {};
 
-  for(let i = 0; i < action.payload.removedEntities.length; ++i) {
-    const id = action.payload.removedEntities[i];
-    const entity = action.payload.existingEntities.byId[id];
+  for(let i = 0; i < payload.removedEntities.length; ++i) {
+    const id = payload.removedEntities[i];
+    const entity = payload.existingEntities.byId[id];
 
     if(!updatedTypes[entity.type]) {//if this entity type has not yet been changed...
       updatedTypes[entity.type] = true;//...record that it is being changed...
@@ -46,8 +46,8 @@ function updateState(state, action) {
     delete updatedState[entity.type][entity.id];//remove the deleted entity from the set
   }
 
-  for(var id in action.payload.entities) {
-    const entity = action.payload.entities[id];
+  for(var id in payload.entities) {
+    const entity = payload.entities[id];
 
     if(!updatedTypes[entity.type]) {//if this entity type has not yet been changed...
       updatedTypes[entity.type] = true;//...record that it is being changed...
