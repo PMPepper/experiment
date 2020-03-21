@@ -3,6 +3,7 @@
 import React, {useState, useMemo} from 'react';
 import {Trans} from '@lingui/macro';
 import exprEval from 'expr-eval'
+import {useSelector} from 'react-redux'
 
 //Components
 import Form from '@/components/form/Form';
@@ -41,6 +42,7 @@ export default function TechnologyDesignWindow(props) {
     componentTypes,
     (componentType, componentTypeId) => ({label: componentType.name, value: componentTypeId}),//map func
     sortAlphabeticalOnObjPath('label', i18n.language),//sort function
+    null,
     true//sort on mapped
   ), [componentTypes, i18n.language]);
 
