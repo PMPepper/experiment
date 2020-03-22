@@ -19,12 +19,6 @@ import mapToSortedArray from '@/helpers/object/map-to-sorted-array';
 import sortAlphabeticalOnObjPath from '@/helpers/sorting/sort-alphabetical-on-obj-path';
 
 //Consts
-const componentProperties = [
-  'rp', 'bp', 'mass', 'hitpoints', 'crew', 'explosionChance',
-  //engines
-  'thermal', 'thrust', 'fuelConsumption', 'fuelConsumptionPerETH'
-];//minerals are special/handled separately
-
 const parser = new exprEval.Parser();
 
 
@@ -40,7 +34,7 @@ export default function TechnologyDesignWindow(props) {
     componentTypes,
     (componentType, componentTypeId) => ({label: componentType.name, value: componentTypeId}),//map func
     sortAlphabeticalOnObjPath('label', i18n.language),//sort function
-    null,
+    componentType => componentType.designable,
     true//sort on mapped
   ), [componentTypes, i18n.language]);
 
@@ -101,11 +95,10 @@ export default function TechnologyDesignWindow(props) {
           </Form.Field>
         </Form.Row>
         <Form.Row columns={12}>
-          {componentProperties.map(property => {
-            if(!(property in selectedComponent)) {
-              return null;
-            }
-            const expr = parser.parse(selectedComponent[property]);
+          {selectedComponent.propertiesLayout.map(propertyLayout => {
+            const property = propertyLayout.property;
+
+            const expr = parser.parse(selectedComponent.properties[property]);
 
             const calculatedValue = expr.evaluate(componentOptions);
             const calculatedValueFormatted = <FormatNumber value={calculatedValue} />

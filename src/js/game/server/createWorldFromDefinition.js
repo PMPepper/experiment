@@ -3,15 +3,16 @@ import orbitPeriod from '@/helpers/physics/orbit-period';
 import map from '@/helpers/object/map';
 
 import forEach from '@/helpers/object/forEach';
+import clone from '@/helpers/object/simple-clone';
 
 import roundTo from '@/helpers/math/round-to';
 import random from '@/helpers/math/random';
 import defaultGameDefinition from '../data/defaultGameDefinition';
 
-function clone(obj) {
-  //TODO a better clone method?
-  return JSON.parse(JSON.stringify(obj))
-}
+//Game stuff
+import RTCManager from '@/game/server/RTCManager';
+
+
 
 export default function createWorldFromDefinition(server, definition) {
   //merge in the default game definition
@@ -22,20 +23,13 @@ export default function createWorldFromDefinition(server, definition) {
   server.structures = clone(definition.structures);
 
   //research/technology/components
-  server.rtcManager.researchAreas = {...definition.researchAreas};
-  server.rtcManager.research = forEach(clone(definition.research), researchProject => {
-    if(!researchProject.factionId) {
-      researchProject.factionId = 0;
-    }
-  });
-  server.rtcManager.technology = forEach(clone(definition.technology), researchProject => {
-    if(!researchProject.factionId) {
-      researchProject.factionId = 0;
-    }
-  });
-  server.rtcManager.setComponentTypes(clone(definition.componentTypes));
-  server.rtcManager.setComponents(clone(definition.components));
-
+  server.rtcManager = new RTCManager(
+    definition.researchAreas,
+    definition.research,
+    definition.technology,
+    definition.componentTypes,
+    definition.components
+  );
 
   server.systemBodyTypeMineralAbundance = clone(definition.systemBodyTypeMineralAbundance);
 

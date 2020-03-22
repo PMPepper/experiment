@@ -24,7 +24,6 @@ import shipBuildingFactory from './entityProcessorFactories/shipBuilding';
 
 import NameGenerator from '@/game/NameGenerator';
 import EntityManager from '@/game/server/EntityManager';
-import RTCManager from '@/game/server/RTCManager';
 
 
 //Server phases
@@ -100,7 +99,6 @@ export default class Server {
     this.entityManager = new EntityManager(this.gameTime, this.entityProcessors, this.nameGenerator);
     this.factions = {};
     this.clients = {};
-    this.rtcManager = new RTCManager();
 
     this.clientLastUpdatedTime = {};
     createWorldFromDefinition(this, definition);
@@ -109,6 +107,8 @@ export default class Server {
       minerals: this.minerals,
       structures: this.structures,
       constructionProjects: this.constructionProjects,
+      
+      //TODO should these be here? They are part of RTCManager
       researchAreas: this.rtcManager.researchAreas,
       research: this.rtcManager.research,
       technology: this.rtcManager.technology,

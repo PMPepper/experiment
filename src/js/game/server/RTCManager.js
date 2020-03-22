@@ -2,34 +2,69 @@
 
 import exprEval from 'expr-eval'
 
+//Classes
+import MapSet from '@/classes/MapSet';
+
 //Helpers
 import difference from '@/helpers/array/difference';
 import filter from '@/helpers/object/filter';
 import map from '@/helpers/object/map';
+import forEach from '@/helpers/object/forEach';
+import clone from '@/helpers/object/simple-clone';
 import toString from '@/helpers/string/to-string';
 
 //Constants
-const componentTypeGeneralProps = ['name', 'options', 'researchAreaId'];
 const parser = new exprEval.Parser();
 
 
 //The class
 export default class RTCManager {
+  researchForTechnology = null;//a MapSet
+  technologyForComponent = null;//a MapSet
+
   componentTypes = {};
   research = {}
   researchAreas = {}
   technology = {};
   components = {};
 
-  componentTypeEvaluators = {};
+  componentTypePropertyEvaluators = {};
+  componentTypeMineralEvaluators = {};
 
   //{[factionId]: Set([ids])}
   updatedResearch = {};
   updatedTechnology = {};
   updatedComponents = {};
 
-  setComponents(components) {
-    this.components = map(components, component => {
+  constructor(researchAreas, research, technology, componentTypes, components) {
+    this.researchForTechnology = new MapSet();
+    this.technologyForComponent = new MapSet();
+
+    this.researchAreas = clone(researchAreas);
+
+    forEach(research, (researchProject, id) => {
+      this._addResearch(id, researchProject.factionId, researchProject);
+    });
+
+    forEach(technology, (technology, id) => {
+      this._addTechnology(id, technology.factionId, technology)
+    });
+
+    //Component types
+    this.componentTypes = clone(componentTypes);
+
+    //build set of expression parsers for all component types
+    this.componentTypePropertyEvaluators = map(this.componentTypes, (componentType) => {
+      return map(componentType.properties || {}, exprStr => parser.parse(exprStr));
+    });
+
+    //mineral evaluators
+    this.componentTypeMineralEvaluators = map(this.componentTypes, (componentType) => {
+      return map(componentType.minerals, exprStr => parser.parse(exprStr));
+    });
+
+    //set components
+    this.components = map(clone(components), component => {
       if(!component.factionId) {
         component.factionId = 0;
       }
@@ -38,23 +73,9 @@ export default class RTCManager {
     });
   }
 
-  setComponentTypes(componentTypes) {
-    this.componentTypes = componentTypes;
-
-    //build set of expression parsers for all component types
-    this.componentTypeEvaluators = map(componentTypes, (componentType) => {
-      return difference(Object.keys(componentType), componentTypeGeneralProps).reduce((output, prop) => {
-        if(prop === 'minerals') {
-          output.minerals = map(componentType.minerals, exprStr => parser.parse(exprStr));
-        } else {
-          output[prop] = parser.parse(componentType[prop]);
-        }
-
-        return output;
-      }, {});
-    })
-  }
-
+  ////////////////////
+  // Public methods //
+  ////////////////////
   addFactionComponent(faction, name, componentTypeId, componentOptions) {
     const componentType = this.componentTypes[componentTypeId]
 
@@ -87,23 +108,20 @@ export default class RTCManager {
       }
     })
 
-    console.log(Array.from(neededTechnologies));
-    const requireResearchIds = [];//TODO map from neededTechnologies
+    const requireResearchIds = this.researchForTechnology.getAll(neededTechnologies, true);
 
     const optionsStr = componentType.options.map(({id}) => componentOptions[id]).join(',');
     const componentId = `component-${componentTypeId}-[${optionsStr}]-${faction.id}`;
-
-    console.log(componentId);
 
     if(this.research[componentId]) {
       //this project already exists!
       return false
     }
 
-    this.addResearch(componentId, faction.id, {
+    this._addResearch(componentId, faction.id, {
       name,
       description: '',//TODO - wrong place for trans? <Trans>Project to create {name}</Trans>,
-      cost: this.componentTypeEvaluators[componentTypeId].rp.evaluate(componentOptions),
+      cost: this.componentTypePropertyEvaluators[componentTypeId].rp.evaluate(componentOptions),
       area: componentType.researchAreaId,
       requireResearchIds,
       unlockTechnologyIds: [componentId]
@@ -112,77 +130,25 @@ export default class RTCManager {
     console.log(this.research[componentId]);
 
     //add technology
-    this.addTechnology(componentId, faction.id, {
+    this._addTechnology(componentId, faction.id, {
       name,
       unlockComponentIds: [componentId]
     });
 
     //add component
-    this.addComponent(componentId, faction.id, {
+    this._addComponent(componentId, faction.id, {
       name,
-      //TODO get calculated properities
+      componentTypeId,
+      options: clone(componentOptions),
+      properties: map(this.componentTypePropertyEvaluators[componentTypeId], (evaluator, propertyName) => {
+        return evaluator.evaluate(componentOptions);
+      }),
+      minerals: map(this.componentTypeMineralEvaluators[componentTypeId], (evaluator, propertyName) => {
+        return evaluator.evaluate(componentOptions);
+      })
     });
 
-    //TODO need to record as part of this what technologies are required to be able design this technology?
-
     return componentId;//new research project ID (and component ID?)
-  }
-
-  addResearch(id, factionId, research) {
-    this.research[id] = {
-      ...research
-    }
-
-    factionId = factionId || 0;
-
-    this.research[id].factionId = factionId;
-
-    if(factionId) {
-      //mark this is something that the client needs to be informed of
-      if(!this.updatedResearch[factionId]) {
-        this.updatedResearch[factionId] = new Set();
-      }
-
-      this.updatedResearch[factionId].add(id);
-    }
-  }
-
-  addTechnology(id, factionId, technology) {
-    this.technology[id] = {
-      ...technology
-    }
-
-    factionId = factionId || 0;
-
-    this.technology[id].factionId = factionId;
-
-    if(factionId) {
-      //mark this is something that the client needs to be informed of
-      if(!this.updatedTechnology[factionId]) {
-        this.updatedTechnology[factionId] = new Set();
-      }
-
-      this.updatedTechnology[factionId].add(id);
-    }
-  }
-
-  addComponent(id, factionId, component) {
-    this.components[id] = {
-      ...component
-    }
-
-    factionId = factionId || 0;
-
-    this.components[id].factionId = factionId;
-
-    if(factionId) {
-      //mark this is something that the client needs to be informed of
-      if(!this.updatedComponents[factionId]) {
-        this.updatedComponents[factionId] = new Set();
-      }
-
-      this.updatedComponents[factionId].add(id);
-    }
   }
 
   getResearchUpdatesFor(factionId) {
@@ -257,4 +223,66 @@ export default class RTCManager {
     return filter(this.components, component => component.factionId === 0)
   }
 
+  /////////////////////
+  // Private methods //
+  /////////////////////
+  _addResearch(id, factionId, research) {
+    factionId = factionId || 0;
+    this.research[id] = research = clone(research);
+    research.factionId = factionId;
+
+    //update researchForTechnology
+    research.unlockTechnologyIds && research.unlockTechnologyIds.forEach(technologyId => {
+      this.researchForTechnology.set(technologyId, id);
+    });
+
+    if(factionId) {
+      //mark this is something that the client needs to be informed of
+      if(!this.updatedResearch[factionId]) {
+        this.updatedResearch[factionId] = new Set();
+      }
+
+      this.updatedResearch[factionId].add(id);
+    }
+  }
+
+  _addTechnology(id, factionId, technology) {
+    factionId = factionId || 0;
+    this.technology[id] = technology = clone(technology);
+    technology.factionId = factionId;
+
+    //get required research
+    technology.requiredResearchIds = this.researchForTechnology.get(id, true);
+
+    //update technologyForComponent
+    technology.unlockComponentIds && technology.unlockComponentIds.forEach(componentId => {
+      this.technologyForComponent.set(componentId, id);
+    });
+
+    if(factionId) {
+      //mark this is something that the client needs to be informed of
+      if(!this.updatedTechnology[factionId]) {
+        this.updatedTechnology[factionId] = new Set();
+      }
+
+      this.updatedTechnology[factionId].add(id);
+    }
+  }
+
+  _addComponent(id, factionId, component) {
+    factionId = factionId || 0;
+    this.components[id] = component = clone(component);
+    component.factionId = factionId;
+
+    component.requiredTechnologyIds = this.technologyForComponent.get(id, true);
+
+    if(factionId) {
+      //mark this is something that the client needs to be informed of
+      if(!this.updatedComponents[factionId]) {
+        this.updatedComponents[factionId] = new Set();
+      }
+
+      this.updatedComponents[factionId].add(id);
+    }
+  }
 }

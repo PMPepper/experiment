@@ -47,6 +47,23 @@ export default class MapSet {
       new Set(set)
   }
 
+  getAll = (keys, asArray) => {
+    const store = this.store;
+    const result = new Set();
+
+    keys.forEach(key => {
+      if(!store.has(key)) {
+        return
+      }
+
+      const values = store.get(key);
+
+      values.forEach(value => result.add(value));
+    })
+
+    return asArray ? Array.from(result) : result
+  }
+
   set = (key, ...values) => {
     const store = this.store;
     let set = null;

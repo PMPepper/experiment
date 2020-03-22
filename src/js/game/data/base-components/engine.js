@@ -3,24 +3,42 @@ import range from 'range-inclusive';
 export default {
   name: 'Engine',
   researchAreaId: 8,
+  designable: true,
 
-  //required props
-  mass: 'size * 10',
-  rp: 'size * et * p * 5',
-  bp: 'size * et * p * 0.5',
-  hitpoints: 'size/2',
-  crew: 'size * p',
-  explosionChance: '0.1 * p',
+  //These are calculated props, based on the selected options
+  properties: {
+    //required props
+    mass: 'size * 10',
+    rp: 'size * et * p * 5',
+    bp: 'size * et * p * 0.5',
+    hitpoints: 'size/2',
+    crew: 'size * p',
+    explosionChance: '0.1 * p',
+
+    //engine specific props
+    thermal: '(size * et * p)',//TODO thermal reduction tech (LOW priority)
+    thrust: 'size * et * p',
+    fuelConsumption: '(size * et * p) * p^2.5 * eff * (1 - (size / 100))',
+    fuelConsumptionPerETH: 'p^2.5 * eff * (1 - (size / 100))',
+  },
   minerals: {
     "7": 'size * et * p * 0.5'
   },
 
-  //engine specific props
-  thermal: '(size * et * p)',//TODO thermal reduction tech (LOW priority)
-  thrust: 'size * et * p',
-  fuelConsumption: '(size * et * p) * p^2.5 * eff * (1 - (size / 100))',
-  fuelConsumptionPerETH: 'p^2.5 * eff * (1 - (size / 100))',
+  propertiesLayout: [
+    {property: 'rp'},
+    {property: 'bp'},
+    {property: 'mass'},
+    {property: 'hitpoints'},
+    {property: 'crew'},
+    {property: 'explosionChance'},
+    {property: 'thermal'},
+    {property: 'thrust'},
+    {property: 'fuelConsumption'},
+    {property: 'fuelConsumptionPerETH'},
+  ],
 
+  //These are things the user specifies
   options: [
     {
       id: 'et',

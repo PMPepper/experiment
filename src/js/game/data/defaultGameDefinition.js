@@ -1,4 +1,5 @@
 import engine from './base-components/engine';
+import fuelTank from './base-components/fuelTank';
 
 //includes stuff that usually won't change between games (minerals, tech tree, structure build times, costs, minerals, etc)
 
@@ -414,7 +415,7 @@ export default {
     "pe": {
       name: 'Post-Einstein technology',
       description: "Unlock the potential of Post-Einsteinium (PE) physics to create technology vastly superior to anything previously thought possible.",
-      cost: 500,
+      cost: 1,
       area: 2,
       requireResearchIds: [],
       unlockTechnologyIds: ['pe']
@@ -422,7 +423,7 @@ export default {
     "re1": {
       name: "Basic Reactor 1",
       description: "Utilise PE physics to create a new form of power reactor, capable of producing huge quantities of power from the mineral Stellarium. Our scientists believe this will lead to further advances in propulsion.",
-      cost: 500,
+      cost: 1,
       area: 8,
       requireResearchIds: ['pe'],
       unlockTechnologyIds: ['re1']
@@ -569,22 +570,25 @@ export default {
   },
   componentTypes: {
     engine: engine,
+    fuelTank: fuelTank,
   },
   components: {
     standardFuelTank: {
       name: 'Standard fuel tank',
+      componentTypeId: 'fuelTank',
 
-      //TODO component properties (temp values for now)
-      mass: 1000,
-      bp: 10,
-      hitpoints: 2,
-      crew: 0,
-      explosionChance: 0,
+      properties: {
+        //TODO component properties (temp values for now)
+        mass: 1000,
+        bp: 10,
+        hitpoints: 2,
+        crew: 0,
+        explosionChance: 0,
+        fuelStorage: 10000
+      },
       minerals: {
         "4": 5
-      },
-
-      fuelStorage: 10000
+      }
     }
   },
 };
