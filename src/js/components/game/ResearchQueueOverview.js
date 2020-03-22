@@ -21,10 +21,10 @@ import getETA from '@/helpers/app-ui/get-eta';
 
 
 //The component
-const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({colony, gameTimeDate, researchQueue, gameConfig, populations, species, onEditClick, onRemoveClick}, ref) {
+const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({colony, gameTimeDate, researchQueue, research, structures, populations, species, onEditClick, onRemoveClick}, ref) {
   const currentResearchId = researchQueue.researchQueue.researchIds[0]
   const currentResearchProject = currentResearchId ?
-    gameConfig.research[currentResearchId]
+    research[currentResearchId]
     :
     null;
   const currentResearchProgress = currentResearchProject ?
@@ -66,7 +66,7 @@ const ResearchQueueOverview = React.forwardRef(function ResearchQueueOverview({c
                 const quantityAssignedFormatted = <FormatNumber value={quantityAssigned} />;
 
                 return <Table.Row key={`${populationId}-${structureId}`}>
-                  <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
+                  <Table.TD>{structures[structureId].name}</Table.TD>
                   <Table.TD>{currentSpecies.species.name}</Table.TD>
                   <Table.TD><Trans>{quantityRequestedFormatted} / {quantityAssignedFormatted}</Trans></Table.TD>
                   <Table.TD><FormatNumber value={getCapabilityProductionForColonyPopulationStructure(colony, 'research', populationId, structureId) * quantityAssigned} /></Table.TD>

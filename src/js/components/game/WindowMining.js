@@ -28,7 +28,8 @@ import getPopulationName from '@/helpers/app-ui/get-population-name';
 
 //The component
 export default function WindowMining({colonyId}) {
-  const gameConfig = useSelector(state => state.gameConfig);
+  const minerals = useSelector(state => state.minerals);
+  const structures = useSelector(state => state.structures);
   const colony = useSelector(state => state.entities.byId[colonyId]);
   const systemBodyMinerals = useSelector(
     state => state.entities.byId[colony.systemBodyId].availableMinerals,
@@ -49,7 +50,7 @@ export default function WindowMining({colonyId}) {
   const totalColonyMiningFormatted = <FormatNumber value={colony.colony.capabilityProductionTotals.mining} />;
 
   //Mineral rows
-  const mineralsRows = isMineralsSurveyed ? map(gameConfig.minerals, (mineral, mineralId) => {
+  const mineralsRows = isMineralsSurveyed ? map(minerals, (mineral, mineralId) => {
     const systemBodyMineral = systemBodyMinerals[mineralId];
     const dailyProduction = (colony.colony.capabilityProductionTotals.mining || 0) * systemBodyMineral.access;
 
@@ -77,14 +78,14 @@ export default function WindowMining({colonyId}) {
         </Table.THead>
         <Table.TBody>
           {colonyMiningStructures
-            .sort(sortStructuresByNameAndSpecies(i18n.language, populations, species, gameConfig))
+            .sort(sortStructuresByNameAndSpecies(i18n.language, populations, species, structures))
             .filter(({quantity}) => (quantity > 0))
             .map(({populationId, structureId, quantity}) => {
               const availableFormatted = <FormatNumber value={+quantity} />
               const rps = getCapabilityProductionForColonyPopulationStructure(colony, 'mining', populationId, structureId);
 
               return <Table.Row key={`${populationId}-${structureId}`}>
-                <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
+                <Table.TD>{structures[structureId].name}</Table.TD>
                 {hasMultiplePopulations && <Table.TD>{getPopulationName(populationId, populations, species)}</Table.TD>}
                 <Table.TD><Trans>{availableFormatted}</Trans></Table.TD>
                 <Table.TD><FormatNumber value={+rps} /></Table.TD>

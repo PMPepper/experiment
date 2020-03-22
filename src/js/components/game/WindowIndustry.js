@@ -33,7 +33,8 @@ import getPopulationName from '@/helpers/app-ui/get-population-name';
 
 //The component
 export default function WindowIndustry({colonyId}) {
-  const gameConfig = useSelector(state => state.gameConfig);
+  const structures = useSelector(state => state.structures);
+  const constructionProjects = useSelector(state => state.constructionProjects);
   const populations = useSelector(state => state.entitiesByType.population);
   const species = useSelector(state => state.entitiesByType.species);
   const gameTimeDate = useSelector(state => state.gameTime) * 1000;
@@ -58,7 +59,7 @@ export default function WindowIndustry({colonyId}) {
 
   const [selectedBuildQueueItemId, setSelectedBuildQueueItemId] = useState(null);
 
-  const selectedAddConstructionProject = selectedAddConstructionProjectId ? gameConfig.constructionProjects[selectedAddConstructionProjectId] : null;
+  const selectedAddConstructionProject = selectedAddConstructionProjectId ? constructionProjects[selectedAddConstructionProjectId] : null;
   const selectedAddConstructionProjectRequiresStructures = selectedAddConstructionProject && !isEmpty(selectedAddConstructionProject.requiredStructures);
 
   const selectedBuildQueueItem = (selectedBuildQueueItemId && colony.colony.buildQueue.find(buildQueueItem => buildQueueItem.id === selectedBuildQueueItemId)) || null;
@@ -105,14 +106,14 @@ export default function WindowIndustry({colonyId}) {
         </Table.THead>
         <Table.TBody>
           {colonyConstructionStructures
-            .sort(sortStructuresByNameAndSpecies(i18n.language, populations, species, gameConfig))
+            .sort(sortStructuresByNameAndSpecies(i18n.language, populations, species, structures))
             .filter(({quantity}) => (quantity > 0))
             .map(({populationId, structureId, quantity}) => {
               const availableFormatted = <FormatNumber value={+quantity} />
               const rps = getCapabilityProductionForColonyPopulationStructure(colony, 'construction', populationId, structureId);
 
               return <Table.Row key={`${populationId}-${structureId}`}>
-                <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
+                <Table.TD>{structures[structureId].name}</Table.TD>
                 {hasMultiplePopulations && <Table.TD>{getPopulationName(populationId, populations, species)}</Table.TD>}
                 <Table.TD><Trans>{availableFormatted}</Trans></Table.TD>
                 <Table.TD><FormatNumber value={+rps} /></Table.TD>
@@ -153,7 +154,7 @@ export default function WindowIndustry({colonyId}) {
           </Table.THead>
           <Table.TBody>
             {colony.colony.buildQueue.map((buildQueueItem, index) => {
-              const currentConstructionProject = gameConfig.constructionProjects[buildQueueItem.constructionProjectId];
+              const currentConstructionProject = constructionProjects[buildQueueItem.constructionProjectId];
               const isFirstOfType = !colony.colony.buildQueue.slice(0, index).some(currentBuildQueueItem => (currentBuildQueueItem.constructionProjectId === buildQueueItem.constructionProjectId));
               const progress = +buildQueueItem.completed + (isFirstOfType ? (colony.colony.buildInProgress[buildQueueItem.constructionProjectId] || 0) / currentConstructionProject.bp : 0);
 
@@ -195,7 +196,7 @@ export default function WindowIndustry({colonyId}) {
             <Form.Select
               width={8}
               placeholder={i18n._('select.placeholder', null, {defaults: '- - Select - -'})}
-              options={getConstructionOptions(faction, gameConfig, colony, i18n)}
+              options={getConstructionOptions(faction, constructionProjects, structures, colony, i18n)}
               value={selectedAddConstructionProjectId}
               setValue={setSelectedAddConstructionProjectId}
             />
@@ -282,38 +283,38 @@ function getPopulationOptions(populationIds, populations, species, i18n, disable
     .sort(sortAlphabeticalOnObjPath('label', i18n.language))
 }
 
-function getConstructionOptions(faction, gameConfig, colony, i18n) {
-  const availableConstructionProjectIds = getAvailableConstructionProjectIds(faction, gameConfig);
+function getConstructionOptions(faction, constructionProjects, structures, colony, i18n) {
+  const availableConstructionProjectIds = getAvailableConstructionProjectIds(faction, constructionProjects, structures);
   const sortFunc = sortAlphabeticalOnObjPath('label', i18n.language);
 
   const buildProjects = availableConstructionProjectIds
     .filter(constructionProjectId =>
-      isEmpty(gameConfig.constructionProjects[constructionProjectId].requiredStructures)
+      isEmpty(constructionProjects[constructionProjectId].requiredStructures)
       &&
-      isEmpty(gameConfig.constructionProjects[constructionProjectId].shipyard)
+      isEmpty(constructionProjects[constructionProjectId].shipyard)
     )
     .map(constructionProjectId => ({
-      label: gameConfig.constructionProjects[constructionProjectId].name,
+      label: constructionProjects[constructionProjectId].name,
       value: constructionProjectId
     }))
     .sort(sortFunc)
 
   const upgradeProjects = availableConstructionProjectIds
     .filter(constructionProjectId =>
-      !isEmpty(gameConfig.constructionProjects[constructionProjectId].requiredStructures)
+      !isEmpty(constructionProjects[constructionProjectId].requiredStructures)
       &&
-      isEmpty(gameConfig.constructionProjects[constructionProjectId].shipyard)
+      isEmpty(constructionProjects[constructionProjectId].shipyard)
     )
     .map(constructionProjectId => ({
-      label: gameConfig.constructionProjects[constructionProjectId].name,
+      label: constructionProjects[constructionProjectId].name,
       value: constructionProjectId
     }))
     .sort(sortFunc)
 
   const shipyards = availableConstructionProjectIds
-    .filter(constructionProjectId => !isEmpty(gameConfig.constructionProjects[constructionProjectId].shipyard))
+    .filter(constructionProjectId => !isEmpty(constructionProjects[constructionProjectId].shipyard))
     .map(constructionProjectId => ({
-      label: gameConfig.constructionProjects[constructionProjectId].name,
+      label: constructionProjects[constructionProjectId].name,
       value: constructionProjectId
     }))
     .sort(sortFunc)
@@ -343,9 +344,8 @@ function getConstructionOptions(faction, gameConfig, colony, i18n) {
   return options;
 }
 
-function getAvailableConstructionProjectIds(faction, gameConfig) {
-  const {constructionProjects} = gameConfig;
-  const availableStructureIds = new Set(getAvailableStructureIds(faction, gameConfig));
+function getAvailableConstructionProjectIds(faction, constructionProjects, structures) {
+  const availableStructureIds = new Set(getAvailableStructureIds(faction, structures));
 
   return Object.keys(constructionProjects).filter(constructionProjectId => {
     const constructionProject = constructionProjects[constructionProjectId];
@@ -358,9 +358,7 @@ function getAvailableConstructionProjectIds(faction, gameConfig) {
 }
 
 //gets a list of all structures this faction knows how to build
-function getAvailableStructureIds(faction, gameConfig) {
-  const {structures} = gameConfig;
-
+function getAvailableStructureIds(faction, structures) {
   return Object.keys(structures).filter(structureId => {
     const structure = structures[structureId];
 

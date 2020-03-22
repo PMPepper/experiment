@@ -35,7 +35,9 @@ import {setResearchSelectedArea} from '@/redux/reducers/coloniesWindow';
 
 //The component
 export default function WindowResearch({colonyId}) {
-  const gameConfig = useSelector(state => state.gameConfig);
+  const researchAreas = useSelector(state => state.researchAreas);
+  const research = useSelector(state => state.research);
+  const structures = useSelector(state => state.structures);
   const colony = useSelector(state => state.entities.byId[colonyId]);
   const faction = useSelector(state => state.entities.byId[state.factionId]);
   const populations = useSelector(state => state.entitiesByType.population);
@@ -69,8 +71,6 @@ export default function WindowResearch({colonyId}) {
     })
   }, []);
 
-  const researchAreas = gameConfig.researchAreas;
-
   const totalNumResearchFacilities = Object.values(colony.colony.structuresWithCapability.research).reduce((sum, add) => {return sum + add;}, 0);
 
   const client = useClient();
@@ -94,7 +94,7 @@ export default function WindowResearch({colonyId}) {
         </Table.THead>
         <Table.TBody>
           {colonyResearchStructures
-            .sort(sortStructuresByNameAndSpecies(i18n.language, populations, species, gameConfig))
+            .sort(sortStructuresByNameAndSpecies(i18n.language, populations, species, structures))
             .filter(({quantity}) => (quantity > 0))
             .map(({populationId, structureId, quantity}) => {
               const assigned = (assignedStructures[populationId] && assignedStructures[populationId][structureId]) || 0;
@@ -104,7 +104,7 @@ export default function WindowResearch({colonyId}) {
               const rps = getCapabilityProductionForColonyPopulationStructure(colony, 'research', populationId, structureId);
 
               return <Table.Row key={`${populationId}-${structureId}`}>
-                <Table.TD>{gameConfig.structures[structureId].name}</Table.TD>
+                <Table.TD>{structures[structureId].name}</Table.TD>
                 <Table.TD>{getPopulationName(populationId, populations, species)}</Table.TD>
                 <Table.TD><Trans>{availableFormatted} / {totalFormatted}</Trans></Table.TD>
                 <Table.TD><FormatNumber value={rps} /></Table.TD>
@@ -128,7 +128,7 @@ export default function WindowResearch({colonyId}) {
         const researchQueue = researchQueues[researchQueueId];
 
         return <li key={researchQueueId}>
-          <ResearchQueueOverview colony={colony} researchQueue={researchQueue} gameTimeDate={gameTimeDate} gameConfig={gameConfig} populations={populations} species={species} onEditClick={onClickEditResearchGroup} onRemoveClick={onClickRemoveResearchGroup} />
+          <ResearchQueueOverview colony={colony} researchQueue={researchQueue} gameTimeDate={gameTimeDate} research={research} structures={structures} populations={populations} species={species} onEditClick={onClickEditResearchGroup} onRemoveClick={onClickRemoveResearchGroup} />
         </li>
       })}
     </ul>

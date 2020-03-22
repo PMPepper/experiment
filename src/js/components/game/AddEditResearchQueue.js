@@ -36,7 +36,9 @@ export default function AddEditResearchQueue({faction, colony, onComplete, resea
   const close = useContext(CloseModalContext);
 
   //Redux
-  const gameConfig = useSelector(state => state.gameConfig);
+  const structureDefinitions = useSelector(state => state.structures);
+  const research = useSelector(state => state.research);
+  const researchAreas = useSelector(state => state.researchAreas);
   const researchQueues = useSelector(state => state.entitiesByType.researchQueue);
   const populations = useSelector(state => state.entitiesByType.population);
   const species = useSelector(state => state.entitiesByType.species);
@@ -153,9 +155,9 @@ export default function AddEditResearchQueue({faction, colony, onComplete, resea
             return <Form.Group key={population.id}>
               <Form.Legend>{name}</Form.Legend>
               {mapToSortedArray(
-                filter(colony.colony.populationStructuresWithCapability[population.id].research, (qty, structureId) => (qty > 0)),
+                colony.colony.populationStructuresWithCapability[population.id].research,
                 (quantity, structureId) => {
-                  const structure = gameConfig.structures[structureId];
+                  const structure = structureDefinitions[structureId];
 
                   //how may of this population/structure are in use by another research queue on this colony?
                   const inUse = colony.researchQueueIds.reduce((total, researchQueueId) => {
@@ -187,12 +189,13 @@ export default function AddEditResearchQueue({faction, colony, onComplete, resea
                     </Form.Field>
                   </Form.Row>;
                 },
-                sortAlphabeticalOnMappedProp((structureId) => {
+                sortAlphabeticalOnMappedProp((element) => {
+                  const structureId = element.key;
                   //TODO translations
-                  return gameConfig.structures[structureId].name
+                  return structureDefinitions[structureId].name
                 }, i18n.language),
-                false,
-                true//sort on keys
+                (qty, structureId) => (qty > 0),
+                true
               )}
             </Form.Group>
           })
@@ -214,7 +217,7 @@ export default function AddEditResearchQueue({faction, colony, onComplete, resea
         <Form.Container>
           <LocalTableState
             rows={researchIds.reduce((obj, researchId, index) => {
-              const research = gameConfig.research[researchId];
+              const researchProject = research[researchId];
               const progress = colony.colony.researchInProgress[researchId] || 0;
 
               if(faction.faction.research[researchId]) {
@@ -222,10 +225,10 @@ export default function AddEditResearchQueue({faction, colony, onComplete, resea
               }
 
               //ETA
-              const researchETA = getETA(currentDate, research.cost, progress, researchRate)
+              const researchETA = getETA(currentDate, researchProject.cost, progress, researchRate)
 
               obj[researchId] = {
-                ...research,
+                ...researchProject,
                 progress,
                 eta: researchETA || '-',
                 index: Object.keys(obj).length + 1
@@ -262,7 +265,7 @@ export default function AddEditResearchQueue({faction, colony, onComplete, resea
               <Form.Select
                 width={6}
                 placeholder={i18n._('select.placeholder', null, {defaults: '- - Select - -'})}
-                options={getResearchOptions(i18n, faction, gameConfig, excludeResearchIds, colony.colony.researchInProgress)}
+                options={getResearchOptions(i18n, faction, researchAreas, research, excludeResearchIds, colony.colony.researchInProgress)}
                 value={selectedAvailableResearchId}
                 setValue={setSelectedAvailableResearchId}
               />
@@ -274,7 +277,7 @@ export default function AddEditResearchQueue({faction, colony, onComplete, resea
           <Form.Row>
             <Form.Field columns={12} inline>
               <Form.Label width={4}><Trans>Description</Trans></Form.Label>
-              <Form.Textarea width={8} value={selectedAvailableResearchId ? gameConfig.research[selectedAvailableResearchId].description : ''} rows="6" />
+              <Form.Textarea width={8} value={selectedAvailableResearchId ? research[selectedAvailableResearchId].description : ''} rows="6" />
             </Form.Field>
           </Form.Row>
         </Form.Group>
@@ -297,15 +300,15 @@ export default function AddEditResearchQueue({faction, colony, onComplete, resea
 }
 
 
-function getResearchOptions(i18n, faction, gameConfig, excludeResearchIds, researchInProgress) {
+function getResearchOptions(i18n, faction, researchAreas, research, excludeResearchIds, researchInProgress) {
   //TODO deal with translations - text can be Trans object, but research areas are dynamically driven, so how to handle translations?
 
-  return Object.keys(gameConfig.researchAreas)
+  return Object.keys(researchAreas)
     .map(areaId => ({
       key: areaId,
-      label: gameConfig.researchAreas[areaId],
+      label: researchAreas[areaId],
       options: mapToSortedArray(
-        getAvailableProjectsInArea(areaId, faction, gameConfig, excludeResearchIds),
+        getAvailableProjectsInArea(areaId, faction, research, excludeResearchIds),
         (research, researchId) => {
           const progress = researchInProgress[researchId] || 0;
           const researchCost = formatNumber(research.cost - progress, 0, i18n.language, null);
@@ -320,12 +323,12 @@ function getResearchOptions(i18n, faction, gameConfig, excludeResearchIds, resea
     }))
 }
 
-function getAvailableProjectsInArea(areaId, faction, gameConfig, excludeResearchIds) {
+function getAvailableProjectsInArea(areaId, faction, research, excludeResearchIds) {
   areaId = `${areaId}`;
 
   const factionCompletedResearch = faction.faction.research;
 
-  return filter(gameConfig.research, (research, researchId) => (
+  return filter(research, (research, researchId) => (
     `${research.area}` === areaId &&//is in selected area
     !factionCompletedResearch[researchId] &&//is not already researched
     !excludeResearchIds.includes(researchId) &&//is not in the exclude list

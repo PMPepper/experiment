@@ -4,10 +4,10 @@ import makeCombinedSortFunc from '@/helpers/sorting/make-combined-sort-func';
 
 
 //The helper func
-export default function sortStructuresByNameAndSpecies(langCode, populations, species, gameConfig) {
+export default function sortStructuresByNameAndSpecies(langCode, populations, species, structures) {
   //Table sorting
   const sortStructureNameComparator = sortAlphabeticalOnMappedProp(({populationId, structureId}) => {
-    return gameConfig.structures[structureId].name
+    return structures[structureId].name
   }, langCode);
 
   const sortSpeciesNameComparator = sortAlphabeticalOnMappedProp(({populationId, structureId}) => {

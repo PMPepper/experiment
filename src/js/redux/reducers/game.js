@@ -10,7 +10,6 @@ export default function game(state = DFEAULT_GAME_STATE, {type, payload}) {
         gameSpeed: payload.gameSpeed,
         desiredGameSpeed: payload.desiredGameSpeed,
         isPaused: payload.isPaused,
-        //research, technology, components?
       };
     }
   } else if(type === SET_GAME_STATE) {
@@ -18,7 +17,6 @@ export default function game(state = DFEAULT_GAME_STATE, {type, payload}) {
       gameSpeed: payload.gameSpeed,
       desiredGameSpeed: payload.desiredGameSpeed,
       isPaused: payload.isPaused,
-      //research, technology, components?
     };
   }
 
