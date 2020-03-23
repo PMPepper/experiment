@@ -6,7 +6,8 @@ import styles from './styles.scss';
 import SystemMap from './SystemMap';
 
 import WindowColonies from './WindowColonies';
-import TechnologyDesignWindow from './TechnologyDesignWindow';
+import WindowTechnologyDesign from './WindowTechnologyDesign';
+import WindowShipDesign from './WindowShipDesign';
 import GameTime from '@/components/game/GameTime';
 
 import Panel from '@/components/panel/Panel';
@@ -291,10 +292,14 @@ export default function Game({client}) {
         <Window style={{width: '90%', maxWidth: '120rem'}} reduxPath="coloniesWindow" title={<Trans id="coloniesWindow.title">Colonies</Trans>}>
           <WindowColonies />
         </Window>
-        <Window reduxPath="fleetsWindow" title={<Trans id="fleetsWindow.title">Fleets</Trans>}>TODO fleets window!</Window>
-        <Window reduxPath="shipDesignWindow" title={<Trans id="shipDesignWindow.title">Ship design</Trans>}>TODO ship design window!</Window>
+        <Window reduxPath="fleetsWindow" title={<Trans id="fleetsWindow.title">Fleets</Trans>}>
+          TODO fleets window!
+        </Window>
+        <Window reduxPath="shipDesignWindow" title={<Trans id="shipDesignWindow.title">Ship design</Trans>}>
+          <WindowShipDesign />
+        </Window>
         <Window style={{width: '90%', maxWidth: '60rem'}} reduxPath="technologyDesignWindow" title={<Trans id="technologyDesignWindow.title">/Design technology</Trans>}>
-          <TechnologyDesignWindow />
+          <WindowTechnologyDesign />
         </Window>
       </SortChildren>
       <FPSStats isActive={true} />

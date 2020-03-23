@@ -11,7 +11,7 @@ const worldDefinition = {
   },
   factions: [{
     name: 'Humans',
-    startingResearch: ['pe'],
+    startingResearch: ['pe', 'e1', 'armour1', 'fuelTank', 'fuelTankSmall'],
     //key value pair, where key is 'id' for generation reference (shared between factions) and value is the system,
     //currently only known systems supported
     startingSystems: {

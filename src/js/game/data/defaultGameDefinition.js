@@ -1,5 +1,14 @@
-import engine from './base-components/engine';
-import fuelTank from './base-components/fuelTank';
+import engine from './base-component-types/engine';
+import fuelTank from './base-component-types/fuelTank';
+import crewQuarters from './base-component-types/crewQuarters';
+import command from './base-component-types/command';
+import activeSensor from './base-component-types/activeSensor';
+import beamFireControl from './base-component-types/beamFireControl';
+import maintenance from './base-component-types/maintenance';
+import missileFireControl from './base-component-types/missileFireControl';
+
+import fuelTanks from './base-components/fuelTanks';
+import miscComponents from './base-components/misc';
 
 //includes stuff that usually won't change between games (minerals, tech tree, structure build times, costs, minerals, etc)
 
@@ -451,7 +460,135 @@ export default {
       area: 8,
       requireResearchIds: ['re2'],
       unlockTechnologyIds: ['e2']
-    }
+    },
+    fuelTankHuge: {
+      name: 'Huge fuel tank',
+      description: 'A huge container for Stellarium fuel',
+      cost: 5000,
+      area: 5,
+      requireResearchIds: ['fuelTankVeryLarge'],
+      unlockTechnologyIds: ['fuelTankHuge']
+    },
+    fuelTankVeryLarge: {
+      name: 'Very large fuel tank',
+      description: 'A very large container for Stellarium fuel',
+      cost: 2500,
+      area: 5,
+      requireResearchIds: ['fuelTankLarge'],
+      unlockTechnologyIds: ['fuelTankVeryLarge']
+    },
+    fuelTankLarge: {
+      name: 'Large fuel tank',
+      description: 'A large container for Stellarium fuel',
+      cost: 1000,
+      area: 5,
+      requireResearchIds: ['fuelTank'],
+      unlockTechnologyIds: ['fuelTankLarge']
+    },
+    fuelTank: {
+      name: 'Fuel tank',
+      description: 'A standard container for Stellarium fuel.',
+      cost: 1000,
+      area: 5,
+      requireResearchIds: [],
+      unlockTechnologyIds: ['fuelTank']
+    },
+    fuelTankSmall: {
+      name: 'Small fuel tank',
+      description: 'A small container for Stellarium fuel',
+      cost: 1000,
+      area: 5,
+      requireResearchIds: ['fuelTank'],
+      unlockTechnologyIds: ['fuelTankSmall']
+    },
+    fuelTankTiny: {
+      name: 'Tiny fuel tank',
+      description: 'A tiny container for Stellarium fuel',
+      cost: 3000,
+      area: 5,
+      requireResearchIds: ['fuelTankSmall'],
+      unlockTechnologyIds: ['fuelTankTiny']
+    },
+    "armour1": {
+      name: "Armour 1",
+      description: "",
+      cost: 250,
+      area: 3,
+      requireResearchIds: [],
+      unlockTechnologyIds: ['armour1']
+    },
+    "armour2": {
+      name: "Armour 2",
+      description: "",
+      cost: 500,
+      area: 3,
+      requireResearchIds: ['armour1'],
+      unlockTechnologyIds: ['armour2']
+    },
+    "armour3": {
+      name: "Armour 3",
+      description: "",
+      cost: 2500,
+      area: 3,
+      requireResearchIds: ['armour2'],
+      unlockTechnologyIds: ['armour3']
+    },
+    "armour4": {
+      name: "Armour 4",
+      description: "",
+      cost: 5000,
+      area: 3,
+      requireResearchIds: ['armour3'],
+      unlockTechnologyIds: ['armour4']
+    },
+    "armour5": {
+      name: "Armour 5",
+      description: "",
+      cost: 10000,
+      area: 3,
+      requireResearchIds: ['armour4'],
+      unlockTechnologyIds: ['armour5']
+    },
+    "armour6": {
+      name: "Armour 6",
+      description: "",
+      cost: 20000,
+      area: 3,
+      requireResearchIds: ['armour5'],
+      unlockTechnologyIds: ['armour6']
+    },
+    "armour7": {
+      name: "Armour 7",
+      description: "",
+      cost: 40000,
+      area: 3,
+      requireResearchIds: ['armour6'],
+      unlockTechnologyIds: ['armour7']
+    },
+    "armour8": {
+      name: "Armour 8",
+      description: "",
+      cost: 80000,
+      area: 3,
+      requireResearchIds: ['armour7'],
+      unlockTechnologyIds: ['armour8']
+    },
+    "armour9": {
+      name: "Armour 9",
+      description: "",
+      cost: 150000,
+      area: 3,
+      requireResearchIds: ['armour8'],
+      unlockTechnologyIds: ['armour9']
+    },
+    "armour10": {
+      name: "Armour 10",
+      description: "",
+      cost: 250000,
+      area: 3,
+      requireResearchIds: ['armour9'],
+      unlockTechnologyIds: ['armour10']
+    },
   },
   technology: {
     "pe": {
@@ -563,32 +700,155 @@ export default {
         research: 0.2,
       },
     },
-    standardFuelTank: {
-      name: 'Standard fuel tank',
-      unlockComponentIds: ['standardFuelTank']
+    fuelTankHuge: {
+      name: 'Huge fuel tank',
+      unlockComponentIds: ['fuelTankHuge']
+    },
+    fuelTankVeryLarge: {
+      name: 'Very large fuel tank',
+      unlockComponentIds: ['fuelTankVeryLarge']
+    },
+    fuelTankLarge: {
+      name: 'Large fuel tank',
+      unlockComponentIds: ['fuelTankLArge']
+    },
+    fuelTank: {
+      name: 'Fuel tank',
+      unlockComponentIds: ['fuelTank']
+    },
+    fuelTankSmall: {
+      name: 'Small fuel tank',
+      unlockComponentIds: ['fuelTankSmall']
+    },
+    fuelTankTiny: {
+      name: 'Tiny fuel tank',
+      unlockComponentIds: ['fuelTankTiny']
+    },
+    armour1: {
+      name: 'Armour 1',
+      unlockArmour: ['armour1']
+    },
+    armour2: {
+      name: 'Armour 2',
+      unlockArmour: ['armour2']
+    },
+    armour3: {
+      name: 'Armour 3',
+      unlockArmour: ['armour3']
+    },
+    armour4: {
+      name: 'Armour 4',
+      unlockArmour: ['armour4']
+    },
+    armour5: {
+      name: 'Armour 5',
+      unlockArmour: ['armour5']
+    },
+    armour6: {
+      name: 'Armour 6',
+      unlockArmour: ['armour6']
+    },
+    armour7: {
+      name: 'Armour 7',
+      unlockArmour: ['armour7']
+    },
+    armour8: {
+      name: 'Armour 8',
+      unlockArmour: ['armour8']
+    },
+    armour9: {
+      name: 'Armour 9',
+      unlockArmour: ['armour9']
+    },
+    armour10: {
+      name: 'Armour 10',
+      unlockArmour: ['armour10']
     }
   },
   componentTypes: {
-    engine: engine,
-    fuelTank: fuelTank,
+    engine,
+    fuelTank,
+    crewQuarters,
+    command,
+    activeSensor,
+    beamFireControl,
+    maintenance,
+    missileFireControl,
   },
   components: {
-    standardFuelTank: {
-      name: 'Standard fuel tank',
-      componentTypeId: 'fuelTank',
-
-      properties: {
-        //TODO component properties (temp values for now)
-        mass: 1000,
-        bp: 10,
-        hitpoints: 2,
-        crew: 0,
-        explosionChance: 0,
-        fuelStorage: 10000
-      },
-      minerals: {
-        "4": 5
-      }
-    }
+    ...fuelTanks,
+    ...miscComponents
   },
+  armour: {
+    armour1: {
+      name: 'Armour 1',
+      mass: 10,
+      minerals: {
+        "4": 1
+      }
+    },
+    armour2: {
+      name: 'Armour 2',
+      mass: 8.5,
+      minerals: {
+        "4": 1
+      }
+    },
+    armour3: {
+      name: 'Armour 3',
+      mass: 6.5,
+      minerals: {
+        "4": 0.9
+      }
+    },
+    armour4: {
+      name: 'Armour 4',
+      mass: 5.5,
+      minerals: {
+        "4": 0.8
+      }
+    },
+    armour5: {
+      name: 'Armour 5',
+      mass: 4,
+      minerals: {
+        "4": 0.75
+      }
+    },
+    armour6: {
+      name: 'Armour 6',
+      mass: 3.5,
+      minerals: {
+        "4": 0.7
+      }
+    },
+    armour7: {
+      name: 'Armour 7',
+      mass: 0.3,
+      minerals: {
+        "4": 0.65
+      }
+    },
+    armour8: {
+      name: 'Armour 8',
+      mass: 0.25,
+      minerals: {
+        "4": 0.6
+      }
+    },
+    armour9: {
+      name: 'Armour 9',
+      mass: 0.2,
+      minerals: {
+        "4": 0.5
+      }
+    },
+    armour10: {
+      name: 'Armour 10',
+      mass: 0.15,
+      minerals: {
+        "4": 0.4
+      }
+    },
+  }
 };

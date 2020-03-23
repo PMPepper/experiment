@@ -11,7 +11,6 @@ import FormatNumber from '@/components/formatNumber/FormatNumber';
 
 //Hooks
 import useI18n from '@/hooks/useI18n';
-import useShallowEqualSelector from '@/hooks/useShallowEqualSelector';
 import {useClient} from '@/components/game/Game';
 
 //Helpers
@@ -46,7 +45,14 @@ export default function TechnologyDesignWindow(props) {
   const [componentOptions, setComponentOptions] = useState(() => getComponentDefaults(selectedComponent, faction));
 
   return <div>
-    <Form>
+    <Form onSubmit={e => {
+      e.preventDefault();
+
+      client.addComponentProject(componentName, selectedComponentType, componentOptions).then(() => {
+        //TODO proper confirmation
+        alert('technology project added');
+      });
+    }}>
       <Form.Row columns={12}>
         <Form.Field inline width={12} columns={12}>
           <Form.Label width={4}><Trans>Component type</Trans></Form.Label>
@@ -95,7 +101,7 @@ export default function TechnologyDesignWindow(props) {
           </Form.Field>
         </Form.Row>
         <Form.Row columns={12}>
-          {selectedComponent.propertiesLayout.map(propertyLayout => {
+          {selectedComponent.propertiesDesignLayout.map(propertyLayout => {
             const property = propertyLayout.property;
 
             const expr = parser.parse(selectedComponent.properties[property]);
@@ -111,9 +117,7 @@ export default function TechnologyDesignWindow(props) {
         </Form.Row>
       </Form.Group>
       <Form.Row columns={12}>
-        <Form.Button width={12} onClick={() => {
-          client.addComponentProject(componentName, selectedComponentType, componentOptions);
-        }}><Trans>Create component project</Trans></Form.Button>
+        <Form.Button type="submit" width={12}><Trans>Create component project</Trans></Form.Button>
       </Form.Row>
     </Form>
   </div>;

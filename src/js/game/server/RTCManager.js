@@ -55,21 +55,23 @@ export default class RTCManager {
 
     //build set of expression parsers for all component types
     this.componentTypePropertyEvaluators = map(this.componentTypes, (componentType) => {
-      return map(componentType.properties || {}, exprStr => parser.parse(exprStr));
+      return componentType.properties ?
+        map(componentType.properties, exprStr => parser.parse(exprStr))
+        :
+        null;
     });
 
     //mineral evaluators
     this.componentTypeMineralEvaluators = map(this.componentTypes, (componentType) => {
-      return map(componentType.minerals, exprStr => parser.parse(exprStr));
+      return componentType.minerals ?
+        map(componentType.minerals, exprStr => parser.parse(exprStr))
+        :
+        null;
     });
 
     //set components
-    this.components = map(clone(components), component => {
-      if(!component.factionId) {
-        component.factionId = 0;
-      }
-
-      return component
+    forEach(components, (component, id) => {
+      this._addComponent(id, component.factionId, component)
     });
   }
 

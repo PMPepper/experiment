@@ -25,8 +25,28 @@ export default {
     "7": 'size * et * p * 0.5'
   },
 
-  propertiesLayout: [
+  propertiesDesignLayout: [
     {property: 'rp'},
+    {property: 'bp'},
+    {property: 'mass'},
+    {property: 'hitpoints'},
+    {property: 'crew'},
+    {property: 'explosionChance'},
+    {property: 'thermal'},
+    {property: 'thrust'},
+    {property: 'fuelConsumption'},
+    {property: 'fuelConsumptionPerETH'},
+  ],
+
+  propertiesListLayout: [
+    {property: 'bp'},
+    {property: 'mass'},
+    {property: 'hitpoints'},
+    {property: 'crew'},
+    {property: 'thrust'},
+  ],
+
+  propertiesDetailsLayout: [
     {property: 'bp'},
     {property: 'mass'},
     {property: 'hitpoints'},
